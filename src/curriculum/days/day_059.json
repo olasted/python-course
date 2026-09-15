@@ -1,0 +1,87 @@
+{
+  "day": 59,
+  "title": "Design Patterns",
+  "tasks": [
+    {
+      "id": "59.1",
+      "description": "Implement the Singleton pattern: a `Config` class where only one instance can ever be created.",
+      "hint": "Override `__new__`: `def __new__(cls): if not hasattr(cls, '_instance'): cls._instance = super().__new__(cls); return cls._instance`\nEvery call to `Config()` returns the SAME object.\nCheck: `c1 = Config(); c2 = Config(); print(c1 is c2)` → True",
+      "expected": "True",
+      "solution": "class Config:\n    _instance = None\n\n    def __new__(cls):\n        if cls._instance is None:\n            cls._instance = super().__new__(cls)\n            cls._instance.settings = {}\n        return cls._instance\n\nc1 = Config()\nc2 = Config()\nc1.settings['theme'] = 'dark'\nprint(c1 is c2)",
+      "walkthrough": "`__new__` is responsible for creating the object. The first call builds one and stores it on the class; every later call returns that same stored object.\n`c1 is c2` is True because both names point at the one instance. The settings dictionary is set up inside the guard so it isn't reset on later calls."
+    },
+    {
+      "id": "59.2",
+      "description": "Implement the Observer pattern: an `EventEmitter` class where listeners register for events and get notified when events fire.",
+      "hint": "`self.listeners = {}` — a dict mapping event names to lists of callbacks.\n`on(event, callback)` appends to the list.\n`emit(event, data)` loops the list and calls each callback with data.",
+      "expected": "",
+      "solution": "class EventEmitter:\n    def __init__(self):\n        self.listeners = {}\n\n    def on(self, event, callback):\n        self.listeners.setdefault(event, []).append(callback)\n\n    def emit(self, event, data=None):\n        for callback in self.listeners.get(event, []):\n            callback(data)\n\ndef log_login(user):\n    print(f'[log] {user} logged in')\n\ndef greet(user):\n    print(f'Welcome back, {user}!')\n\nemitter = EventEmitter()\nemitter.on('login', log_login)\nemitter.on('login', greet)\nemitter.emit('login', 'alice')\nemitter.emit('logout', 'alice')",
+      "walkthrough": "`on` stores callbacks under an event name. `emit` looks up that name and calls each callback with the data.\nEmitting an event nobody listens to, like logout here, simply does nothing thanks to the `.get(event, [])` default."
+    },
+    {
+      "id": "59.3",
+      "description": "Implement the Factory pattern: a `ShapeFactory.create(type)` class method that returns Circle, Square, or Triangle instances.",
+      "hint": "`@classmethod def create(cls, shape_type): shapes = {'circle': Circle, 'square': Square}; return shapes[shape_type]()`\nThis decouples the caller from knowing which class to instantiate.\nAdd error handling for unknown shape types.",
+      "expected": "",
+      "solution": "class Circle:\n    def area(self):\n        return 'circle area'\n\nclass Square:\n    def area(self):\n        return 'square area'\n\nclass Triangle:\n    def area(self):\n        return 'triangle area'\n\nclass ShapeFactory:\n    _registry = {'circle': Circle, 'square': Square, 'triangle': Triangle}\n\n    @classmethod\n    def create(cls, shape_type):\n        shape_class = cls._registry.get(shape_type.lower())\n        if shape_class is None:\n            raise ValueError(f'Unknown shape type: {shape_type}')\n        return shape_class()\n\nfor kind in ['circle', 'Square', 'triangle']:\n    shape = ShapeFactory.create(kind)\n    print(type(shape).__name__, '->', shape.area())\n\ntry:\n    ShapeFactory.create('hexagon')\nexcept ValueError as e:\n    print(e)",
+      "walkthrough": "The registry maps a string to a class. `create` looks the string up, and if it finds a class, calls it to make an instance.\nUnknown names raise a clear ValueError rather than a confusing KeyError."
+    },
+    {
+      "id": "59.4",
+      "description": "Implement a simple Strategy pattern: a `Sorter` class that accepts a sorting strategy (bubble, quick) and uses it.",
+      "hint": "Pass the strategy as a function: `sorter = Sorter(strategy=bubble_sort)`\nThe `Sorter.sort(data)` method calls `self.strategy(data)`.\nYou can swap strategies at runtime: `sorter.strategy = quick_sort`",
+      "expected": "",
+      "solution": "def bubble_sort(data):\n    data = data[:]\n    for i in range(len(data) - 1):\n        for j in range(len(data) - 1 - i):\n            if data[j] > data[j + 1]:\n                data[j], data[j + 1] = data[j + 1], data[j]\n    return data\n\ndef quick_sort(data):\n    if len(data) <= 1:\n        return data\n    pivot = data[0]\n    less = [x for x in data[1:] if x < pivot]\n    more = [x for x in data[1:] if x >= pivot]\n    return quick_sort(less) + [pivot] + quick_sort(more)\n\nclass Sorter:\n    def __init__(self, strategy):\n        self.strategy = strategy\n\n    def sort(self, data):\n        return self.strategy(data)\n\nnumbers = [5, 2, 9, 1, 7]\nsorter = Sorter(strategy=bubble_sort)\nprint('bubble:', sorter.sort(numbers))\n\nsorter.strategy = quick_sort\nprint('quick: ', sorter.sort(numbers))",
+      "walkthrough": "Both sort functions take a list and return a sorted copy, so either can be plugged into `Sorter`.\nThe `Sorter` doesn't know or care which algorithm it holds. Swapping strategies is just assigning a different function."
+    },
+    {
+      "id": "59.5",
+      "description": "Implement the Decorator pattern (not Python @decorator — the OOP pattern): wrap a `Coffee` object with `MilkDecorator` to add milk cost and description.",
+      "hint": "Both base class and decorators implement the same interface (e.g., `cost()` and `description()`).\n`class MilkDecorator: def __init__(self, coffee): self._coffee = coffee`\n`def cost(self): return self._coffee.cost() + 0.50`",
+      "expected": "",
+      "solution": "class Coffee:\n    def cost(self):\n        return 2.00\n\n    def description(self):\n        return 'Coffee'\n\nclass MilkDecorator:\n    def __init__(self, coffee):\n        self._coffee = coffee\n\n    def cost(self):\n        return self._coffee.cost() + 0.50\n\n    def description(self):\n        return self._coffee.description() + ', milk'\n\nclass SugarDecorator:\n    def __init__(self, coffee):\n        self._coffee = coffee\n\n    def cost(self):\n        return self._coffee.cost() + 0.25\n\n    def description(self):\n        return self._coffee.description() + ', sugar'\n\nplain = Coffee()\nwith_milk = MilkDecorator(plain)\nfancy = SugarDecorator(MilkDecorator(Coffee()))\n\nfor drink in [plain, with_milk, fancy]:\n    print(f'{drink.description()}: {drink.cost():.2f}')",
+      "walkthrough": "Each decorator holds the object it wraps and forwards calls to it, adding its own cost and description on the way.\nBecause the decorators have the same methods as Coffee, they can be stacked in any order and used wherever a Coffee is expected."
+    }
+  ],
+  "lesson": {
+    "intro": "Design patterns are named solutions to problems that come up again and again\nin object-oriented code. Knowing the names helps you read other people's code\nand talk about your own. Today: five of the common ones, each in a few lines\nof Python.",
+    "sections": [
+      {
+        "heading": "Singleton: only one instance, ever",
+        "body": "Override `__new__`, the method that creates the object before `__init__`\nruns. If an instance already exists, return it instead of making another.\nUseful for configuration and shared connections.",
+        "code": "class Config:\n    _instance = None\n\n    def __new__(cls):\n        if cls._instance is None:\n            cls._instance = super().__new__(cls)\n        return cls._instance\n\na = Config()\nb = Config()\nprint(a is b)",
+        "output": "True"
+      },
+      {
+        "heading": "Observer: notify whoever is listening",
+        "body": "An emitter keeps a dictionary of event name to list of callbacks.\n`on` registers a callback; `emit` calls every callback for that event.\nIt's how buttons, web sockets and many frameworks work.",
+        "code": "class EventEmitter:\n    def __init__(self):\n        self.listeners = {}\n\n    def on(self, event, callback):\n        self.listeners.setdefault(event, []).append(callback)\n\n    def emit(self, event, data=None):\n        for cb in self.listeners.get(event, []):\n            cb(data)\n\nem = EventEmitter()\nem.on('save', lambda d: print('saved', d))\nem.on('save', lambda d: print('backup made'))\nem.emit('save', 'file.txt')",
+        "output": "saved file.txt\nbackup made"
+      },
+      {
+        "heading": "Factory: build the right class from a name",
+        "body": "A dictionary from name to class, and a method that looks up and calls\nthe class. The caller says \"circle\" and gets a Circle without importing\nor knowing about the class itself.",
+        "code": "class Circle: pass\nclass Square: pass\n\nclass ShapeFactory:\n    _shapes = {'circle': Circle, 'square': Square}\n\n    @classmethod\n    def create(cls, kind):\n        if kind not in cls._shapes:\n            raise ValueError(f'Unknown shape: {kind}')\n        return cls._shapes[kind]()\n\nprint(type(ShapeFactory.create('circle')).__name__)",
+        "output": "Circle"
+      },
+      {
+        "heading": "Strategy: swap the algorithm at runtime",
+        "body": "Pass a function in and call it later. Because functions are values, the\nstrategy pattern in Python is barely a pattern at all.",
+        "code": "class Sorter:\n    def __init__(self, strategy):\n        self.strategy = strategy\n\n    def sort(self, data):\n        return self.strategy(data)\n\ns = Sorter(sorted)\nprint(s.sort([3, 1, 2]))\ns.strategy = lambda d: sorted(d, reverse=True)\nprint(s.sort([3, 1, 2]))",
+        "output": "[1, 2, 3]\n[3, 2, 1]"
+      },
+      {
+        "heading": "Decorator (the pattern, not the @)",
+        "body": "Wrap an object in another object with the same interface, adding\nbehaviour on the way through. A coffee with milk is a coffee that costs\na bit more and describes itself differently, but you use it the same way.",
+        "code": "class Coffee:\n    def cost(self): return 2.0\n    def description(self): return 'Coffee'\n\nclass MilkDecorator:\n    def __init__(self, coffee): self._coffee = coffee\n    def cost(self): return self._coffee.cost() + 0.5\n    def description(self): return self._coffee.description() + ', milk'\n\nc = MilkDecorator(Coffee())\nprint(c.description(), c.cost())",
+        "output": "Coffee, milk 2.5"
+      }
+    ],
+    "watch_out": [
+      "In a singleton, `__init__` still runs on every `Config()` call. Keep it empty or guard it.",
+      "`setdefault(event, [])` returns the existing list or creates one, so the append always has somewhere to go.",
+      "A factory dictionary holds the classes themselves (`Circle`), not instances (`Circle()`).",
+      "Decorator objects must expose the same methods as the thing they wrap, or code that used the original breaks."
+    ]
+  }
+}

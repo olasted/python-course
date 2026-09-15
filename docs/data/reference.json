@@ -1,0 +1,216 @@
+{
+  "sections": [
+    {
+      "title": "Printing and variables",
+      "items": [
+        { "code": "print('hello')", "note": "Show text. Each print ends the line." },
+        { "code": "print(a, b)", "note": "Print several things with a space between." },
+        { "code": "print('a', end='')", "note": "Print without moving to a new line." },
+        { "code": "name = 'Sam'", "note": "Make a variable. No type needed." },
+        { "code": "x, y = 1, 2", "note": "Assign two at once." },
+        { "code": "x += 1", "note": "Short for x = x + 1. Also -=, *=, /=." },
+        { "code": "# a comment", "note": "Python ignores everything after #." }
+      ]
+    },
+    {
+      "title": "Types and converting",
+      "items": [
+        { "code": "int('42')", "note": "Text to whole number." },
+        { "code": "float('3.5')", "note": "Text to decimal number." },
+        { "code": "str(42)", "note": "Number to text." },
+        { "code": "type(x)", "note": "See what kind of value x is." },
+        { "code": "int(3.9)", "note": "Chops the decimal: 3." },
+        { "code": "round(3.456, 2)", "note": "3.46. Without the 2 you get a whole number." },
+        { "code": "bool(0), bool('')", "note": "Both False. Empty things are False." }
+      ]
+    },
+    {
+      "title": "Numbers",
+      "items": [
+        { "code": "7 / 2", "note": "3.5 — division always gives a float." },
+        { "code": "7 // 2", "note": "3 — whole-number division (rounds down)." },
+        { "code": "7 % 2", "note": "1 — the remainder. x % 2 == 0 means even." },
+        { "code": "2 ** 10", "note": "1024 — power." },
+        { "code": "abs(-5)", "note": "5" },
+        { "code": "max(3, 9), min(3, 9)", "note": "Biggest / smallest. Works on lists too." },
+        { "code": "sum([1, 2, 3])", "note": "6" },
+        { "code": "import math\nmath.sqrt(16)", "note": "4.0. Also math.pi, math.floor, math.ceil." }
+      ]
+    },
+    {
+      "title": "Input",
+      "items": [
+        { "code": "name = input('Name: ')", "note": "Always returns text, even if they type a number." },
+        { "code": "age = int(input('Age: '))", "note": "Convert straight away if you need a number." },
+        { "code": "num = float(input())", "note": "Use float if decimals are allowed." }
+      ]
+    },
+    {
+      "title": "Strings",
+      "items": [
+        { "code": "f'Hi {name}, you are {age}'", "note": "f-string: put variables inside {}." },
+        { "code": "f'{price:.2f}'", "note": "2 decimal places. f'{n:,}' adds commas." },
+        { "code": "f'{name:<10}|'", "note": "Pad to width 10. < left, > right, ^ centre." },
+        { "code": "len(s)", "note": "Number of characters." },
+        { "code": "s[0], s[-1]", "note": "First and last character." },
+        { "code": "s[2:5]", "note": "Characters 2, 3, 4. s[::-1] reverses." },
+        { "code": "s.upper(), s.lower(), s.title()", "note": "Change case. Returns a new string." },
+        { "code": "s.strip()", "note": "Remove spaces/newlines from both ends." },
+        { "code": "s.split(',')", "note": "Text to list. No argument = split on spaces." },
+        { "code": "', '.join(items)", "note": "List to text. The separator goes first." },
+        { "code": "s.replace('a', 'b')", "note": "Swap every 'a' for 'b'." },
+        { "code": "s.startswith('He'), s.endswith('!')", "note": "True/False." },
+        { "code": "'lo' in s", "note": "True if s contains 'lo'." },
+        { "code": "s.count('l'), s.find('l')", "note": "How many / position of first (-1 if none)." },
+        { "code": "s.isdigit(), s.isalpha()", "note": "All digits? All letters?" },
+        { "code": "'ab' * 3", "note": "'ababab'" }
+      ]
+    },
+    {
+      "title": "If / else",
+      "items": [
+        { "code": "if x > 5:\n    ...\nelif x > 2:\n    ...\nelse:\n    ...", "note": "Top to bottom, first True wins. Colons and indents matter." },
+        { "code": "==  !=  <  <=  >  >=", "note": "Compare. == not = (single = assigns)." },
+        { "code": "a and b, a or b, not a", "note": "Combine conditions." },
+        { "code": "10 <= x <= 20", "note": "Between (inclusive). Python lets you chain." },
+        { "code": "x in [1, 2, 3]", "note": "Membership test. Works on strings, lists, dicts (keys)." },
+        { "code": "'yes' if ok else 'no'", "note": "One-line if (ternary)." }
+      ]
+    },
+    {
+      "title": "Loops",
+      "items": [
+        { "code": "for i in range(5):", "note": "0, 1, 2, 3, 4. Stop is not included." },
+        { "code": "for i in range(1, 6):", "note": "1 to 5." },
+        { "code": "for i in range(10, 0, -2):", "note": "10, 8, 6, 4, 2. Third number is the step." },
+        { "code": "for item in my_list:", "note": "Each item in turn. Works for strings and dicts too." },
+        { "code": "for i, item in enumerate(my_list):", "note": "Position and item together. enumerate(x, 1) starts at 1." },
+        { "code": "for a, b in zip(list1, list2):", "note": "Walk two lists side by side." },
+        { "code": "while x < 10:\n    x += 1", "note": "Repeat while True. Make sure something changes." },
+        { "code": "while True:\n    ...\n    if done:\n        break", "note": "Loop until break." },
+        { "code": "continue", "note": "Skip to the next iteration." },
+        { "code": "for _ in range(3):", "note": "Underscore = 'I don't need the counter'." }
+      ]
+    },
+    {
+      "title": "Lists",
+      "items": [
+        { "code": "nums = [3, 1, 2]", "note": "Ordered, changeable." },
+        { "code": "nums[0], nums[-1]", "note": "First, last. Positions start at 0." },
+        { "code": "nums[1:3]", "note": "Slice: positions 1 and 2." },
+        { "code": "nums.append(4)", "note": "Add to the end. Changes the list, returns None." },
+        { "code": "nums.insert(0, 9)", "note": "Add at a position." },
+        { "code": "nums.remove(3)", "note": "Remove first matching value." },
+        { "code": "nums.pop()", "note": "Remove and return the last item. pop(0) for the first." },
+        { "code": "len(nums)", "note": "How many items." },
+        { "code": "sorted(nums)", "note": "New sorted list. nums.sort() sorts in place and returns None." },
+        { "code": "nums[::-1]  or  list(reversed(nums))", "note": "Reversed copy." },
+        { "code": "3 in nums", "note": "True/False." },
+        { "code": "nums.index(2)", "note": "Position of a value." },
+        { "code": "[x * 2 for x in nums]", "note": "List comprehension: transform each item." },
+        { "code": "[x for x in nums if x > 1]", "note": "Comprehension with a filter." },
+        { "code": "a + b", "note": "Join two lists into a new one." }
+      ]
+    },
+    {
+      "title": "Dictionaries",
+      "items": [
+        { "code": "d = {'name': 'Sam', 'age': 30}", "note": "Key: value pairs." },
+        { "code": "d['name']", "note": "Look up. KeyError if missing." },
+        { "code": "d.get('email', 'none')", "note": "Look up with a fallback. Never crashes." },
+        { "code": "d['city'] = 'Leeds'", "note": "Add or update." },
+        { "code": "del d['age']", "note": "Remove a key." },
+        { "code": "'name' in d", "note": "Does the key exist?" },
+        { "code": "for k, v in d.items():", "note": "Loop over pairs. Also d.keys(), d.values()." },
+        { "code": "len(d)", "note": "Number of pairs." },
+        { "code": "{k: v * 2 for k, v in d.items()}", "note": "Dict comprehension." }
+      ]
+    },
+    {
+      "title": "Tuples and sets",
+      "items": [
+        { "code": "t = (1, 2, 3)", "note": "Like a list but can't be changed." },
+        { "code": "a, b, c = t", "note": "Unpack into variables." },
+        { "code": "s = {1, 2, 2, 3}", "note": "Set: unique items, no order. Becomes {1, 2, 3}." },
+        { "code": "set(my_list)", "note": "Remove duplicates." },
+        { "code": "s.add(4)", "note": "Add to a set (not append)." },
+        { "code": "a & b, a | b, a - b", "note": "Intersection, union, difference." }
+      ]
+    },
+    {
+      "title": "Functions",
+      "items": [
+        { "code": "def greet(name):\n    return f'Hi {name}'", "note": "Define. return sends a value back." },
+        { "code": "greet('Sam')", "note": "Call it. Use print(...) to see the result." },
+        { "code": "def power(base, exp=2):", "note": "Default value for exp." },
+        { "code": "def total(*nums):", "note": "Any number of arguments, as a tuple." },
+        { "code": "def show(**info):", "note": "Any keyword arguments, as a dict." },
+        { "code": "return a, b", "note": "Return two values (as a tuple)." },
+        { "code": "square = lambda x: x ** 2", "note": "Tiny one-line function." },
+        { "code": "global counter", "note": "Inside a function: 'I mean the outside variable'." }
+      ]
+    },
+    {
+      "title": "Errors",
+      "items": [
+        { "code": "try:\n    n = int(text)\nexcept ValueError:\n    print('not a number')", "note": "Catch a specific error." },
+        { "code": "except (TypeError, KeyError):", "note": "Catch several." },
+        { "code": "except Exception as e:\n    print(e)", "note": "Catch anything and see the message." },
+        { "code": "else:", "note": "Runs only if no error happened." },
+        { "code": "finally:", "note": "Always runs, error or not." },
+        { "code": "raise ValueError('bad input')", "note": "Cause an error on purpose." },
+        { "code": "class MyError(Exception):\n    pass", "note": "Your own error type." }
+      ]
+    },
+    {
+      "title": "Files",
+      "items": [
+        { "code": "with open('f.txt', 'w') as f:\n    f.write('hi\\n')", "note": "Write (overwrites). 'a' appends. with closes it for you." },
+        { "code": "with open('f.txt') as f:\n    text = f.read()", "note": "Read everything." },
+        { "code": "for line in f:\n    print(line.strip())", "note": "Read line by line. strip removes the newline." },
+        { "code": "f.readlines()", "note": "All lines as a list." },
+        { "code": "import json\njson.dump(data, f)  /  json.load(f)", "note": "Save / load Python data as JSON." },
+        { "code": "json.dumps(data, indent=2)  /  json.loads(text)", "note": "To / from a string." },
+        { "code": "from pathlib import Path\nPath('f.txt').read_text()", "note": "Modern shortcut." }
+      ]
+    },
+    {
+      "title": "Classes",
+      "items": [
+        { "code": "class Dog:\n    def __init__(self, name):\n        self.name = name", "note": "__init__ runs when you create one. self = this object." },
+        { "code": "    def bark(self):\n        print(f'{self.name} says woof')", "note": "Methods always take self first." },
+        { "code": "d = Dog('Rex')\nd.bark()", "note": "Create and use." },
+        { "code": "def __str__(self):\n    return f'Dog({self.name})'", "note": "What print(d) shows." },
+        { "code": "class Puppy(Dog):", "note": "Inherit from Dog." },
+        { "code": "super().__init__(name)", "note": "Call the parent's __init__." },
+        { "code": "@property\ndef age(self): ...", "note": "Use like an attribute: d.age (no brackets)." },
+        { "code": "@dataclass\nclass Point:\n    x: float\n    y: float", "note": "Auto __init__, __repr__, __eq__. from dataclasses import dataclass." }
+      ]
+    },
+    {
+      "title": "Handy modules",
+      "items": [
+        { "code": "import random\nrandom.randint(1, 6)\nrandom.choice(items)\nrandom.shuffle(items)", "note": "Random whole number (inclusive), pick one, shuffle in place." },
+        { "code": "from datetime import date, datetime, timedelta\ndate.today()\ndatetime.now()\ndate.today() + timedelta(days=7)", "note": "Dates and times." },
+        { "code": "from collections import Counter\nCounter(words).most_common(3)", "note": "Count things." },
+        { "code": "from collections import defaultdict\nd = defaultdict(list)", "note": "Dict that creates missing keys." },
+        { "code": "import re\nre.findall(r'\\d+', text)", "note": "Regex: all runs of digits." },
+        { "code": "import csv\ncsv.reader(f)  /  csv.DictReader(f)", "note": "Read CSV rows." },
+        { "code": "import os\nos.getcwd(), os.listdir('.')", "note": "Current folder, list files." },
+        { "code": "import time\ntime.sleep(1)", "note": "Pause for a second." }
+      ]
+    },
+    {
+      "title": "Reading an error",
+      "items": [
+        { "code": "Traceback (most recent call last):\n  File \"your code\", line 3, in <module>\nNameError: name 'x' is not defined", "note": "Read the last line first: the error type and message. Then the line number above it." },
+        { "code": "NameError", "note": "Typo or variable used before it exists." },
+        { "code": "SyntaxError / IndentationError", "note": "Missing colon, bracket, quote, or wrong indentation." },
+        { "code": "TypeError", "note": "Mixing types, e.g. text + number. Use str() or f-strings." },
+        { "code": "ValueError", "note": "Right type, bad value, e.g. int('abc')." },
+        { "code": "IndexError / KeyError", "note": "Position or key doesn't exist." },
+        { "code": "AttributeError", "note": "That method doesn't exist on that type. Often the value is None." }
+      ]
+    }
+  ]
+}

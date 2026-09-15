@@ -1,0 +1,89 @@
+{
+  "day": 60,
+  "title": "Final Challenge: CLI Todo App",
+  "tasks": [
+    {
+      "id": "60.1",
+      "description": "Create a `Todo` dataclass with: `id: int`, `title: str`, `done: bool = False`, `created_at: str`. The created_at should default to today's date string.",
+      "hint": "`from dataclasses import dataclass, field; from datetime import date`\n`created_at: str = field(default_factory=lambda: str(date.today()))`\nUsing `default_factory` with a lambda lets you compute the default at creation time.",
+      "expected": "",
+      "solution": "import json\nfrom dataclasses import dataclass, field\nfrom datetime import date\n\n@dataclass\nclass Todo:\n    id: int\n    title: str\n    done: bool = False\n    created_at: str = field(default_factory=lambda: str(date.today()))\n\nt = Todo(1, 'Buy milk')\nprint(t)\nprint(t.created_at)",
+      "walkthrough": "The first two fields have no defaults. `done` defaults to False.\n`created_at` uses `default_factory` with a lambda so the date is looked up each time a Todo is made, not once when the class is defined."
+    },
+    {
+      "id": "60.2",
+      "description": "Create a `TodoList` class: add, complete, delete, and list todos. Assign auto-incrementing IDs.",
+      "hint": "`self.todos = []; self._next_id = 1`\n`add(title)`: create Todo with current `_next_id`, append, increment ID.\n`complete(id)`: find by id, set `done = True`.\n`delete(id)`: filter it out of the list.",
+      "expected": "",
+      "solution": "import json\nfrom dataclasses import dataclass, field\nfrom datetime import date\n\n@dataclass\nclass Todo:\n    id: int\n    title: str\n    done: bool = False\n    created_at: str = field(default_factory=lambda: str(date.today()))\n\nclass TodoList:\n    def __init__(self):\n        self.todos = []\n        self._next_id = 1\n\n    def add(self, title):\n        todo = Todo(self._next_id, title)\n        self.todos.append(todo)\n        self._next_id += 1\n        return todo\n\n    def find(self, todo_id):\n        for t in self.todos:\n            if t.id == todo_id:\n                return t\n        return None\n\n    def complete(self, todo_id):\n        todo = self.find(todo_id)\n        if todo:\n            todo.done = True\n        return todo is not None\n\n    def delete(self, todo_id):\n        before = len(self.todos)\n        self.todos = [t for t in self.todos if t.id != todo_id]\n        return len(self.todos) < before\n\n    def pending_count(self):\n        return sum(1 for t in self.todos if not t.done)\n\n    def list_all(self):\n        if not self.todos:\n            print('  (nothing here yet)')\n        for t in self.todos:\n            mark = 'x' if t.done else ' '\n            print(f'  [{mark}] {t.id}. {t.title}  ({t.created_at})')\n\ntodos = TodoList()\ntodos.add('Buy milk')\ntodos.add('Walk the dog')\ntodos.add('Write code')\ntodos.complete(2)\ntodos.delete(1)\ntodos.list_all()\nprint('pending:', todos.pending_count())",
+      "walkthrough": "`add` builds a Todo with the current next id and then increments it, so ids are unique and increasing.\n`complete` uses `find` to locate the item and flips its flag. `delete` rebuilds the list without the matching id."
+    },
+    {
+      "id": "60.3",
+      "description": "Add `save(filename)` and `load(filename)` methods using JSON. The todo list should persist between runs.",
+      "hint": "`save`: `json.dump([vars(t) for t in self.todos], f, indent=2)`\n`load`: `self.todos = [Todo(**d) for d in json.load(f)]`\n`vars(t)` converts a dataclass to a dict; `Todo(**d)` unpacks it back.",
+      "expected": "",
+      "solution": "import json\nfrom dataclasses import dataclass, field\nfrom datetime import date\n\n@dataclass\nclass Todo:\n    id: int\n    title: str\n    done: bool = False\n    created_at: str = field(default_factory=lambda: str(date.today()))\n\nclass TodoList:\n    def __init__(self):\n        self.todos = []\n        self._next_id = 1\n\n    def add(self, title):\n        todo = Todo(self._next_id, title)\n        self.todos.append(todo)\n        self._next_id += 1\n        return todo\n\n    def find(self, todo_id):\n        for t in self.todos:\n            if t.id == todo_id:\n                return t\n        return None\n\n    def complete(self, todo_id):\n        todo = self.find(todo_id)\n        if todo:\n            todo.done = True\n        return todo is not None\n\n    def delete(self, todo_id):\n        before = len(self.todos)\n        self.todos = [t for t in self.todos if t.id != todo_id]\n        return len(self.todos) < before\n\n    def pending_count(self):\n        return sum(1 for t in self.todos if not t.done)\n\n    def list_all(self):\n        if not self.todos:\n            print('  (nothing here yet)')\n        for t in self.todos:\n            mark = 'x' if t.done else ' '\n            print(f'  [{mark}] {t.id}. {t.title}  ({t.created_at})')\n\n    def save(self, filename):\n        with open(filename, 'w') as f:\n            json.dump([vars(t) for t in self.todos], f, indent=2)\n\n    def load(self, filename):\n        with open(filename) as f:\n            self.todos = [Todo(**d) for d in json.load(f)]\n        self._next_id = max((t.id for t in self.todos), default=0) + 1\n\ntodos = TodoList()\ntodos.add('Buy milk')\ntodos.add('Walk the dog')\ntodos.complete(1)\ntodos.save('todos.json')\n\nfresh = TodoList()\nfresh.load('todos.json')\nfresh.list_all()\nfresh.add('New item after load')\nfresh.list_all()",
+      "walkthrough": "`save` converts each dataclass to a dictionary with `vars()` and writes the list as JSON.\n`load` reads it back and rebuilds each Todo with `Todo(**d)`. It then sets `_next_id` past the highest loaded id so new items don't clash."
+    },
+    {
+      "id": "60.4",
+      "description": "Build the CLI menu: 1) Add todo, 2) Mark done, 3) Delete, 4) List all, 5) Save & Exit. Show pending count in the menu.",
+      "hint": "Count pending: `pending = sum(1 for t in todos if not t.done)`\nDisplay: `print(f'--- Todo List ({pending} pending) ---')`\nMain loop: `while True: show_menu(); choice = input('>'); handle_choice(choice)`",
+      "expected": "",
+      "solution": "import json\nfrom dataclasses import dataclass, field\nfrom datetime import date\n\n@dataclass\nclass Todo:\n    id: int\n    title: str\n    done: bool = False\n    created_at: str = field(default_factory=lambda: str(date.today()))\n\nclass TodoList:\n    def __init__(self):\n        self.todos = []\n        self._next_id = 1\n\n    def add(self, title):\n        todo = Todo(self._next_id, title)\n        self.todos.append(todo)\n        self._next_id += 1\n        return todo\n\n    def find(self, todo_id):\n        for t in self.todos:\n            if t.id == todo_id:\n                return t\n        return None\n\n    def complete(self, todo_id):\n        todo = self.find(todo_id)\n        if todo:\n            todo.done = True\n        return todo is not None\n\n    def delete(self, todo_id):\n        before = len(self.todos)\n        self.todos = [t for t in self.todos if t.id != todo_id]\n        return len(self.todos) < before\n\n    def pending_count(self):\n        return sum(1 for t in self.todos if not t.done)\n\n    def list_all(self):\n        if not self.todos:\n            print('  (nothing here yet)')\n        for t in self.todos:\n            mark = 'x' if t.done else ' '\n            print(f'  [{mark}] {t.id}. {t.title}  ({t.created_at})')\n\n    def save(self, filename):\n        with open(filename, 'w') as f:\n            json.dump([vars(t) for t in self.todos], f, indent=2)\n\n    def load(self, filename):\n        with open(filename) as f:\n            self.todos = [Todo(**d) for d in json.load(f)]\n        self._next_id = max((t.id for t in self.todos), default=0) + 1\n\ndef show_menu(todos):\n    print(f'\\n--- Todo List ({todos.pending_count()} pending) ---')\n    print('1) Add todo  2) Mark done  3) Delete  4) List all  5) Save & Exit')\n\ndef ask_id():\n    try:\n        return int(input('Todo id: '))\n    except ValueError:\n        print('Please enter a number.')\n        return None\n\ntodos = TodoList()\n\nwhile True:\n    show_menu(todos)\n    choice = input('> ').strip()\n    if choice == '1':\n        todos.add(input('Title: '))\n    elif choice == '2':\n        todo_id = ask_id()\n        if todo_id is not None and not todos.complete(todo_id):\n            print('No todo with that id.')\n    elif choice == '3':\n        todo_id = ask_id()\n        if todo_id is not None and not todos.delete(todo_id):\n            print('No todo with that id.')\n    elif choice == '4':\n        todos.list_all()\n    elif choice == '5':\n        todos.save('todos.json')\n        print('Saved. Bye.')\n        break\n    else:\n        print('Pick 1 to 5.')",
+      "walkthrough": "The loop shows the menu with the pending count, reads a choice and dispatches to a method.\n`ask_id` wraps the int conversion in try/except so typing letters gives a message instead of a crash.\nOption 5 saves and breaks out of the loop.",
+      "solution_stdin": "1\nBuy milk\n1\nWalk the dog\n2\n1\n4\n3\nabc\n7\n5\n"
+    },
+    {
+      "id": "60.5",
+      "description": "Polish the app: colour-code done todos, add input validation, handle file-not-found on load gracefully, and show creation date.",
+      "hint": "ANSI codes for colour: `'\\033[92m'` = green, `'\\033[0m'` = reset.\nPrint done todos in green, pending in white.\nFor file load: `try: todo_list.load(...) except FileNotFoundError: pass` — start fresh if no file.",
+      "expected": "",
+      "solution": "import json\nfrom dataclasses import dataclass, field\nfrom datetime import date\n\n@dataclass\nclass Todo:\n    id: int\n    title: str\n    done: bool = False\n    created_at: str = field(default_factory=lambda: str(date.today()))\n\nclass TodoList:\n    def __init__(self):\n        self.todos = []\n        self._next_id = 1\n\n    def add(self, title):\n        todo = Todo(self._next_id, title)\n        self.todos.append(todo)\n        self._next_id += 1\n        return todo\n\n    def find(self, todo_id):\n        for t in self.todos:\n            if t.id == todo_id:\n                return t\n        return None\n\n    def complete(self, todo_id):\n        todo = self.find(todo_id)\n        if todo:\n            todo.done = True\n        return todo is not None\n\n    def delete(self, todo_id):\n        before = len(self.todos)\n        self.todos = [t for t in self.todos if t.id != todo_id]\n        return len(self.todos) < before\n\n    def pending_count(self):\n        return sum(1 for t in self.todos if not t.done)\n\n    def list_all(self):\n        if not self.todos:\n            print('  (nothing here yet)')\n        for t in self.todos:\n            mark = 'x' if t.done else ' '\n            print(f'  [{mark}] {t.id}. {t.title}  ({t.created_at})')\n\n    def save(self, filename):\n        with open(filename, 'w') as f:\n            json.dump([vars(t) for t in self.todos], f, indent=2)\n\n    def load(self, filename):\n        with open(filename) as f:\n            self.todos = [Todo(**d) for d in json.load(f)]\n        self._next_id = max((t.id for t in self.todos), default=0) + 1\n\nGREEN = '\\033[92m'\nDIM = '\\033[2m'\nRESET = '\\033[0m'\n\ndef show_list(todos):\n    if not todos.todos:\n        print('  (nothing here yet)')\n    for t in todos.todos:\n        if t.done:\n            print(f'  {GREEN}[x] {t.id}. {t.title}{RESET}  {DIM}{t.created_at}{RESET}')\n        else:\n            print(f'  [ ] {t.id}. {t.title}  {DIM}{t.created_at}{RESET}')\n\ndef show_menu(todos):\n    print(f'\\n--- Todo List ({todos.pending_count()} pending) ---')\n    print('1) Add todo  2) Mark done  3) Delete  4) List all  5) Save & Exit')\n\ndef ask_id():\n    try:\n        return int(input('Todo id: '))\n    except ValueError:\n        print('Please enter a number.')\n        return None\n\nSAVE_FILE = 'todos.json'\ntodos = TodoList()\ntry:\n    todos.load(SAVE_FILE)\n    print(f'Loaded {len(todos.todos)} todos.')\nexcept FileNotFoundError:\n    print('No saved list yet, starting fresh.')\n\nwhile True:\n    show_menu(todos)\n    choice = input('> ').strip()\n    if choice == '1':\n        title = input('Title: ').strip()\n        if title:\n            todos.add(title)\n        else:\n            print('Title cannot be empty.')\n    elif choice == '2':\n        todo_id = ask_id()\n        if todo_id is not None and not todos.complete(todo_id):\n            print('No todo with that id.')\n    elif choice == '3':\n        todo_id = ask_id()\n        if todo_id is not None and not todos.delete(todo_id):\n            print('No todo with that id.')\n    elif choice == '4':\n        show_list(todos)\n    elif choice == '5':\n        todos.save(SAVE_FILE)\n        print('Saved. Bye.')\n        break\n    else:\n        print('Pick 1 to 5.')",
+      "walkthrough": "Loading is wrapped in try/except so the very first run, with no file, starts with an empty list instead of crashing.\nDone items are printed in green using ANSI codes, and every item shows its creation date in dim text.\nEmpty titles are rejected. Everything else is the menu from the previous step.\nThat's the whole course. The program you just built uses most of what you've learned.",
+      "solution_stdin": "1\n\n1\nRead a book\n2\n1\n4\n5\n"
+    }
+  ],
+  "lesson": {
+    "intro": "The last project: a to-do list you can use from the terminal, that remembers\nits items between runs. It brings together dataclasses, a class that manages a\ncollection, JSON for saving, a menu loop, and a bit of polish. Build it in the\nfive steps below and run after each one.",
+    "sections": [
+      {
+        "heading": "Step 1: the Todo dataclass",
+        "body": "Four fields. `created_at` needs a default computed at creation time, so\nuse `field(default_factory=...)` with a lambda that returns today's date\nas a string.",
+        "code": "from dataclasses import dataclass, field\nfrom datetime import date\n\n@dataclass\nclass Todo:\n    id: int\n    title: str\n    done: bool = False\n    created_at: str = field(default_factory=lambda: str(date.today()))\n\nprint(Todo(1, 'Buy milk'))",
+        "output": "Todo(id=1, title='Buy milk', done=False, created_at='2026-09-15')"
+      },
+      {
+        "heading": "Step 2: the TodoList class",
+        "body": "Holds a list of todos and a counter for the next id. `add` creates a\nTodo and bumps the counter; `complete` and `delete` find by id. A small\n`find` helper avoids repeating the search loop.",
+        "code": "class TodoList:\n    def __init__(self):\n        self.todos = []\n        self._next_id = 1\n\n    def add(self, title):\n        self.todos.append(Todo(self._next_id, title))\n        self._next_id += 1\n\n    def find(self, todo_id):\n        return next((t for t in self.todos if t.id == todo_id), None)\n\nprint('(see the solutions for complete/delete)')",
+        "output": "(see the solutions for complete/delete)"
+      },
+      {
+        "heading": "Step 3: save and load with JSON",
+        "body": "`vars(todo)` turns a dataclass into a dictionary; `Todo(**d)` turns a\ndictionary back. After loading, set the next id to one more than the\nhighest existing id so new items don't collide.",
+        "code": "import json\nfrom dataclasses import dataclass\n\n@dataclass\nclass Todo:\n    id: int\n    title: str\n\ntodos = [Todo(1, 'a'), Todo(2, 'b')]\ntext = json.dumps([vars(t) for t in todos])\nprint(text)\nprint([Todo(**d) for d in json.loads(text)])",
+        "output": "[{\"id\": 1, \"title\": \"a\"}, {\"id\": 2, \"title\": \"b\"}]\n[Todo(id=1, title='a'), Todo(id=2, title='b')]"
+      },
+      {
+        "heading": "Step 4: the menu",
+        "body": "Show the options and a pending count, read a choice, branch. Each branch\ncalls one method on the list. Convert ids with `int()` inside a `try`\nso a typo doesn't crash the program.",
+        "code": "pending = 2\nprint(f'--- Todo List ({pending} pending) ---')\nprint('1) Add  2) Mark done  3) Delete  4) List  5) Save & Exit')",
+        "output": "--- Todo List (2 pending) ---\n1) Add  2) Mark done  3) Delete  4) List  5) Save & Exit"
+      },
+      {
+        "heading": "Step 5: polish",
+        "body": "ANSI escape codes colour terminal text: `'\\033[92m'` starts green,\n`'\\033[0m'` resets. Handle a missing save file with\n`except FileNotFoundError` so the first run starts fresh. Show the date\neach item was created.",
+        "code": "GREEN = '\\033[92m'\nRESET = '\\033[0m'\nprint(f'{GREEN}[x] done item{RESET}')\nprint('[ ] pending item')",
+        "output": "[x] done item\n[ ] pending item"
+      }
+    ],
+    "watch_out": [
+      "`created_at: str = str(date.today())` without `default_factory` is evaluated once when the class is defined, not per todo.",
+      "After loading from JSON, reset `_next_id`, or new todos reuse old ids.",
+      "`int(input(...))` on an empty or non-numeric answer raises ValueError. Catch it in the menu.",
+      "The output panel in this app doesn't render ANSI colours; you'll see the escape codes as text. They work in a real terminal."
+    ]
+  }
+}

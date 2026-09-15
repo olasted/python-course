@@ -1,0 +1,98 @@
+{
+  "day": 12,
+  "title": "Break and Continue",
+  "tasks": [
+    {
+      "id": "12.1",
+      "description": "Print numbers 1 to 10, but skip 5 using the continue statement.",
+      "hint": "`continue` skips the rest of the current iteration and goes to the next one.\nInside the loop: `if i == 5: continue` — then `print(i)` below it.\nThe loop keeps running — only that one number is skipped.",
+      "expected": "1\n2\n3\n4\n6\n7\n8\n9\n10",
+      "solution": "for i in range(1, 11):\n    if i == 5:\n        continue\n    print(i)",
+      "walkthrough": "When `i` is 5, `continue` skips the `print` and the loop moves to 6.\nEvery other number reaches the `print` as normal."
+    },
+    {
+      "id": "12.2",
+      "description": "Find the first number between 1 and 100 that is divisible by both 7 and 5. Print it, then stop.",
+      "hint": "Loop `for i in range(1, 101):` and check: `if i % 7 == 0 and i % 5 == 0:`\nWhen found, `print(i)` then `break` — break exits the loop immediately.\nThe first such number is 35 (7×5).",
+      "expected": "35",
+      "solution": "for i in range(1, 101):\n    if i % 7 == 0 and i % 5 == 0:\n        print(i)\n        break",
+      "walkthrough": "The loop tests each number for being divisible by both 7 and 5.\nThe first one that passes is 35. It's printed, then `break` stops the search so 70 never gets printed."
+    },
+    {
+      "id": "12.3",
+      "description": "Loop through 'Hello World' and print only the vowels (a, e, i, o, u), one per line.",
+      "hint": "Store vowels in a string: `vowels = 'aeiouAEIOU'`\nFor each character: `if char not in vowels: continue` — skip consonants.\nThe remaining code (the print) only runs for vowels.",
+      "expected": "e\no\no",
+      "solution": "vowels = 'aeiouAEIOU'\nfor char in 'Hello World':\n    if char not in vowels:\n        continue\n    print(char)",
+      "walkthrough": "Consonants and the space hit the `continue` and are skipped.\nOnly vowels get past the check to the `print`, giving e, o, o."
+    },
+    {
+      "id": "12.4",
+      "description": "Given `nums = [4, 8, -2, 15, 7, -5]`, find and print the first negative number, then stop searching.",
+      "hint": "Loop over the list: `for n in nums:`\nCheck: `if n < 0:` — a negative number is less than zero.\n`print(n)` then `break` — stop after finding the first one.",
+      "expected": "-2",
+      "solution": "nums = [4, 8, -2, 15, 7, -5]\nfor n in nums:\n    if n < 0:\n        print(n)\n        break",
+      "walkthrough": "Each number is checked in order. -2 is the first one below zero.\n`break` stops the loop there, so -5 is never reached."
+    },
+    {
+      "id": "12.5",
+      "description": "Keep asking the user for a password until they type 'secret'. Then print 'Access granted.'",
+      "hint": "`while True:` loops until broken.\nInside: `pwd = input('Password: ')` then `if pwd == 'secret': print('Access granted.'); break`\nIf the password is wrong, the loop continues and asks again.",
+      "expected": "",
+      "solution": "while True:\n    pwd = input('Password: ')\n    if pwd == 'secret':\n        print('Access granted.')\n        break",
+      "walkthrough": "The loop asks, checks, and if the password is wrong simply goes round again.\nA correct password prints the message and `break` ends the loop.",
+      "solution_stdin": "guess\nletmein\nsecret\n"
+    },
+    {
+      "id": "12.6",
+      "description": "Print numbers 1 to 10, skipping any that are divisible by 3.",
+      "hint": "Loop `for i in range(1, 11):`\nCheck divisibility: `if i % 3 == 0: continue` — skip those.\n`print(i)` below the continue only runs for non-multiples of 3.",
+      "expected": "1\n2\n4\n5\n7\n8\n10",
+      "solution": "for i in range(1, 11):\n    if i % 3 == 0:\n        continue\n    print(i)",
+      "walkthrough": "`i % 3 == 0` is true for 3, 6 and 9. Those hit `continue` and skip the print.\nAll the other numbers print normally."
+    },
+    {
+      "id": "12.7",
+      "description": "Search for 'python' in the list ['java', 'ruby', 'python', 'go']. Print 'Found!' if found, 'Not found' if not — without using the 'in' keyword.",
+      "hint": "Use a boolean flag before the loop: `found = False`\nLoop over the list; when you match `'python'`, set `found = True` and `break`.\nAfter the loop: `if found: print('Found!') else: print('Not found')`",
+      "expected": "Found!",
+      "solution": "languages = ['java', 'ruby', 'python', 'go']\nfound = False\nfor lang in languages:\n    if lang == 'python':\n        found = True\n        break\nif found:\n    print('Found!')\nelse:\n    print('Not found')",
+      "walkthrough": "The flag starts as False, meaning \"not found yet\".\nWhen the loop reaches 'python', it flips the flag and breaks out.\nAfter the loop, the flag decides which message to print. This is exactly what the `in` keyword does internally."
+    }
+  ],
+  "lesson": {
+    "intro": "Two small keywords that give you fine control inside any loop. `break` leaves the\nloop completely. `continue` skips the rest of the current pass and moves to the\nnext one. Both work in `for` and `while` loops.",
+    "sections": [
+      {
+        "heading": "continue: skip this one",
+        "body": "When Python hits `continue`, it ignores everything below it in the loop body\nfor this pass and goes straight to the next item.",
+        "code": "for i in range(1, 6):\n    if i == 3:\n        continue\n    print(i)",
+        "output": "1\n2\n4\n5"
+      },
+      {
+        "heading": "break: stop looking",
+        "body": "`break` ends the loop immediately, even if there were more items to go.\nIt's the natural way to search for something and stop at the first match.",
+        "code": "nums = [4, 8, -2, 15, -5]\nfor n in nums:\n    if n < 0:\n        print('First negative:', n)\n        break",
+        "output": "First negative: -2"
+      },
+      {
+        "heading": "Filtering with continue",
+        "body": "A common style: check for the things you don't want at the top and `continue`\npast them. What's left in the body only runs for the items you do want.",
+        "code": "vowels = 'aeiouAEIOU'\nfor ch in 'Hello':\n    if ch not in vowels:\n        continue\n    print(ch)",
+        "output": "e\no"
+      },
+      {
+        "heading": "Remembering whether you found something",
+        "body": "Set a flag to `False` before the loop. If you find what you're after, set it\nto `True` and `break`. After the loop, check the flag.",
+        "code": "langs = ['java', 'ruby', 'python', 'go']\nfound = False\nfor lang in langs:\n    if lang == 'python':\n        found = True\n        break\nif found:\n    print('Found!')\nelse:\n    print('Not found')",
+        "output": "Found!"
+      }
+    ],
+    "watch_out": [
+      "`break` only leaves the innermost loop it's in.",
+      "Code after `continue` in the same block never runs on that pass, so put the `print` below the check, not above.",
+      "A `while True:` loop with no reachable `break` never ends.",
+      "The flag pattern needs `found = False` before the loop, not inside it."
+    ]
+  }
+}

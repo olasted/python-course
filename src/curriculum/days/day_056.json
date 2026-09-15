@@ -1,0 +1,87 @@
+{
+  "day": 56,
+  "title": "The os and sys Modules",
+  "tasks": [
+    {
+      "id": "56.1",
+      "description": "Use `os.path` functions to: check if a path exists, get its absolute path, and split it into directory and filename.",
+      "hint": "`os.path.exists(path)` → True/False\n`os.path.abspath('file.txt')` → full absolute path\n`os.path.split('/home/user/file.txt')` → `('/home/user', 'file.txt')`",
+      "expected": "",
+      "solution": "import os\n\npath = 'example.txt'\nwith open(path, 'w') as f:\n    f.write('hello')\n\nprint('Exists:', os.path.exists(path))\nprint('Absolute:', os.path.abspath(path))\nprint('Split:', os.path.split(os.path.abspath(path)))\nprint('Exists (missing file):', os.path.exists('not_here.txt'))",
+      "walkthrough": "A file is created first so `exists` has something to say yes to.\n`abspath` turns a relative name into a full path, and `split` cuts that into the folder and the file name."
+    },
+    {
+      "id": "56.2",
+      "description": "Use `os.listdir()` and `os.path.isfile()` / `os.path.isdir()` to list and categorise entries in the current directory.",
+      "hint": "`os.listdir('.')` returns names of all files and dirs in current directory.\n`os.path.isfile(name)` checks if it's a file; `os.path.isdir(name)` checks for directory.\nLoop the list and categorise each entry.",
+      "expected": "",
+      "solution": "import os\n\nos.makedirs('demo_dir', exist_ok=True)\nwith open('demo_file.txt', 'w') as f:\n    f.write('x')\n\nfiles = []\ndirs = []\nfor name in os.listdir('.'):\n    if os.path.isfile(name):\n        files.append(name)\n    elif os.path.isdir(name):\n        dirs.append(name)\n\nprint('Directories:', sorted(dirs))\nprint('Files:', sorted(files)[:10])",
+      "walkthrough": "`listdir` gives names only, so each is tested with `isfile` or `isdir` and sorted into the right list.\nA demo folder and file are created first so both lists have something in them."
+    },
+    {
+      "id": "56.3",
+      "description": "Use `os.environ` to read environment variables. Print the PATH variable (or HOME/USERPROFILE).",
+      "hint": "`os.environ` is a dict of environment variables.\n`os.environ.get('PATH', 'Not set')` safely gets a value with a default.\nOn Windows: `USERPROFILE`; on Mac/Linux: `HOME`",
+      "expected": "",
+      "solution": "import os\n\nhome = os.environ.get('USERPROFILE') or os.environ.get('HOME', 'Not set')\nprint('Home folder:', home)\n\npath = os.environ.get('PATH', 'Not set')\nentries = path.split(os.pathsep)\nprint(f'PATH has {len(entries)} entries. First few:')\nfor entry in entries[:3]:\n    print('  ', entry)",
+      "walkthrough": "`os.environ.get` never crashes on a missing variable. The home folder lookup tries the Windows name first and falls back to the Unix one.\nPATH is a long string separated by `os.pathsep` (a semicolon on Windows, a colon elsewhere), so it's split for readability."
+    },
+    {
+      "id": "56.4",
+      "description": "Use `sys.argv` to create a script that accepts a name as a command-line argument and prints 'Hello, {name}!'.",
+      "hint": "`import sys; sys.argv` is a list where `sys.argv[0]` is the script name.\n`sys.argv[1]` is the first argument the user passed.\nCheck `len(sys.argv) > 1` before accessing to avoid IndexError.",
+      "expected": "",
+      "solution": "import sys\n\nif len(sys.argv) > 1:\n    name = sys.argv[1]\nelse:\n    name = 'World'\n\nprint(f'Hello, {name}!')\nprint('Arguments received:', sys.argv[1:])",
+      "walkthrough": "`sys.argv[0]` is always the script path, so real arguments start at index 1.\nThe length check gives a sensible default when no name is passed, which is what happens inside this app. From a terminal, `python script.py Sam` would greet Sam."
+    },
+    {
+      "id": "56.5",
+      "description": "Use `sys.exit()` to exit a script with a specific exit code. Use `os.system()` to run a simple shell command.",
+      "hint": "`sys.exit(0)` exits normally; `sys.exit(1)` exits with error code 1.\nConvention: 0 = success, non-zero = error.\n`os.system('echo hello')` runs a shell command — but `subprocess` is preferred for complex cases.",
+      "expected": "",
+      "solution": "import os\nimport sys\n\nprint('Running a shell command with os.system:')\ncode = os.system('echo hello from the shell')\nprint('os.system returned', code)\n\nprint('Exiting with code 0 (success)')\nsys.exit(0)\nprint('This line never runs')",
+      "walkthrough": "`os.system` hands the command to the operating system's shell; its output goes straight to the console and the return value is the exit code.\n`sys.exit(0)` ends the program cleanly. Anything after it is unreachable. Try `sys.exit(1)` to see how the app reports a failing exit code."
+    }
+  ],
+  "lesson": {
+    "intro": "`os` and `sys` are how a Python program talks to the machine it's running on:\npaths and folders, environment variables, command-line arguments, exit codes.\nYou've seen `pathlib` for paths; `os.path` is the older equivalent that you'll\nstill meet everywhere.",
+    "sections": [
+      {
+        "heading": "os.path: paths as strings",
+        "body": "`exists`, `abspath`, `split`, `join`, `isfile`, `isdir`. They all take and\nreturn plain strings.",
+        "code": "import os\n\nprint(os.path.exists('nope.txt'))\nprint(os.path.split('/home/user/file.txt'))\nprint(os.path.join('data', 'out.csv'))\nprint(os.path.basename(os.path.abspath('file.txt')))",
+        "output": "False\n('/home/user', 'file.txt')\ndata\\out.csv\nfile.txt"
+      },
+      {
+        "heading": "Listing a folder",
+        "body": "`os.listdir('.')` gives the names in the current folder. Combine with\n`isfile` and `isdir` to sort them out.",
+        "code": "import os\n\nfor name in sorted(os.listdir('.'))[:5]:\n    kind = 'dir ' if os.path.isdir(name) else 'file'\n    print(kind, name)",
+        "output": "file notes.txt\nfile numbers.txt\ndir  utils"
+      },
+      {
+        "heading": "Environment variables",
+        "body": "`os.environ` is a dictionary of the environment. Use `.get()` with a\ndefault because a variable might not be set. On Windows the home folder\nis `USERPROFILE`; elsewhere it's `HOME`.",
+        "code": "import os\n\nhome = os.environ.get('USERPROFILE') or os.environ.get('HOME', 'unknown')\nprint(home)\nprint(len(os.environ.get('PATH', '').split(os.pathsep)), 'entries on PATH')",
+        "output": "C:\\Users\\you\n31 entries on PATH"
+      },
+      {
+        "heading": "sys.argv and sys.exit",
+        "body": "`sys.argv` is the list of command-line arguments; `[0]` is the script\nname. `sys.exit(code)` ends the program; 0 means success, anything else\nsignals an error to whoever ran it. In this app there are no\ncommand-line arguments, so check the length before using `argv[1]`.",
+        "code": "import sys\n\nname = sys.argv[1] if len(sys.argv) > 1 else 'stranger'\nprint(f'Hello, {name}!')\nprint('exiting normally')\nsys.exit(0)",
+        "output": "Hello, stranger!\nexiting normally"
+      },
+      {
+        "heading": "Running a shell command",
+        "body": "`os.system` runs a command as if typed in a terminal and returns its exit\ncode. For anything where you need the output, use `subprocess.run` with\n`capture_output=True` instead.",
+        "code": "import subprocess\n\nresult = subprocess.run(['python', '--version'], capture_output=True, text=True)\nprint(result.stdout.strip() or result.stderr.strip())\nprint('exit code', result.returncode)",
+        "output": "Python 3.13.7\nexit code 0"
+      }
+    ],
+    "watch_out": [
+      "`sys.argv[1]` with no arguments raises IndexError. Check `len(sys.argv)` first.",
+      "`sys.exit(1)` in this app shows as an error, because a non-zero exit code means failure. That's it working correctly.",
+      "`os.environ['X']` crashes if X isn't set. Use `.get()`.",
+      "`os.system` output goes straight to the terminal; in this app that means it appears in the output panel, but you can't capture it. Use subprocess to capture."
+    ]
+  }
+}

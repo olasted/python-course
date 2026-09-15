@@ -1,0 +1,81 @@
+{
+  "day": 34,
+  "title": "Regular Expressions",
+  "tasks": [
+    {
+      "id": "34.1",
+      "description": "Use `re.search()` to check if the string 'Hello, World!' contains the word 'World'. Print True or False.",
+      "hint": "`import re` — then `re.search(pattern, string)` returns a match object if found, None if not.\n`bool(re.search('World', 'Hello, World!'))` → `True`\nOr check with `if re.search(...): print(True)`",
+      "expected": "True",
+      "solution": "import re\n\nprint(bool(re.search('World', 'Hello, World!')))",
+      "walkthrough": "`search` finds the pattern anywhere in the string and returns a match object, which counts as True.\n`bool()` turns that into a plain True for printing."
+    },
+    {
+      "id": "34.2",
+      "description": "Use `re.findall()` to extract all numbers from the string 'I have 3 cats and 12 dogs and 1 fish'. Print the list.",
+      "hint": "`re.findall(pattern, string)` returns a list of ALL matches.\nPattern `r'\\d+'` matches one or more digits (`\\d` = any digit, `+` = one or more).\n`re.findall(r'\\d+', text)` → `['3', '12', '1']` (strings, not ints).",
+      "expected": "['3', '12', '1']",
+      "solution": "import re\n\ntext = 'I have 3 cats and 12 dogs and 1 fish'\nprint(re.findall(r'\\d+', text))",
+      "walkthrough": "`\\d` matches a digit and `+` means one or more in a row, so `12` is caught as a whole rather than as 1 and 2.\n`findall` returns every match as a list of strings."
+    },
+    {
+      "id": "34.3",
+      "description": "Use `re.sub()` to replace all vowels in 'Hello World' with '*'. Print the result.",
+      "hint": "`re.sub(pattern, replacement, string)` replaces all matches with the replacement.\nPattern for vowels: `r'[aeiouAEIOU]'` — `[...]` is a character class.\n`re.sub(r'[aeiouAEIOU]', '*', 'Hello World')` → `'H*ll* W*rld'`",
+      "expected": "H*ll* W*rld",
+      "solution": "import re\n\nprint(re.sub(r'[aeiouAEIOU]', '*', 'Hello World'))",
+      "walkthrough": "The square brackets make a character class: any single vowel, either case.\n`sub` replaces each match with `*`."
+    },
+    {
+      "id": "34.4",
+      "description": "Validate that a string looks like an email address using `re.match()`. Test with 'user@example.com' and 'notanemail'.",
+      "hint": "Simple email pattern: `r'^[\\w.+-]+@[\\w-]+\\.[a-zA-Z]{2,}$'`\n`re.match()` checks from the START of the string.\nPrint True/False for each test case — real email validation is complex, this is a simplified version.",
+      "expected": "",
+      "solution": "import re\n\npattern = r'^[\\w.+-]+@[\\w-]+\\.[a-zA-Z]{2,}$'\n\nfor email in ['user@example.com', 'notanemail']:\n    print(bool(re.match(pattern, email)))",
+      "walkthrough": "Reading the pattern left to right: start of string, one or more name characters, an @, one or more domain characters, a literal dot, at least two letters, end of string.\n`match` anchors at the start and the `$` anchors at the end, so the whole string must fit."
+    },
+    {
+      "id": "34.5",
+      "description": "Use `re.split()` to split the string 'one1two2three3four' on any digit. Print the resulting list.",
+      "hint": "`re.split(pattern, string)` splits wherever the pattern matches.\nPattern `r'\\d'` matches any single digit.\n`re.split(r'\\d', 'one1two2three3four')` → `['one', 'two', 'three', 'four']`",
+      "expected": "['one', 'two', 'three', 'four']",
+      "solution": "import re\n\nprint(re.split(r'\\d', 'one1two2three3four'))",
+      "walkthrough": "`split` cuts the string at every place the pattern matches. Each single digit is a cut point.\nThe digits themselves are not included in the result."
+    }
+  ],
+  "lesson": {
+    "intro": "Regular expressions are patterns for matching text: \"one or more digits\",\n\"something that looks like an email\". They're a small language of their own,\ncryptic at first, and enormously useful once a few pieces make sense. Today\ncovers the handful you'll actually use.",
+    "sections": [
+      {
+        "heading": "search: is the pattern in there?",
+        "body": "`re.search(pattern, text)` returns a match object if the pattern appears\nanywhere, or `None` if not. Wrapping it in `bool()` gives a clean True/False.\nPatterns are usually written as raw strings, `r'...'`, so backslashes are\nleft alone.",
+        "code": "import re\n\nprint(bool(re.search('World', 'Hello, World!')))\nprint(bool(re.search('Mars', 'Hello, World!')))",
+        "output": "True\nFalse"
+      },
+      {
+        "heading": "The building blocks",
+        "body": "- `\\d` any digit, `\\w` any letter/digit/underscore, `\\s` any whitespace, `.` anything.\n- `+` one or more of the previous thing, `*` zero or more, `?` optional.\n- `[aeiou]` any one character from the set. `[a-z]` a range.\n- `^` start of the string, `$` end of the string.\n- `{2,}` at least two of the previous thing.",
+        "code": "import re\n\ntext = 'I have 3 cats and 12 dogs'\nprint(re.findall(r'\\d+', text))\nprint(re.findall(r'[aeiou]', 'hello'))",
+        "output": "['3', '12']\n['e', 'o']"
+      },
+      {
+        "heading": "findall, sub, split",
+        "body": "`findall` gives every match as a list. `sub` replaces every match. `split`\ncuts the string wherever the pattern matches. The results of `findall` are\nstrings, even when they look like numbers.",
+        "code": "import re\n\nprint(re.sub(r'[aeiou]', '*', 'Hello World'))\nprint(re.split(r'\\d', 'one1two2three'))",
+        "output": "H*ll* W*rld\n['one', 'two', 'three']"
+      },
+      {
+        "heading": "match: from the very start",
+        "body": "`re.match` only succeeds if the pattern matches at the beginning. Combined\nwith `$` at the end, it checks the whole string. This is a simplified email\npattern; real validation is messier, but this catches the obvious.",
+        "code": "import re\n\npattern = r'^[\\w.+-]+@[\\w-]+\\.[a-zA-Z]{2,}$'\nfor s in ['user@example.com', 'notanemail']:\n    print(s, bool(re.match(pattern, s)))",
+        "output": "user@example.com True\nnotanemail False"
+      }
+    ],
+    "watch_out": [
+      "Forgetting the `r` prefix. `'\\d'` in a normal string can be mangled; `r'\\d'` is safe.",
+      "`re.match` only checks the start. Use `re.search` to find a pattern anywhere.",
+      "`findall` returns strings. Convert with `int()` if you need numbers.",
+      "`.` matches any character. To match a literal dot, escape it: `\\.`."
+    ]
+  }
+}

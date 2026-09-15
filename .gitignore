@@ -1,0 +1,16 @@
+# Python
+__pycache__/
+*.pyc
+
+# Per-user runtime state — regenerated automatically, shouldn't be shared
+progress.json
+src/progress.json
+src/workspace/
+
+# Local test/verification scratch space
+tools/.verify_workspace/
+
+# Editor/OS noise
+.vscode/
+.DS_Store
+Thumbs.db

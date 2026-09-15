@@ -1,0 +1,81 @@
+{
+  "day": 31,
+  "title": "Generators and yield",
+  "tasks": [
+    {
+      "id": "31.1",
+      "description": "Write a generator function `count_up(n)` that yields numbers from 1 to n. Loop over it and print each value.",
+      "hint": "`yield` pauses the function and returns a value — the function resumes from that point next time.\n`def count_up(n): for i in range(1, n+1): yield i`\nLoop it like any iterable: `for num in count_up(5): print(num)`",
+      "expected": "1\n2\n3\n4\n5",
+      "solution": "def count_up(n):\n    for i in range(1, n + 1):\n        yield i\n\nfor num in count_up(5):\n    print(num)",
+      "walkthrough": "Each pass of the inner loop yields one number and pauses.\nThe outer `for` requests values one at a time until the generator finishes, so it prints 1 to 5."
+    },
+    {
+      "id": "31.2",
+      "description": "Write a generator `squares()` that yields the squares of 1, 2, 3, 4, 5 indefinitely (or for 5 values). Use next() to get the first 3.",
+      "hint": "`def squares(): i = 1\n  while True: yield i**2; i += 1` — infinite generator.\n`gen = squares(); print(next(gen))` calls the generator manually.\n`next()` gets the next value — call it 3 times.",
+      "expected": "1\n4\n9",
+      "solution": "def squares():\n    i = 1\n    while True:\n        yield i ** 2\n        i += 1\n\ngen = squares()\nprint(next(gen))\nprint(next(gen))\nprint(next(gen))",
+      "walkthrough": "The `while True` never ends, but that's fine: the body only runs when a value is asked for.\nThree calls to `next()` produce the first three squares and then the generator sits paused."
+    },
+    {
+      "id": "31.3",
+      "description": "Write a generator `fibonacci()` that yields Fibonacci numbers (0, 1, 1, 2, 3, 5, 8...). Print the first 8.",
+      "hint": "Track two values: `a, b = 0, 1`\nEach iteration: `yield a` then `a, b = b, a + b` — this updates both at once.\nUse `for _, n in zip(range(8), fibonacci()): print(n)` or a loop with a counter.",
+      "expected": "0\n1\n1\n2\n3\n5\n8\n13",
+      "solution": "def fibonacci():\n    a, b = 0, 1\n    while True:\n        yield a\n        a, b = b, a + b\n\nfor _, n in zip(range(8), fibonacci()):\n    print(n)",
+      "walkthrough": "`a` is the current number and `b` is the next. After yielding `a`, both move along in one assignment.\n`zip(range(8), ...)` stops after 8 pairs, which limits the infinite generator to 8 values."
+    },
+    {
+      "id": "31.4",
+      "description": "Convert a generator expression `(x**2 for x in range(1, 6))` to a list and print it. Compare to a list comprehension.",
+      "hint": "`(expression for var in iterable)` creates a generator — note the `()` not `[]`.\nGenerators are LAZY — they don't compute values until needed.\n`list(x**2 for x in range(1, 6))` forces all values to be computed now.",
+      "expected": "[1, 4, 9, 16, 25]",
+      "solution": "gen = (x ** 2 for x in range(1, 6))\nprint(list(gen))",
+      "walkthrough": "Round brackets make a generator expression; square brackets would make a list straight away.\n`list(gen)` pulls every value out of the generator, giving exactly what `[x ** 2 for x in range(1, 6)]` would.\nThe difference is that the generator computed nothing until `list()` asked. Try printing `gen` on its own to see the generator object."
+    },
+    {
+      "id": "31.5",
+      "description": "Write a generator `read_lines(text)` that takes a multi-line string and yields each line one at a time (stripped).",
+      "hint": "Split the text on `'\\n'`: `for line in text.split('\\n'): yield line.strip()`\nGenerators are memory-efficient for large data — they don't load everything at once.\nTest with a 3-line string and loop the generator.",
+      "expected": "",
+      "solution": "def read_lines(text):\n    for line in text.split('\\n'):\n        yield line.strip()\n\npoem = '''  roses are red\n  violets are blue\ngenerators are lazy  '''\n\nfor line in read_lines(poem):\n    print(line)",
+      "walkthrough": "The text is split on newlines and each piece is stripped of surrounding spaces before being yielded.\nWith a real file you'd loop over the file object instead of splitting a string, but the generator shape is the same."
+    }
+  ],
+  "lesson": {
+    "intro": "A normal function runs, returns one value, and is done. A generator hands out\nvalues one at a time and pauses in between, remembering where it was. That\nmakes it possible to work through huge or even endless sequences without\nholding them all in memory.",
+    "sections": [
+      {
+        "heading": "yield instead of return",
+        "body": "Any function with `yield` in it becomes a generator. Calling it doesn't run\nthe body; it gives you a generator object. Each time a value is requested,\nthe body runs until the next `yield`, hands that value out, and pauses.",
+        "code": "def count_up(n):\n    for i in range(1, n + 1):\n        yield i\n\nfor num in count_up(3):\n    print(num)",
+        "output": "1\n2\n3"
+      },
+      {
+        "heading": "Pulling values by hand with next()",
+        "body": "`next(gen)` asks for one more value. When the generator runs out, `next`\nraises StopIteration, which is how a `for` loop knows to stop.",
+        "code": "def squares():\n    i = 1\n    while True:\n        yield i ** 2\n        i += 1\n\ngen = squares()\nprint(next(gen))\nprint(next(gen))\nprint(next(gen))",
+        "output": "1\n4\n9"
+      },
+      {
+        "heading": "Infinite sequences are fine",
+        "body": "Because nothing is computed until asked for, a generator can go on forever.\nYou take what you need. Fibonacci is the classic example. `zip` with a\n`range` is a tidy way to take the first n.",
+        "code": "def fibonacci():\n    a, b = 0, 1\n    while True:\n        yield a\n        a, b = b, a + b\n\nfor _, n in zip(range(8), fibonacci()):\n    print(n, end=' ')",
+        "output": "0 1 1 2 3 5 8 13"
+      },
+      {
+        "heading": "Generator expressions",
+        "body": "A list comprehension with round brackets instead of square ones. It looks\nthe same but produces a generator: lazy, one value at a time. Pass it to\n`list()`, `sum()`, `max()` or a loop.",
+        "code": "gen = (x ** 2 for x in range(1, 6))\nprint(gen)\nprint(list(gen))\nprint(sum(x ** 2 for x in range(1, 6)))",
+        "output": "<generator object <genexpr> at 0x...>\n[1, 4, 9, 16, 25]\n55"
+      }
+    ],
+    "watch_out": [
+      "A generator can only be gone through once. After it's exhausted, looping again gives nothing.",
+      "Printing a generator object shows its address, not its values. Convert with `list()` if you want to see them.",
+      "`return` inside a generator ends it. Values after that are never produced.",
+      "`a, b = b, a + b` updates both at once. Doing it on two lines would use the new `a` when computing `b`."
+    ]
+  }
+}

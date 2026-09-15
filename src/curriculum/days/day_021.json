@@ -1,0 +1,103 @@
+{
+  "day": 21,
+  "title": "Lambda, Map, and Filter",
+  "tasks": [
+    {
+      "id": "21.1",
+      "description": "Create a lambda function that squares a number. Assign it to `square`. Test with square(9) and print.",
+      "hint": "A lambda is an anonymous one-liner: `lambda params: expression`\n`square = lambda x: x ** 2` creates a function you can call like normal.\n`square(9)` → `81` — lambdas are most useful as short throwaway functions.",
+      "expected": "81",
+      "solution": "square = lambda x: x ** 2\nprint(square(9))",
+      "walkthrough": "The lambda takes one argument, `x`, and evaluates to `x ** 2`.\nAssigning it to `square` gives it a name, and calling `square(9)` works like any function."
+    },
+    {
+      "id": "21.2",
+      "description": "Use map() with a lambda to create a list of squares for [1, 2, 3, 4, 5]. Print it.",
+      "hint": "`map(function, iterable)` applies the function to EVERY item.\n`map()` returns a map object — wrap it in `list()` to see the values.\n`list(map(lambda x: x**2, [1,2,3,4,5]))` → `[1, 4, 9, 16, 25]`",
+      "expected": "[1, 4, 9, 16, 25]",
+      "solution": "nums = [1, 2, 3, 4, 5]\nsquares = list(map(lambda x: x ** 2, nums))\nprint(squares)",
+      "walkthrough": "`map` applies the lambda to every item in `nums`.\n`list()` collects the results so they can be printed as a normal list."
+    },
+    {
+      "id": "21.3",
+      "description": "Use filter() with a lambda to keep only numbers greater than 3 from [1, 2, 3, 4, 5, 6]. Print the result.",
+      "hint": "`filter(function, iterable)` keeps only items where the function returns `True`.\nLambda: `lambda x: x > 3` returns True for 4, 5, 6.\n`list(filter(lambda x: x > 3, nums))` → `[4, 5, 6]`",
+      "expected": "[4, 5, 6]",
+      "solution": "nums = [1, 2, 3, 4, 5, 6]\nbig = list(filter(lambda x: x > 3, nums))\nprint(big)",
+      "walkthrough": "`filter` calls the lambda on each item and keeps the ones where it returns True.\n4, 5 and 6 are greater than 3, so they survive."
+    },
+    {
+      "id": "21.4",
+      "description": "Sort `[('Alice', 90), ('Bob', 75), ('Carol', 85)]` by score (second element) using sorted() with a lambda key. Print names in order.",
+      "hint": "`sorted(iterable, key=function)` sorts based on the value the key returns.\nThe key lambda extracts the score (index 1): `key=lambda item: item[1]`\nDefault sort is ascending (low to high). Loop the result: `for name, score in sorted(...): print(name)`",
+      "expected": "Bob\nCarol\nAlice",
+      "solution": "scores = [('Alice', 90), ('Bob', 75), ('Carol', 85)]\nfor name, score in sorted(scores, key=lambda item: item[1]):\n    print(name)",
+      "walkthrough": "Each item is a pair, and `item[1]` is the score. Sorting by that puts Bob (75) first and Alice (90) last.\nThe loop unpacks each pair and prints only the name."
+    },
+    {
+      "id": "21.5",
+      "description": "Use map() to convert the list ['hello', 'world', 'python'] to uppercase. Print the result list.",
+      "hint": "Pass the string method as the function: `map(str.upper, words)` — clean and no lambda needed!\nOr with lambda: `map(lambda s: s.upper(), words)`\n`list(map(str.upper, words))` → `['HELLO', 'WORLD', 'PYTHON']`",
+      "expected": "['HELLO', 'WORLD', 'PYTHON']",
+      "solution": "words = ['hello', 'world', 'python']\nprint(list(map(str.upper, words)))",
+      "walkthrough": "`str.upper` is the upper method itself, not called yet. `map` calls it on each word.\n`lambda s: s.upper()` would do the same thing with a few more characters."
+    },
+    {
+      "id": "21.6",
+      "description": "Use filter() to keep only even numbers from [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]. Then use map() to double them. Print the result.",
+      "hint": "Chain the operations: filter first, then map the filtered result.\n`evens = filter(lambda x: x%2==0, nums)` — then `doubled = map(lambda x: x*2, evens)`\n`list(doubled)` → `[4, 8, 12, 16, 20]`",
+      "expected": "[4, 8, 12, 16, 20]",
+      "solution": "nums = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]\nevens = filter(lambda x: x % 2 == 0, nums)\ndoubled = map(lambda x: x * 2, evens)\nprint(list(doubled))",
+      "walkthrough": "First `filter` narrows the list down to the even numbers.\nThen `map` doubles each of those. Only at the end does `list()` force the work to happen and collect the results."
+    },
+    {
+      "id": "21.7",
+      "description": "Use sorted() with a lambda to sort the words ['banana', 'apple', 'cherry', 'kiwi'] by their length (shortest first). Print the list.",
+      "hint": "Sort by length: `sorted(words, key=lambda w: len(w))` — or the shortcut `key=len`\nThe default sort order is ascending (shortest to longest).\nResult: `['kiwi', 'apple', 'banana', 'cherry']`",
+      "expected": "['kiwi', 'apple', 'banana', 'cherry']",
+      "solution": "words = ['banana', 'apple', 'cherry', 'kiwi']\nprint(sorted(words, key=len))",
+      "walkthrough": "With `key=len`, each word is compared by its length instead of alphabetically.\nkiwi (4) comes first, then apple (5), then banana and cherry (both 6, kept in their original order)."
+    }
+  ],
+  "lesson": {
+    "intro": "Sometimes you need a tiny function for one job, like \"double this\" or \"get the\nsecond item\", and writing a full `def` feels heavy. A lambda is a one-line\nfunction with no name. They show up most often as the `key` for sorting and as\nthe function passed to `map()` and `filter()`.",
+    "sections": [
+      {
+        "heading": "What a lambda is",
+        "body": "`lambda x: x ** 2` means \"a function that takes x and gives back x squared\".\nNo `def`, no `return`, just the parameters, a colon, and one expression.\nThese two are equivalent.",
+        "code": "def square_def(x):\n    return x ** 2\n\nsquare = lambda x: x ** 2\n\nprint(square_def(9), square(9))",
+        "output": "81 81"
+      },
+      {
+        "heading": "map: apply a function to every item",
+        "body": "`map(function, list)` calls the function on each item. It returns a lazy map\nobject, so wrap it in `list()` to see the results. You can pass any function,\nincluding built-ins like `str.upper`.",
+        "code": "nums = [1, 2, 3, 4, 5]\nprint(list(map(lambda x: x ** 2, nums)))\nprint(list(map(str.upper, ['hello', 'world'])))",
+        "output": "[1, 4, 9, 16, 25]\n['HELLO', 'WORLD']"
+      },
+      {
+        "heading": "filter: keep the items that pass a test",
+        "body": "`filter(function, list)` keeps the items for which the function returns\nTrue. Again, wrap in `list()`.",
+        "code": "nums = [1, 2, 3, 4, 5, 6]\nprint(list(filter(lambda x: x > 3, nums)))\nprint(list(filter(lambda x: x % 2 == 0, nums)))",
+        "output": "[4, 5, 6]\n[2, 4, 6]"
+      },
+      {
+        "heading": "Sorting by something other than the value",
+        "body": "`sorted(items, key=...)` uses the key function to decide the order. To sort\npairs by their second element, the key returns `item[1]`. To sort words by\nlength, the key is `len`.",
+        "code": "scores = [('Alice', 90), ('Bob', 75), ('Carol', 85)]\nprint(sorted(scores, key=lambda item: item[1]))\nprint(sorted(['banana', 'kiwi', 'apple'], key=len))",
+        "output": "[('Bob', 75), ('Carol', 85), ('Alice', 90)]\n['kiwi', 'apple', 'banana']"
+      },
+      {
+        "heading": "Comprehensions do the same job",
+        "body": "Most Python programmers prefer a list comprehension over map and filter\nbecause it reads more naturally. Knowing both means you can read either.",
+        "code": "nums = [1, 2, 3, 4, 5, 6]\nprint([x * 2 for x in nums if x % 2 == 0])\nprint(list(map(lambda x: x * 2, filter(lambda x: x % 2 == 0, nums))))",
+        "output": "[4, 8, 12]\n[4, 8, 12]"
+      }
+    ],
+    "watch_out": [
+      "Printing `map(...)` directly shows `<map object at ...>`. Wrap it in `list()`.",
+      "A lambda body is a single expression. No `if` statements, no loops, no `return` keyword.",
+      "`key=len` passes the function itself. `key=len()` calls it with no arguments and fails.",
+      "A map or filter object can only be consumed once. Convert to a list if you need it twice."
+    ]
+  }
+}

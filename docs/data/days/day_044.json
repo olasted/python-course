@@ -1,0 +1,81 @@
+{
+  "day": 44,
+  "title": "The pathlib Module",
+  "tasks": [
+    {
+      "id": "44.1",
+      "description": "Use `Path.cwd()` to get the current directory. Print it and its parent.",
+      "hint": "`from pathlib import Path`\n`p = Path.cwd()` returns the current working directory as a Path object.\n`p.parent` gives the parent directory — Path objects support `/` for joining too.",
+      "expected": "",
+      "solution": "from pathlib import Path\n\ncurrent = Path.cwd()\nprint(current)\nprint(current.parent)",
+      "walkthrough": "`Path.cwd()` returns the current working directory as a Path object.\n`.parent` is the folder that contains it. In this app the current folder is the workspace, so the parent is `src`."
+    },
+    {
+      "id": "44.2",
+      "description": "Create a Path object for 'myfile.txt'. Check if it exists. Write text to it and read it back.",
+      "hint": "`p = Path('myfile.txt')` — this doesn't create the file, just a path object.\n`p.exists()` returns True/False.\n`p.write_text('Hello!')` writes to the file; `p.read_text()` reads it back.",
+      "expected": "",
+      "solution": "from pathlib import Path\n\np = Path('myfile.txt')\nprint(f'Exists before: {p.exists()}')\n\np.write_text('Hello from pathlib!')\nprint(f'Exists after: {p.exists()}')\nprint(p.read_text())",
+      "walkthrough": "The Path object is just a description until `write_text` creates the file.\n`read_text` returns the whole contents as a string, no `open` or `with` required."
+    },
+    {
+      "id": "44.3",
+      "description": "Use Path to build a path from parts: join 'home', 'user', 'documents', 'notes.txt'. Print the full path.",
+      "hint": "Path supports the `/` operator for joining: `Path('home') / 'user' / 'documents' / 'notes.txt'`\nThis is cross-platform — no need to worry about `\\` vs `/`.\n`str(path)` converts it to a string if needed.",
+      "expected": "",
+      "solution": "from pathlib import Path\n\nfull = Path('home') / 'user' / 'documents' / 'notes.txt'\nprint(full)",
+      "walkthrough": "Each `/` joins another part. The separator in the printed result matches the operating system, a backslash on Windows."
+    },
+    {
+      "id": "44.4",
+      "description": "Use `Path.glob()` to list all `.json` files in the current directory.",
+      "hint": "`Path('.').glob('*.json')` returns a generator of matching Path objects.\n`list(Path('.').glob('*.json'))` collects them.\nFor recursive search: `Path('.').rglob('*.json')` — searches subdirectories too.",
+      "expected": "",
+      "solution": "from pathlib import Path\n\nPath('sample1.json').write_text('{}')\nPath('sample2.json').write_text('[]')\n\nfor p in sorted(Path('.').glob('*.json')):\n    print(p.name)",
+      "walkthrough": "Two small JSON files are created first so there's something to find.\n`glob('*.json')` matches any file ending in .json in the current folder. `sorted` puts the results in a stable order."
+    },
+    {
+      "id": "44.5",
+      "description": "Use pathlib to: get the stem (filename without extension), suffix (extension), and parent of 'data/results/output.csv'.",
+      "hint": "`p = Path('data/results/output.csv')`\n`p.stem` → `'output'` (filename without extension)\n`p.suffix` → `'.csv'` (the extension with dot)\n`p.parent` → `Path('data/results')`",
+      "expected": "",
+      "solution": "from pathlib import Path\n\np = Path('data/results/output.csv')\nprint(f'stem:   {p.stem}')\nprint(f'suffix: {p.suffix}')\nprint(f'parent: {p.parent}')",
+      "walkthrough": "None of this touches the disk; the path doesn't need to exist.\n`stem` drops the extension, `suffix` keeps only the extension, `parent` drops the file name."
+    }
+  ],
+  "lesson": {
+    "intro": "Paths as strings are fiddly: joining with the right slash, pulling off the\nextension, checking existence. `pathlib` gives you a `Path` object that\ndoes all of that with methods, and works the same on Windows and everything\nelse.",
+    "sections": [
+      {
+        "heading": "Making and joining paths",
+        "body": "`Path('...')` creates a path object; it doesn't touch the disk. The `/`\noperator joins parts, using the right separator for the system.",
+        "code": "from pathlib import Path\n\np = Path('home') / 'user' / 'documents' / 'notes.txt'\nprint(p)\nprint(p.name)\nprint(p.parent)",
+        "output": "home\\user\\documents\\notes.txt\nnotes.txt\nhome\\user\\documents"
+      },
+      {
+        "heading": "Taking a path apart",
+        "body": "`.stem` is the file name without extension, `.suffix` is the extension,\n`.parent` is the folder, `.parts` is everything as a tuple.",
+        "code": "from pathlib import Path\n\np = Path('data/results/output.csv')\nprint(p.stem)\nprint(p.suffix)\nprint(p.parent)\nprint(p.parts)",
+        "output": "output\n.csv\ndata\\results\n('data', 'results', 'output.csv')"
+      },
+      {
+        "heading": "Reading and writing in one call",
+        "body": "`write_text` and `read_text` open, do the job, and close for you. For\nsmall files they replace the `with open` dance.",
+        "code": "from pathlib import Path\n\np = Path('myfile.txt')\nprint(p.exists())\np.write_text('Hello from pathlib')\nprint(p.exists())\nprint(p.read_text())",
+        "output": "False\nTrue\nHello from pathlib"
+      },
+      {
+        "heading": "Finding files with glob",
+        "body": "`Path('.').glob('*.json')` yields matching files in the current folder;\n`rglob` searches subfolders too. `Path.cwd()` is the current working\ndirectory as a Path.",
+        "code": "from pathlib import Path\n\nprint(Path.cwd().name)\nfor p in sorted(Path('.').glob('*.txt')):\n    print(p.name)",
+        "output": "workspace\nmyfile.txt\nnotes.txt"
+      }
+    ],
+    "watch_out": [
+      "Creating a Path doesn't create a file. `p.exists()` is False until you write to it.",
+      "`p.suffix` includes the dot: `'.csv'`, not `'csv'`.",
+      "`glob` returns a generator. Wrap in `list()` or `sorted()` to see the results or use them twice.",
+      "Some functions still want strings; `str(p)` converts a Path."
+    ]
+  }
+}

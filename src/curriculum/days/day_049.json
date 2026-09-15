@@ -1,0 +1,85 @@
+{
+  "day": 49,
+  "title": "Comprehensions: Advanced",
+  "tasks": [
+    {
+      "id": "49.1",
+      "description": "Use a nested list comprehension to create a 3x3 multiplication table as a list of lists.",
+      "hint": "`[[i*j for j in range(1, 4)] for i in range(1, 4)]` — outer loop is rows, inner is columns.\nThis creates `[[1,2,3], [2,4,6], [3,6,9]]`.\nPrint each row with a loop: `for row in table: print(row)`",
+      "expected": "",
+      "solution": "table = [[i * j for j in range(1, 4)] for i in range(1, 4)]\nfor row in table:\n    print(row)",
+      "walkthrough": "The outer comprehension runs `i` from 1 to 3 and, for each, the inner one builds a row by running `j` from 1 to 3.\nEach row is a list, so the result is a list of three lists. The loop prints them one per line."
+    },
+    {
+      "id": "49.2",
+      "description": "Flatten the list `[[1, 2], [3, 4], [5, 6]]` into `[1, 2, 3, 4, 5, 6]` using a list comprehension.",
+      "hint": "`[x for sublist in nested for x in sublist]` — two `for` clauses flatten one level.\nRead it left to right: for each sublist, for each x in that sublist, take x.\nAlternative: `list(itertools.chain.from_iterable(nested))`",
+      "expected": "[1, 2, 3, 4, 5, 6]",
+      "solution": "nested = [[1, 2], [3, 4], [5, 6]]\nflat = [x for sublist in nested for x in sublist]\nprint(flat)",
+      "walkthrough": "Read the clauses in order: for each sublist in nested, then for each x in that sublist, collect x.\nIt's exactly the same as two nested for loops with an append inside."
+    },
+    {
+      "id": "49.3",
+      "description": "Use a dict comprehension to invert a dictionary `{'a': 1, 'b': 2, 'c': 3}` — swap keys and values.",
+      "hint": "`{v: k for k, v in original.items()}` — swap key and value in the expression.\nThis only works cleanly if all values are unique (no two keys with the same value).\nResult: `{1: 'a', 2: 'b', 3: 'c'}`",
+      "expected": "{1: 'a', 2: 'b', 3: 'c'}",
+      "solution": "original = {'a': 1, 'b': 2, 'c': 3}\ninverted = {value: key for key, value in original.items()}\nprint(inverted)",
+      "walkthrough": "`.items()` gives each pair, and the comprehension writes them back with value first and key second.\nThat only works cleanly when values are unique, which they are here."
+    },
+    {
+      "id": "49.4",
+      "description": "Use a set comprehension to get all unique vowels in the sentence 'the quick brown fox jumps'.",
+      "hint": "`{c for c in sentence if c in 'aeiou'}` — set comprehension uses `{}` not `[]`.\nSets automatically remove duplicates — each vowel appears once.\nResult will be unordered — that's fine for sets.",
+      "expected": "",
+      "solution": "sentence = 'the quick brown fox jumps'\nvowels = {c for c in sentence if c in 'aeiou'}\nprint(sorted(vowels))",
+      "walkthrough": "The set comprehension collects every vowel character once, no matter how many times it appears.\n`sorted` is used for printing so the output order is predictable; the set itself has no order."
+    },
+    {
+      "id": "49.5",
+      "description": "Use a conditional expression (ternary) inside a list comprehension to label numbers 1-10 as 'even' or 'odd'.",
+      "hint": "`['even' if x % 2 == 0 else 'odd' for x in range(1, 11)]`\nThe ternary expression `a if condition else b` works inside comprehensions.\nResult: `['odd', 'even', 'odd', 'even', ...]`",
+      "expected": "['odd', 'even', 'odd', 'even', 'odd', 'even', 'odd', 'even', 'odd', 'even']",
+      "solution": "labels = ['even' if x % 2 == 0 else 'odd' for x in range(1, 11)]\nprint(labels)",
+      "walkthrough": "The expression at the front is a conditional: it evaluates to 'even' or 'odd' depending on the number.\nEvery number from 1 to 10 gets a label, so the list has ten items."
+    }
+  ],
+  "lesson": {
+    "intro": "Comprehensions can do more than transform one flat list. They can nest, build\ndictionaries and sets, and use conditional expressions. Used well they're\ncompact and clear. Used too hard they become unreadable, so today also has a\nnote on when to stop.",
+    "sections": [
+      {
+        "heading": "Nested: a list of lists",
+        "body": "A comprehension inside a comprehension makes a grid. The outer one builds\nrows, the inner one builds the cells of each row.",
+        "code": "table = [[i * j for j in range(1, 4)] for i in range(1, 4)]\nfor row in table:\n    print(row)",
+        "output": "[1, 2, 3]\n[2, 4, 6]\n[3, 6, 9]"
+      },
+      {
+        "heading": "Flattening: two for clauses",
+        "body": "Two `for` clauses in one comprehension work like nested loops, read left\nto right: for each sublist, for each item in it, take the item.",
+        "code": "nested = [[1, 2], [3, 4], [5, 6]]\nflat = [x for sublist in nested for x in sublist]\nprint(flat)",
+        "output": "[1, 2, 3, 4, 5, 6]"
+      },
+      {
+        "heading": "Dict and set comprehensions",
+        "body": "Curly braces with `key: value` make a dictionary. Curly braces with a\nsingle expression make a set. Inverting a dictionary is a one-liner,\nas long as the values are unique.",
+        "code": "original = {'a': 1, 'b': 2, 'c': 3}\nprint({v: k for k, v in original.items()})\nprint({c for c in 'the quick brown fox' if c in 'aeiou'})",
+        "output": "{1: 'a', 2: 'b', 3: 'c'}\n{'o', 'e', 'u', 'i'}"
+      },
+      {
+        "heading": "Conditional expressions inside",
+        "body": "`a if condition else b` picks a value. Put it at the front of a\ncomprehension to label or transform items differently. Note it goes\nbefore the `for`, unlike a filter `if`, which goes after.",
+        "code": "labels = ['even' if x % 2 == 0 else 'odd' for x in range(1, 6)]\nprint(labels)",
+        "output": "['odd', 'even', 'odd', 'even', 'odd']"
+      },
+      {
+        "heading": "When to stop",
+        "body": "If a comprehension needs more than one `if` and one `for`, or you have to\nread it twice, write a loop instead. Clarity beats cleverness, and\nnobody's judging line count."
+      }
+    ],
+    "watch_out": [
+      "Getting the two `for` clauses backwards when flattening. The outer loop comes first.",
+      "`{}` with nothing in it is a dictionary, not a set.",
+      "A conditional expression at the front needs both `if` and `else`. A filter `if` at the end has no `else`.",
+      "Set output order isn't guaranteed. Use `sorted()` if the order matters."
+    ]
+  }
+}

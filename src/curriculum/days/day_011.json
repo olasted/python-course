@@ -1,0 +1,105 @@
+{
+  "day": 11,
+  "title": "While Loops",
+  "tasks": [
+    {
+      "id": "11.1",
+      "description": "Print numbers 1 to 5 using a while loop (not a for loop).",
+      "hint": "Set a counter before the loop: `i = 1`\nCondition: `while i <= 5:` — keeps running while i is 5 or less.\nIMPORTANT: inside the loop, increment `i += 1` — forgetting this causes an infinite loop!",
+      "expected": "1\n2\n3\n4\n5",
+      "solution": "i = 1\nwhile i <= 5:\n    print(i)\n    i += 1",
+      "walkthrough": "`i` starts at 1. Each pass prints it and then adds 1.\nWhen `i` becomes 6, the condition `i <= 5` is false and the loop stops."
+    },
+    {
+      "id": "11.2",
+      "description": "Print all even numbers from 2 up to 10 using a while loop.",
+      "hint": "Start at `i = 2` and increment by `2` each time: `i += 2`\nCondition: `while i <= 10:`\nThis skips all odd numbers automatically.",
+      "expected": "2\n4\n6\n8\n10",
+      "solution": "i = 2\nwhile i <= 10:\n    print(i)\n    i += 2",
+      "walkthrough": "Starting at 2 and adding 2 each time means `i` only ever holds even numbers.\nThe loop ends once `i` passes 10."
+    },
+    {
+      "id": "11.3",
+      "description": "Use a while loop to sum numbers from 1 to 10 and print the total.",
+      "hint": "You need two variables before the loop: `i = 1` and `total = 0`\nEach iteration: `total += i` then `i += 1`\nAfter the loop ends, `print(total)` — the answer is 55.",
+      "expected": "55",
+      "solution": "i = 1\ntotal = 0\nwhile i <= 10:\n    total += i\n    i += 1\nprint(total)",
+      "walkthrough": "Two variables: `i` counts, `total` accumulates.\nEvery pass adds the current `i` to `total`, then moves `i` along.\nAfter the loop, the single `print` shows 55."
+    },
+    {
+      "id": "11.4",
+      "description": "Print FizzBuzz for numbers 1 to 20: 'Fizz' for multiples of 3, 'Buzz' for multiples of 5, 'FizzBuzz' for both, else the number.",
+      "hint": "Check BOTH conditions first (most specific): `if num % 3 == 0 and num % 5 == 0: print('FizzBuzz')`\nThen check individually: `elif num % 3 == 0: print('Fizz')` and `elif num % 5 == 0: print('Buzz')`\nOrder matters — if you check 3 or 5 first, 15 would trigger the wrong branch.",
+      "expected": "1\n2\nFizz\n4\nBuzz\nFizz\n7\n8\nFizz\nBuzz\n11\nFizz\n13\n14\nFizzBuzz\n16\n17\nFizz\n19\nBuzz",
+      "solution": "num = 1\nwhile num <= 20:\n    if num % 3 == 0 and num % 5 == 0:\n        print('FizzBuzz')\n    elif num % 3 == 0:\n        print('Fizz')\n    elif num % 5 == 0:\n        print('Buzz')\n    else:\n        print(num)\n    num += 1",
+      "walkthrough": "The both-divisible check comes first. If it were last, 15 would match the Fizz branch and stop there.\nEach number goes through the ladder once, prints one thing, and the counter moves on."
+    },
+    {
+      "id": "11.5",
+      "description": "Ask the user to keep entering numbers until they type 0. Print how many numbers were entered (not counting the 0).",
+      "hint": "`while True:` loops forever until you explicitly `break` out.\nGet input inside the loop, convert to int, and check if it's 0.\nIncrement a counter for each valid (non-zero) number entered.",
+      "expected": "",
+      "solution": "count = 0\nwhile True:\n    n = int(input('Enter a number (0 to stop): '))\n    if n == 0:\n        break\n    count += 1\nprint(count)",
+      "walkthrough": "`while True` keeps asking indefinitely. The `break` inside the `if` is the only exit.\nThe counter is only increased after the zero check, so the zero itself isn't counted.",
+      "solution_stdin": "4\n8\n15\n0\n"
+    },
+    {
+      "id": "11.6",
+      "description": "Ask the user for a positive number. If they enter a negative number or zero, keep asking until they give a valid positive number.",
+      "hint": "Start by getting the first input: `num = int(input(...))`\nThen use `while num <= 0:` — if it's invalid, ask again inside the loop.\nOnce the loop ends, `num` is guaranteed to be positive.",
+      "expected": "",
+      "solution": "n = int(input('Enter a positive number: '))\nwhile n <= 0:\n    n = int(input('Not positive. Try again: '))\nprint(f'You entered {n}')",
+      "walkthrough": "The first input happens before the loop so there's something to test.\nThe loop only runs while the value is zero or negative, asking again each time.\nWhen it exits, `n` must be positive.",
+      "solution_stdin": "-3\n0\n9\n"
+    },
+    {
+      "id": "11.7",
+      "description": "Use a while loop to print the digits of 12345 one at a time (from rightmost to leftmost).",
+      "hint": "`12345 % 10` extracts the last digit: `5`\n`12345 // 10` removes the last digit: `1234`\nKeep doing this `while n > 0:` — each iteration prints and removes one digit.",
+      "expected": "5\n4\n3\n2\n1",
+      "solution": "n = 12345\nwhile n > 0:\n    print(n % 10)\n    n = n // 10",
+      "walkthrough": "`n % 10` gives the rightmost digit, 5 for 12345.\n`n // 10` chops that digit off, leaving 1234.\nRepeating until `n` hits 0 prints the digits from right to left."
+    }
+  ],
+  "lesson": {
+    "intro": "A `for` loop runs a known number of times. A `while` loop runs as long as a\ncondition stays true, which is what you want when you don't know in advance how\nmany times: keep asking until the answer is valid, keep playing until someone wins.",
+    "sections": [
+      {
+        "heading": "The shape of a while loop",
+        "body": "Set up a variable, write the condition, and make sure something inside the\nloop changes that variable. If nothing changes, the condition stays true\nforever and the program never ends.",
+        "code": "i = 1\nwhile i <= 5:\n    print(i)\n    i += 1",
+        "output": "1\n2\n3\n4\n5"
+      },
+      {
+        "heading": "Accumulating while looping",
+        "body": "The same accumulator idea as with `for`: a running total that starts at 0.\nHere you manage the counter yourself too.",
+        "code": "i = 1\ntotal = 0\nwhile i <= 10:\n    total += i\n    i += 1\nprint(total)",
+        "output": "55"
+      },
+      {
+        "heading": "while True and break",
+        "body": "`while True:` loops forever on purpose. Inside, you decide when to stop with\n`break`, which jumps straight out of the loop. This is the standard pattern for\n\"keep asking until\".",
+        "code": "count = 0\nwhile True:\n    n = int(input('Number (0 to stop): '))\n    if n == 0:\n        break\n    count += 1\nprint(f'You entered {count} numbers')",
+        "output": "Number (0 to stop): Number (0 to stop): Number (0 to stop): You entered 2 numbers"
+      },
+      {
+        "heading": "Re-asking until the input is valid",
+        "body": "Ask once, then loop while the answer is bad. When the loop ends, the value is\nguaranteed to be acceptable.",
+        "code": "n = int(input('Positive number: '))\nwhile n <= 0:\n    n = int(input('Try again, must be positive: '))\nprint(f'Thanks, you gave {n}')",
+        "output": "Positive number: Try again, must be positive: Thanks, you gave 7"
+      },
+      {
+        "heading": "Peeling digits off a number",
+        "body": "`n % 10` is the last digit. `n // 10` is the number with that digit removed.\nLoop while there's anything left.",
+        "code": "n = 123\nwhile n > 0:\n    print(n % 10)\n    n = n // 10",
+        "output": "3\n2\n1"
+      }
+    ],
+    "watch_out": [
+      "Forgetting to change the counter. `while i <= 5:` with no `i += 1` runs forever. This app will stop it after ten seconds and tell you.",
+      "Putting `i += 1` outside the loop by mistake. Check its indentation.",
+      "Using `=` instead of `==` in the condition.",
+      "FizzBuzz: check 'divisible by both' before checking either one alone, or 15 gets labelled Fizz."
+    ]
+  }
+}

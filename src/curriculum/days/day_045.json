@@ -1,0 +1,87 @@
+{
+  "day": 45,
+  "title": "datetime Module",
+  "tasks": [
+    {
+      "id": "45.1",
+      "description": "Get today's date and now's datetime. Print both. Also print just the year, month, and day from today.",
+      "hint": "`from datetime import date, datetime`\n`date.today()` → current date; `datetime.now()` → current date AND time.\nAccess parts: `today.year`, `today.month`, `today.day`",
+      "expected": "",
+      "solution": "from datetime import date, datetime\n\ntoday = date.today()\nnow = datetime.now()\n\nprint(f'Today: {today}')\nprint(f'Now: {now}')\nprint(f'Year: {today.year}, Month: {today.month}, Day: {today.day}')",
+      "walkthrough": "`date.today()` gives the calendar date and `datetime.now()` gives the date with the current time.\nThe individual parts are plain integers available as attributes."
+    },
+    {
+      "id": "45.2",
+      "description": "Create a `date` for your birthday. Calculate how many days until/since your next birthday.",
+      "hint": "`birthday = date(year, month, day)` — pick any year for the date object.\nSubtract dates: `date1 - date2` returns a `timedelta` object.\n`delta.days` gives the number of days as an integer.",
+      "expected": "",
+      "solution": "from datetime import date\n\ntoday = date.today()\nbirthday = date(today.year, 6, 15)\n\nif birthday < today:\n    birthday = date(today.year + 1, 6, 15)\n\ndays_until = (birthday - today).days\nprint(f'Days until next birthday: {days_until}')",
+      "walkthrough": "The birthday is built for this year first. If it has already passed, it's rebuilt for next year.\nSubtracting today from it gives a timedelta, and `.days` extracts the count. Change the month and day to your own."
+    },
+    {
+      "id": "45.3",
+      "description": "Use `strftime` to format today's date as: 'Monday, 26 May 2025'. Also use `strptime` to parse '2025-12-25' back to a date.",
+      "hint": "`date.today().strftime('%A, %d %B %Y')` formats the date.\nFormat codes: `%A` = full weekday, `%d` = day, `%B` = full month, `%Y` = 4-digit year.\n`datetime.strptime('2025-12-25', '%Y-%m-%d')` parses a string into a datetime.",
+      "expected": "",
+      "solution": "from datetime import date, datetime\n\ntoday = date.today()\nprint(today.strftime('%A, %d %B %Y'))\n\nparsed = datetime.strptime('2025-12-25', '%Y-%m-%d')\nprint(parsed.date())\nprint(parsed.strftime('%A'))",
+      "walkthrough": "`strftime` turns a date into text using the format codes: full weekday name, day, full month name, year.\n`strptime` does the reverse, reading text with a matching format into a datetime. Calling `.date()` on it drops the time part."
+    },
+    {
+      "id": "45.4",
+      "description": "Use `timedelta` to find the date 90 days from today and 30 days ago.",
+      "hint": "`from datetime import timedelta`\n`date.today() + timedelta(days=90)` → 90 days in the future.\n`date.today() - timedelta(days=30)` → 30 days in the past.",
+      "expected": "",
+      "solution": "from datetime import date, timedelta\n\ntoday = date.today()\nprint(f'Today: {today}')\nprint(f'In 90 days: {today + timedelta(days=90)}')\nprint(f'30 days ago: {today - timedelta(days=30)}')",
+      "walkthrough": "A `timedelta` is a duration. Adding it moves forward, subtracting moves back, and month and year boundaries are handled correctly."
+    },
+    {
+      "id": "45.5",
+      "description": "Measure how long a piece of code takes using `datetime.now()` before and after running it.",
+      "hint": "`start = datetime.now()`\nRun your code (e.g. a loop that counts to 1 million).\n`elapsed = datetime.now() - start` → a timedelta object.\n`elapsed.total_seconds()` gives the time in seconds as a float.",
+      "expected": "",
+      "solution": "from datetime import datetime\n\nstart = datetime.now()\n\ntotal = 0\nfor i in range(1_000_000):\n    total += i\n\nelapsed = datetime.now() - start\nprint(f'Total: {total}')\nprint(f'Took {elapsed.total_seconds():.4f} seconds')",
+      "walkthrough": "Two timestamps bracket the work. Their difference is a timedelta, and `total_seconds()` gives it as a float.\nFor serious timing, `time.perf_counter()` is more precise, but this works fine for a rough idea."
+    }
+  ],
+  "lesson": {
+    "intro": "Dates are harder than they look: months have different lengths, years leap,\nand \"30 days from now\" needs care. The `datetime` module handles all of that.\nToday: getting the current date and time, doing arithmetic with `timedelta`,\nand converting to and from text.",
+    "sections": [
+      {
+        "heading": "date and datetime",
+        "body": "`date.today()` is just the calendar date. `datetime.now()` is date plus\ntime. Both have `.year`, `.month`, `.day`; datetime adds `.hour`,\n`.minute`, `.second`.",
+        "code": "from datetime import date, datetime\n\ntoday = date.today()\nnow = datetime.now()\nprint(today)\nprint(now)\nprint(today.year, today.month, today.day)",
+        "output": "2026-09-15\n2026-09-15 14:32:07.123456\n2026 9 15"
+      },
+      {
+        "heading": "Subtracting dates gives a timedelta",
+        "body": "Subtract two dates and you get a `timedelta`, a length of time. Its\n`.days` is an integer you can print or compare.",
+        "code": "from datetime import date\n\nbirthday = date(2026, 12, 25)\nuntil = birthday - date(2026, 9, 15)\nprint(until)\nprint(until.days)",
+        "output": "101 days, 0:00:00\n101"
+      },
+      {
+        "heading": "Adding a timedelta moves a date",
+        "body": "`timedelta(days=90)` is a duration. Add it to or subtract it from a date\nto move forwards or backwards, and month boundaries are handled for you.",
+        "code": "from datetime import date, timedelta\n\nstart = date(2026, 9, 15)\nprint(start + timedelta(days=90))\nprint(start - timedelta(days=30))\nprint(start + timedelta(weeks=2))",
+        "output": "2026-12-14\n2026-08-16\n2026-09-29"
+      },
+      {
+        "heading": "strftime and strptime",
+        "body": "`strftime` formats a date as text using codes: `%A` weekday name, `%d`\nday, `%B` month name, `%Y` four-digit year, `%m` month number. `strptime`\nparses text back into a datetime using the same codes.",
+        "code": "from datetime import date, datetime\n\nd = date(2025, 5, 26)\nprint(d.strftime('%A, %d %B %Y'))\nprint(d.strftime('%d/%m/%Y'))\n\nparsed = datetime.strptime('2025-12-25', '%Y-%m-%d')\nprint(parsed.date())",
+        "output": "Monday, 26 May 2025\n26/05/2025\n2025-12-25"
+      },
+      {
+        "heading": "Timing code",
+        "body": "Subtracting two `datetime.now()` calls gives a timedelta;\n`.total_seconds()` turns it into a float.",
+        "code": "from datetime import datetime\n\nstart = datetime.now()\ntotal = sum(range(1_000_000))\nelapsed = datetime.now() - start\nprint(f'{elapsed.total_seconds():.3f} seconds')",
+        "output": "0.041 seconds"
+      }
+    ],
+    "watch_out": [
+      "`import datetime` vs `from datetime import datetime`: the module and the class share a name. With the first form it's `datetime.datetime.now()`.",
+      "`strptime` needs the format to match the text exactly, separators included.",
+      "You can't subtract a `date` from a `datetime` directly. Use `.date()` on the datetime first.",
+      "`timedelta` has no months or years, because their length varies."
+    ]
+  }
+}

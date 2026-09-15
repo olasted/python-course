@@ -1,0 +1,81 @@
+{
+  "day": 50,
+  "title": "Challenge: Text File Analyser",
+  "tasks": [
+    {
+      "id": "50.1",
+      "description": "Write a function `analyse_file(filename)` that reads a text file and returns: total lines, total words, total characters.",
+      "hint": "Read all lines: `lines = f.readlines()`\n`total_lines = len(lines)`\n`total_words = sum(len(line.split()) for line in lines)`\n`total_chars = sum(len(line) for line in lines)`",
+      "expected": "",
+      "solution": "import re\nfrom collections import Counter\n\nSAMPLE = '''The quick brown fox jumps over the lazy dog.\nThe dog sleeps. The fox runs away, quick as ever.\nNobody saw the fox again.'''\n\nwith open('sample.txt', 'w') as f:\n    f.write(SAMPLE)\n\ndef analyse_file(filename):\n    with open(filename) as f:\n        lines = f.readlines()\n    total_lines = len(lines)\n    total_words = sum(len(line.split()) for line in lines)\n    total_chars = sum(len(line) for line in lines)\n    return total_lines, total_words, total_chars\n\nlines, words, chars = analyse_file('sample.txt')\nprint(f'Lines: {lines}')\nprint(f'Words: {words}')\nprint(f'Characters: {chars}')",
+      "walkthrough": "A small sample file is written first so there's something to analyse.\nThe function reads all lines, then derives the three counts from them and returns a tuple, which the caller unpacks."
+    },
+    {
+      "id": "50.2",
+      "description": "Add to your analyser: find the top 5 most frequent words (case-insensitive, ignoring punctuation).",
+      "hint": "`import re, collections`\nExtract words: `re.findall(r'\\b[a-z]+\\b', text.lower())`\n`Counter(words).most_common(5)` gives the top 5.",
+      "expected": "",
+      "solution": "import re\nfrom collections import Counter\n\nSAMPLE = '''The quick brown fox jumps over the lazy dog.\nThe dog sleeps. The fox runs away, quick as ever.\nNobody saw the fox again.'''\n\nwith open('sample.txt', 'w') as f:\n    f.write(SAMPLE)\n\ndef get_words(filename):\n    with open(filename) as f:\n        return re.findall(r'[a-z]+', f.read().lower())\n\ndef top_words(filename, n=5):\n    return Counter(get_words(filename)).most_common(n)\n\nfor word, count in top_words('sample.txt'):\n    print(f'{word}: {count}')",
+      "walkthrough": "Lowercasing first makes The and the the same word. The regex `[a-z]+` pulls out runs of letters and drops punctuation.\n`Counter` tallies them and `most_common(5)` returns the top five as (word, count) pairs."
+    },
+    {
+      "id": "50.3",
+      "description": "Add average word length and longest word to your analysis.",
+      "hint": "Get all words as a list.\n`avg_length = sum(len(w) for w in words) / len(words)`\n`longest = max(words, key=len)` — `max` with a key finds the longest.",
+      "expected": "",
+      "solution": "import re\nfrom collections import Counter\n\nSAMPLE = '''The quick brown fox jumps over the lazy dog.\nThe dog sleeps. The fox runs away, quick as ever.\nNobody saw the fox again.'''\n\nwith open('sample.txt', 'w') as f:\n    f.write(SAMPLE)\n\ndef get_words(filename):\n    with open(filename) as f:\n        return re.findall(r'[a-z]+', f.read().lower())\n\ndef word_stats(filename):\n    words = get_words(filename)\n    avg = sum(len(w) for w in words) / len(words) if words else 0\n    longest = max(words, key=len) if words else ''\n    return avg, longest\n\navg, longest = word_stats('sample.txt')\nprint(f'Average word length: {avg:.2f}')\nprint(f'Longest word: {longest}')",
+      "walkthrough": "The average is total letters divided by word count, with a guard for an empty file.\n`max(words, key=len)` compares words by length and returns the longest."
+    },
+    {
+      "id": "50.4",
+      "description": "Add a function to find all unique words that appear exactly once in the text (hapax legomena).",
+      "hint": "`counter = Counter(words)` — then filter: `[w for w, count in counter.items() if count == 1]`\nSort and display the unique words.\nThis is a real linguistics concept!",
+      "expected": "",
+      "solution": "import re\nfrom collections import Counter\n\nSAMPLE = '''The quick brown fox jumps over the lazy dog.\nThe dog sleeps. The fox runs away, quick as ever.\nNobody saw the fox again.'''\n\nwith open('sample.txt', 'w') as f:\n    f.write(SAMPLE)\n\ndef get_words(filename):\n    with open(filename) as f:\n        return re.findall(r'[a-z]+', f.read().lower())\n\ndef hapax(filename):\n    counts = Counter(get_words(filename))\n    return sorted(w for w, n in counts.items() if n == 1)\n\nprint(hapax('sample.txt'))",
+      "walkthrough": "After counting, the generator picks the words whose count is exactly 1.\n`sorted` puts them in alphabetical order for a tidy result."
+    },
+    {
+      "id": "50.5",
+      "description": "Print a formatted report showing all statistics. Save the report to a separate 'report.txt' file.",
+      "hint": "Build the report as a multi-line string with all the stats.\n`with open('report.txt', 'w') as f: f.write(report)`\nAlso `print(report)` to show it in the console.",
+      "expected": "",
+      "solution": "import re\nfrom collections import Counter\n\nSAMPLE = '''The quick brown fox jumps over the lazy dog.\nThe dog sleeps. The fox runs away, quick as ever.\nNobody saw the fox again.'''\n\nwith open('sample.txt', 'w') as f:\n    f.write(SAMPLE)\n\ndef analyse_file(filename):\n    with open(filename) as f:\n        lines = f.readlines()\n    total_lines = len(lines)\n    total_words = sum(len(line.split()) for line in lines)\n    total_chars = sum(len(line) for line in lines)\n    return total_lines, total_words, total_chars\n\ndef get_words(filename):\n    with open(filename) as f:\n        return re.findall(r'[a-z]+', f.read().lower())\n\ndef top_words(filename, n=5):\n    return Counter(get_words(filename)).most_common(n)\n\ndef word_stats(filename):\n    words = get_words(filename)\n    avg = sum(len(w) for w in words) / len(words) if words else 0\n    longest = max(words, key=len) if words else ''\n    return avg, longest\n\ndef hapax(filename):\n    counts = Counter(get_words(filename))\n    return sorted(w for w, n in counts.items() if n == 1)\n\ndef build_report(filename):\n    lines, words, chars = analyse_file(filename)\n    avg, longest = word_stats(filename)\n    parts = [\n        f'Report for {filename}',\n        '-' * 30,\n        f'Lines:               {lines}',\n        f'Words:               {words}',\n        f'Characters:          {chars}',\n        f'Average word length: {avg:.2f}',\n        f'Longest word:        {longest}',\n        '',\n        'Top words:',\n    ]\n    for word, count in top_words(filename):\n        parts.append(f'  {word:<10} {count}')\n    parts.append('')\n    parts.append(f'Words used once: {\", \".join(hapax(filename))}')\n    return '\\n'.join(parts)\n\nreport = build_report('sample.txt')\nprint(report)\n\nwith open('report.txt', 'w') as f:\n    f.write(report)",
+      "walkthrough": "Each earlier function contributes one piece of data. `build_report` collects the lines in a list and joins them at the end.\nThe finished string is printed and then written to report.txt, so both the screen and the file get the same text."
+    }
+  ],
+  "lesson": {
+    "intro": "A text analyser: read a file, count things, find patterns, write a report.\nIt uses files, string methods, regular expressions and Counter, all of which\nyou know. The trick is organising it as a few small functions that each\nreturn a value, then one function that puts the report together.",
+    "sections": [
+      {
+        "heading": "Lines, words, characters",
+        "body": "`readlines()` gives the lines. Words per line come from `split()`.\nCharacters are just the length of each line. Return the three counts as\na tuple.",
+        "code": "text = 'the cat sat\\non the mat\\n'\nlines = text.splitlines()\nprint(len(lines))\nprint(sum(len(line.split()) for line in lines))\nprint(sum(len(line) for line in lines))",
+        "output": "2\n6\n21"
+      },
+      {
+        "heading": "Words, cleaned up",
+        "body": "Lowercase the text and use a regex to pull out runs of letters. That\nignores punctuation and treats The and the as the same word. Then\n`Counter` does the counting.",
+        "code": "import re\nfrom collections import Counter\n\ntext = 'The cat. The cat sat, the end!'\nwords = re.findall(r'[a-z]+', text.lower())\nprint(words)\nprint(Counter(words).most_common(2))",
+        "output": "['the', 'cat', 'the', 'cat', 'sat', 'the', 'end']\n[('the', 3), ('cat', 2)]"
+      },
+      {
+        "heading": "Averages and extremes",
+        "body": "Average word length is total letters over word count. `max` with\n`key=len` finds the longest word. Words that appear once are the ones\nwhose count is 1 in the Counter.",
+        "code": "from collections import Counter\n\nwords = ['the', 'cat', 'sat', 'quietly', 'the']\nprint(sum(len(w) for w in words) / len(words))\nprint(max(words, key=len))\nprint(sorted(w for w, n in Counter(words).items() if n == 1))",
+        "output": "3.8\nquietly\n['cat', 'quietly', 'sat']"
+      },
+      {
+        "heading": "Building and saving a report",
+        "body": "Collect the lines of the report in a list, join them with newlines, then\nboth print the string and write it to a file. One string, two\ndestinations.",
+        "code": "stats = {'lines': 2, 'words': 6}\nreport = '\\n'.join(f'{k}: {v}' for k, v in stats.items())\nprint(report)\nwith open('report.txt', 'w') as f:\n    f.write(report)",
+        "output": "lines: 2\nwords: 6"
+      }
+    ],
+    "watch_out": [
+      "Counting words with `split()` keeps punctuation attached: 'cat.' and 'cat' would be different words. Use the regex.",
+      "`max(words, key=len)` on an empty list raises an error. Guard it if the file might be empty.",
+      "Dividing by zero for the average when there are no words.",
+      "Write the sample text file at the top of your script so the analyser has something to read."
+    ]
+  }
+}

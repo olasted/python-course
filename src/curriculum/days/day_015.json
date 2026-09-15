@@ -1,0 +1,97 @@
+{
+  "day": 15,
+  "title": "Tuples and Sets",
+  "tasks": [
+    {
+      "id": "15.1",
+      "description": "Create a tuple `coords = (10, 20, 30)`. Print the second element.",
+      "hint": "Tuples use the same index syntax as lists: `tuple[index]`\nZero-based: first element is `[0]`, second is `[1]`, third is `[2]`.\n`coords[1]` → `20`",
+      "expected": "20",
+      "solution": "coords = (10, 20, 30)\nprint(coords[1])",
+      "walkthrough": "Tuples are indexed from 0 like lists, so position 1 is the second item, 20."
+    },
+    {
+      "id": "15.2",
+      "description": "Unpack the tuple (1, 2, 3) into three variables a, b, c and print their sum.",
+      "hint": "Tuple unpacking assigns each element to a variable in one line.\n`a, b, c = (1, 2, 3)` — the number of variables must match the tuple length.\nThen `print(a + b + c)` → `6`",
+      "expected": "6",
+      "solution": "a, b, c = (1, 2, 3)\nprint(a + b + c)",
+      "walkthrough": "Three names on the left, three items on the right, so each name gets one item.\nThen it's simple addition."
+    },
+    {
+      "id": "15.3",
+      "description": "Try to change the first element of (1, 2, 3) to 99. Notice what error appears — tuples are immutable.",
+      "hint": "Tuples are IMMUTABLE — once created, their contents cannot be changed.\nTrying `t[0] = 99` raises a `TypeError: 'tuple' object does not support item assignment`\nThis is intentional — use a list if you need to modify elements.",
+      "expected": "",
+      "solution": "t = (1, 2, 3)\ntry:\n    t[0] = 99\nexcept TypeError as e:\n    print('Error:', e)",
+      "walkthrough": "Assigning to `t[0]` raises a TypeError because tuples can't be modified.\nWrapping it in `try`/`except` lets the program show the message instead of crashing. You'll learn try/except properly tomorrow.\nWithout the try, you'd see the red error box in this app, which is also fine for this task."
+    },
+    {
+      "id": "15.4",
+      "description": "Create a set from the list [1, 2, 2, 3, 3, 3, 4]. Print the set. Notice duplicates are removed.",
+      "hint": "`set()` converts any iterable to a set, automatically removing duplicates.\n`set([1, 2, 2, 3, 3, 3, 4])` → `{1, 2, 3, 4}`\nSets are unordered — the printed order may vary, but the values are correct.",
+      "expected": "{1, 2, 3, 4}",
+      "solution": "numbers = [1, 2, 2, 3, 3, 3, 4]\nunique = set(numbers)\nprint(unique)",
+      "walkthrough": "`set()` keeps one copy of each value and throws the rest away.\nFor small integers Python happens to print them in ascending order."
+    },
+    {
+      "id": "15.5",
+      "description": "Find the common elements (intersection) of sets {1, 2, 3, 4} and {2, 4, 6}. Print sorted.",
+      "hint": "Intersection = elements that appear in BOTH sets.\nUse `&` operator: `{1,2,3,4} & {2,4,6}` → `{2, 4}`\nOr `.intersection()`: `s1.intersection(s2)`\n`sorted(result)` gives a consistent order for testing.",
+      "expected": "[2, 4]",
+      "solution": "a = {1, 2, 3, 4}\nb = {2, 4, 6}\nprint(sorted(a & b))",
+      "walkthrough": "`&` is intersection: the values that appear in both sets, which are 2 and 4.\n`sorted()` turns the result into a list in order, so the output is predictable."
+    },
+    {
+      "id": "15.6",
+      "description": "Find the unique elements from both sets {1, 2, 3} and {2, 3, 4, 5} combined (union). Print sorted.",
+      "hint": "Union = ALL elements from BOTH sets (no duplicates).\nUse `|` operator: `{1,2,3} | {2,3,4,5}` → `{1, 2, 3, 4, 5}`\nOr `.union()`: `s1.union(s2)`\n`sorted(result)` for consistent ordering.",
+      "expected": "[1, 2, 3, 4, 5]",
+      "solution": "a = {1, 2, 3}\nb = {2, 3, 4, 5}\nprint(sorted(a | b))",
+      "walkthrough": "`|` is union: everything in either set, with duplicates removed.\nSorting gives [1, 2, 3, 4, 5]."
+    },
+    {
+      "id": "15.7",
+      "description": "Use a set to count how many UNIQUE characters are in the string 'mississippi'. Print the count.",
+      "hint": "`set(string)` treats each character as an element, removing duplicates.\n`set('mississippi')` → `{'m', 'i', 's', 'p'}` — only 4 unique chars.\n`len(set('mississippi'))` → `4`",
+      "expected": "4",
+      "solution": "print(len(set('mississippi')))",
+      "walkthrough": "A string is a sequence of characters, so `set()` collects the distinct ones: m, i, s, p.\n`len()` counts them, giving 4."
+    }
+  ],
+  "lesson": {
+    "intro": "Two more containers. A tuple is a list you can't change, useful for things that\nbelong together like coordinates. A set is a bag of unique items with no order,\nuseful for removing duplicates and asking \"have I seen this before?\".",
+    "sections": [
+      {
+        "heading": "Tuples",
+        "body": "Round brackets instead of square. Indexing works the same as with lists.\nWhat you can't do is change an item after the tuple is made. That\nimmutability is the point: it says \"this is fixed\".",
+        "code": "coords = (10, 20, 30)\nprint(coords[1])\nprint(len(coords))",
+        "output": "20\n3"
+      },
+      {
+        "heading": "Unpacking",
+        "body": "You can pull the items of a tuple into separate variables in one line.\nThe number of names on the left has to match the number of items.\nThis is what's happening when a function returns two values.",
+        "code": "a, b, c = (1, 2, 3)\nprint(a + b + c)",
+        "output": "6"
+      },
+      {
+        "heading": "Sets remove duplicates",
+        "body": "`set()` turns any collection into a set, dropping repeats. Curly braces also\nmake a set (with no colons; colons would make a dictionary). Sets have no\norder, so don't rely on the position of anything.",
+        "code": "print(set([1, 2, 2, 3, 3, 3, 4]))\nprint(len(set('mississippi')))",
+        "output": "{1, 2, 3, 4}\n4"
+      },
+      {
+        "heading": "Combining sets",
+        "body": "`&` gives the items in both sets. `|` gives the items in either. `-` gives\nthe items in the first but not the second. Wrap the result in `sorted()`\nwhen you want a predictable order.",
+        "code": "a = {1, 2, 3, 4}\nb = {2, 4, 6}\nprint(sorted(a & b))\nprint(sorted(a | b))\nprint(sorted(a - b))",
+        "output": "[2, 4]\n[1, 2, 3, 4, 6]\n[1, 3]"
+      }
+    ],
+    "watch_out": [
+      "`t[0] = 99` on a tuple gives a TypeError. That's by design. Use a list if it needs to change.",
+      "A tuple with one item needs a trailing comma: `(5,)`. Plain `(5)` is just the number 5.",
+      "`{}` makes an empty dictionary, not an empty set. For an empty set write `set()`.",
+      "Sets don't support indexing. `my_set[0]` is an error."
+    ]
+  }
+}

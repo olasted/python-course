@@ -1,0 +1,103 @@
+{
+  "day": 14,
+  "title": "Functions: Advanced",
+  "tasks": [
+    {
+      "id": "14.1",
+      "description": "Define a function `greet(name='World')` with a default parameter. Call it once with 'Alice' and once with no argument. Print both results.",
+      "hint": "Default parameter syntax: `def greet(name='World'):`\nCalling `greet('Alice')` overrides the default; `greet()` uses 'World'.\nPrint each call: `print(greet('Alice'))` then `print(greet())`",
+      "expected": "Hello, Alice!\nHello, World!",
+      "solution": "def greet(name='World'):\n    return f'Hello, {name}!'\n\nprint(greet('Alice'))\nprint(greet())",
+      "walkthrough": "The first call passes a name, so that name is used.\nThe second call passes nothing, so `name` takes the default 'World'."
+    },
+    {
+      "id": "14.2",
+      "description": "Define a function `total(*numbers)` that accepts any number of arguments and returns their sum. Test with total(1, 2, 3, 4, 5).",
+      "hint": "`*args` collects all extra positional arguments into a TUPLE inside the function.\n`def total(*numbers):` — `numbers` is a tuple of everything passed.\n`return sum(numbers)` uses Python's built-in sum on the tuple.",
+      "expected": "15",
+      "solution": "def total(*numbers):\n    return sum(numbers)\n\nprint(total(1, 2, 3, 4, 5))",
+      "walkthrough": "The star means \"collect all the arguments into a tuple called numbers\".\n`sum()` adds up everything in that tuple, giving 15."
+    },
+    {
+      "id": "14.3",
+      "description": "Define a recursive function `factorial(n)` that returns n! (n factorial). Test with factorial(5).",
+      "hint": "Recursion needs a BASE CASE to stop: `if n <= 1: return 1`\nRecursive case: `return n * factorial(n - 1)` — calls itself with a smaller n.\n`factorial(5)` → `5 * factorial(4)` → ... → `5*4*3*2*1` = 120",
+      "expected": "120",
+      "solution": "def factorial(n):\n    if n <= 1:\n        return 1\n    return n * factorial(n - 1)\n\nprint(factorial(5))",
+      "walkthrough": "`factorial(5)` returns `5 * factorial(4)`, which needs `4 * factorial(3)`, and so on down to `factorial(1)`.\nThat base case returns 1 without calling itself again, so the chain unwinds: 1, 2, 6, 24, 120."
+    },
+    {
+      "id": "14.4",
+      "description": "Define a function `describe(**info)` that prints each keyword argument as 'key: value'. Call it with name='Bob', age=30.",
+      "hint": "`**kwargs` collects keyword arguments into a DICT inside the function.\n`def describe(**info):` — `info` is `{'name': 'Bob', 'age': 30}`\nLoop: `for key, value in info.items(): print(f'{key}: {value}')`",
+      "expected": "name: Bob\nage: 30",
+      "solution": "def describe(**info):\n    for key, value in info.items():\n        print(f'{key}: {value}')\n\ndescribe(name='Bob', age=30)",
+      "walkthrough": "Two stars gather the keyword arguments into a dictionary: {'name': 'Bob', 'age': 30}.\nLooping over `.items()` prints each key with its value."
+    },
+    {
+      "id": "14.5",
+      "description": "Define a function `clamp(value, low, high)` that returns value if it is between low and high, low if below, or high if above. Test: clamp(15, 0, 10) should return 10.",
+      "hint": "The elegant one-liner uses nested min/max: `return max(low, min(value, high))`\n`min(value, high)` caps the value at `high`; `max(low, ...)` floors it at `low`.\n`clamp(15, 0, 10)` → `max(0, min(15, 10))` → `max(0, 10)` → `10`",
+      "expected": "10",
+      "solution": "def clamp(value, low, high):\n    return max(low, min(value, high))\n\nprint(clamp(15, 0, 10))",
+      "walkthrough": "`min(value, high)` pulls the value down to `high` if it's too big: min(15, 10) is 10.\n`max(low, ...)` then pushes it up to `low` if it's too small: max(0, 10) is 10.\nThe same trick works with an if/elif/else if the nested calls feel cryptic."
+    },
+    {
+      "id": "14.6",
+      "description": "Define a function `count_vowels(text)` that returns the number of vowels in a string. Test with 'Hello World'.",
+      "hint": "Loop over each character; check if it's a vowel.\n`vowels = 'aeiouAEIOU'` — include both cases.\nCount with: `sum(1 for c in text if c in vowels)` or a for loop with a counter.",
+      "expected": "3",
+      "solution": "def count_vowels(text):\n    vowels = 'aeiouAEIOU'\n    count = 0\n    for char in text:\n        if char in vowels:\n            count += 1\n    return count\n\nprint(count_vowels('Hello World'))",
+      "walkthrough": "Loop over each character and check whether it appears in the vowels string.\nThe counter goes up for each match. 'Hello World' has e, o, o, so 3.\nA shorter version is `sum(1 for c in text if c in vowels)`."
+    },
+    {
+      "id": "14.7",
+      "description": "Define a function `palindrome(word)` that returns True if the word is the same forwards and backwards. Test with 'racecar'.",
+      "hint": "Reverse a string with slicing: `word[::-1]`\nCompare the original to the reversed: `return word == word[::-1]`\n'racecar' reversed is still 'racecar' → True.",
+      "expected": "True",
+      "solution": "def palindrome(word):\n    return word == word[::-1]\n\nprint(palindrome('racecar'))",
+      "walkthrough": "`word[::-1]` is the word reversed.\nComparing the original to its reverse gives True only when they're identical."
+    }
+  ],
+  "lesson": {
+    "intro": "Functions have a few more tricks than you've seen: default values, accepting any\nnumber of arguments, and calling themselves. None of these are things you'll need\nevery day, but you'll see them in other people's code constantly, so it's worth\nknowing what they mean.",
+    "sections": [
+      {
+        "heading": "Defaults, again",
+        "body": "A default makes a parameter optional. Parameters with defaults have to come\nafter the ones without.",
+        "code": "def greet(name='World'):\n    return f'Hello, {name}!'\n\nprint(greet('Alice'))\nprint(greet())",
+        "output": "Hello, Alice!\nHello, World!"
+      },
+      {
+        "heading": "*args: any number of arguments",
+        "body": "A star before a parameter name collects every extra positional argument into\na tuple. Inside the function you treat it like a list. The name `args` is\nonly a convention; `numbers` is clearer here.",
+        "code": "def total(*numbers):\n    return sum(numbers)\n\nprint(total(1, 2, 3))\nprint(total(10, 20, 30, 40))",
+        "output": "6\n100"
+      },
+      {
+        "heading": "**kwargs: any number of named arguments",
+        "body": "Two stars collect keyword arguments (the `name=value` kind) into a dictionary.\nLoop over `.items()` to see them.",
+        "code": "def describe(**info):\n    for key, value in info.items():\n        print(f'{key}: {value}')\n\ndescribe(name='Bob', age=30)",
+        "output": "name: Bob\nage: 30"
+      },
+      {
+        "heading": "Recursion: a function that calls itself",
+        "body": "Some problems are naturally defined in terms of a smaller version of\nthemselves. Factorial of 5 is 5 times factorial of 4. A recursive function\nneeds two parts: a base case that stops (factorial of 1 is 1) and a recursive\ncase that calls itself with a smaller input.\n\nWithout a base case, the calls never stop and Python gives up with a\nRecursionError.",
+        "code": "def factorial(n):\n    if n <= 1:\n        return 1\n    return n * factorial(n - 1)\n\nprint(factorial(5))",
+        "output": "120"
+      },
+      {
+        "heading": "Small useful functions",
+        "body": "Two idioms that come up a lot. `max(low, min(value, high))` clamps a value\ninto a range. `word[::-1]` reverses a string, which makes palindrome checks\na one-liner.",
+        "code": "def clamp(value, low, high):\n    return max(low, min(value, high))\n\ndef palindrome(word):\n    return word == word[::-1]\n\nprint(clamp(15, 0, 10))\nprint(palindrome('racecar'))",
+        "output": "10\nTrue"
+      }
+    ],
+    "watch_out": [
+      "Putting a parameter without a default after one with a default is a syntax error.",
+      "`*numbers` gives you a tuple. `numbers` alone would be a single argument.",
+      "A recursive function with no base case, or one that doesn't shrink the input, never finishes.",
+      "`sum()` takes one collection, not separate numbers: `sum([1, 2, 3])` works, `sum(1, 2, 3)` doesn't."
+    ]
+  }
+}

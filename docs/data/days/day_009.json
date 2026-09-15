@@ -1,0 +1,103 @@
+{
+  "day": 9,
+  "title": "String Methods",
+  "tasks": [
+    {
+      "id": "9.1",
+      "description": "Given `s = '  Hello World  '`, strip the whitespace from both ends and print.",
+      "hint": "`.strip()` removes leading AND trailing whitespace (spaces, tabs, newlines).\nIt returns a new string — the original is unchanged.\n`print(s.strip())` → `'Hello World'`\nAlso available: `.lstrip()` (left only) and `.rstrip()` (right only).",
+      "expected": "Hello World",
+      "solution": "s = '  Hello World  '\nprint(s.strip())",
+      "walkthrough": "`.strip()` removes whitespace from both ends and returns the trimmed copy.\nThe spaces in the middle between Hello and World are left alone."
+    },
+    {
+      "id": "9.2",
+      "description": "Split the string 'apple,banana,cherry' by the comma and print the resulting list.",
+      "hint": "`.split(separator)` breaks a string into a list at each occurrence of the separator.\n`'apple,banana,cherry'.split(',')` → `['apple', 'banana', 'cherry']`\nCalling `.split()` with no argument splits on any whitespace.",
+      "expected": "['apple', 'banana', 'cherry']",
+      "solution": "print('apple,banana,cherry'.split(','))",
+      "walkthrough": "`.split(',')` breaks the string wherever there's a comma.\nThe result is a list of three strings, and printing a list shows the brackets and quotes."
+    },
+    {
+      "id": "9.3",
+      "description": "Replace the word 'bad' with 'good' in 'Python is bad'. Print the result.",
+      "hint": "`.replace(old, new)` returns a new string with ALL occurrences of `old` changed to `new`.\n`'Python is bad'.replace('bad', 'good')` → `'Python is good'`\nRemember to print the result — the original string doesn't change.",
+      "expected": "Python is good",
+      "solution": "print('Python is bad'.replace('bad', 'good'))",
+      "walkthrough": "`.replace(old, new)` swaps every occurrence of the first string for the second.\nIt returns the new version, which goes straight into `print`."
+    },
+    {
+      "id": "9.4",
+      "description": "Check if 'Hello, World!' starts with 'Hello'. Print the result (True or False).",
+      "hint": "`.startswith(prefix)` returns `True` if the string begins with the given prefix.\n`'Hello, World!'.startswith('Hello')` → `True`\nCompanion method: `.endswith(suffix)` checks the end of a string.",
+      "expected": "True",
+      "solution": "print('Hello, World!'.startswith('Hello'))",
+      "walkthrough": "`.startswith()` checks the beginning of the string and returns a boolean.\nSince the string does begin with Hello, the result is True."
+    },
+    {
+      "id": "9.5",
+      "description": "Count how many times the letter 'l' appears in 'Hello, World!'. Print the count.",
+      "hint": "`.count(substring)` counts non-overlapping occurrences of the substring.\n`'Hello, World!'.count('l')` → `3` (two in Hello, one in World)\nCase-sensitive: `'l'` and `'L'` are counted separately.",
+      "expected": "3",
+      "solution": "print('Hello, World!'.count('l'))",
+      "walkthrough": "`.count()` tallies how many times the given text appears.\nThere are two l's in Hello and one in World, so 3."
+    },
+    {
+      "id": "9.6",
+      "description": "Join the list ['Hello', 'World', 'Python'] into one string with a space between each word.",
+      "hint": "`.join(iterable)` is called on the separator, not the list — it's backward from what you'd expect.\n`' '.join(['Hello', 'World', 'Python'])` → `'Hello World Python'`\nThe string before `.join()` is placed BETWEEN each item.",
+      "expected": "Hello World Python",
+      "solution": "words = ['Hello', 'World', 'Python']\nprint(' '.join(words))",
+      "walkthrough": "The string before `.join` is the glue placed between each item.\nA single space joins the three words into one sentence-like string."
+    },
+    {
+      "id": "9.7",
+      "description": "Given `s = 'hello world'`, print it with the first letter of every word capitalised.",
+      "hint": "`.title()` capitalises the first letter of each word and lowercases the rest.\n`'hello world'.title()` → `'Hello World'`\nAlternative: `.split()` → capitalise each → `.join()`, but `.title()` is one step.",
+      "expected": "Hello World",
+      "solution": "s = 'hello world'\nprint(s.title())",
+      "walkthrough": "`.title()` uppercases the first letter of every word and lowercases the rest.\nIt's one call, where the manual approach would be split, capitalise each word, then join."
+    }
+  ],
+  "lesson": {
+    "intro": "Real data is messy text: extra spaces, wrong capitalisation, comma-separated\nlists. Strings come with a toolkit of methods for cleaning and reshaping them.\nToday is a tour of the ones you'll use over and over.",
+    "sections": [
+      {
+        "heading": "Methods return new strings",
+        "body": "Every string method hands you back a new string. The original never changes.\nIf you want to keep the result, store it or print it.",
+        "code": "s = '  Hello World  '\nprint(s.strip())\nprint(s.upper())\nprint(s.replace('World', 'There'))\nprint(s)",
+        "output": "Hello World\n  HELLO WORLD\n  Hello There\n  Hello World"
+      },
+      {
+        "heading": "Splitting text into pieces",
+        "body": "`.split(',')` cuts the string at every comma and gives you a list of the\npieces. With no argument, it splits on any whitespace, which is the easy way\nto get the words of a sentence.",
+        "code": "print('apple,banana,cherry'.split(','))\nprint('the quick brown fox'.split())",
+        "output": "['apple', 'banana', 'cherry']\n['the', 'quick', 'brown', 'fox']"
+      },
+      {
+        "heading": "Joining pieces back together",
+        "body": "`.join()` is the reverse of split, and it's written back to front: the\nseparator comes first, then the list. Read `' '.join(words)` as\n\"join these words with a space\".",
+        "code": "words = ['Hello', 'World', 'Python']\nprint(' '.join(words))\nprint('-'.join(words))",
+        "output": "Hello World Python\nHello-World-Python"
+      },
+      {
+        "heading": "Asking questions about a string",
+        "body": "`.startswith()`, `.endswith()` and `in` give True or False.\n`.count()` counts occurrences. `.find()` gives the position of the first\nmatch, or -1 if it isn't there.",
+        "code": "s = 'Hello, World!'\nprint(s.startswith('Hello'))\nprint(s.endswith('?'))\nprint(s.count('l'))\nprint(s.find('World'))",
+        "output": "True\nFalse\n3\n7"
+      },
+      {
+        "heading": "Changing case",
+        "body": "`.upper()`, `.lower()`, `.title()` and `.capitalize()` each do one job.\n`.title()` capitalises every word; `.capitalize()` only the first.",
+        "code": "s = 'hello world'\nprint(s.title())\nprint(s.capitalize())",
+        "output": "Hello World\nHello world"
+      }
+    ],
+    "watch_out": [
+      "Calling a method and forgetting the brackets: `s.upper` without `()` doesn't run anything.",
+      "`s.strip()` on its own line does nothing useful. Either print it or write `s = s.strip()`.",
+      "The separator goes before `.join`, not inside the brackets. `' '.join(words)`, not `words.join(' ')`.",
+      "`.count('l')` is case-sensitive, so it won't count `L`."
+    ]
+  }
+}

@@ -1,0 +1,81 @@
+{
+  "day": 39,
+  "title": "OOP: Dunder Methods",
+  "tasks": [
+    {
+      "id": "39.1",
+      "description": "Create a `Vector` class with `x` and `y`. Implement `__str__` to print as 'Vector(x, y)' and `__repr__` to print the same.",
+      "hint": "`__str__` is for end-users: `return f'Vector({self.x}, {self.y})'`\n`__repr__` is for developers/debugging — often same as `__str__` for simple classes.\nPython calls `__str__` when you `print()`, `__repr__` in the REPL.",
+      "expected": "",
+      "solution": "class Vector:\n    def __init__(self, x, y):\n        self.x = x\n        self.y = y\n\n    def __str__(self):\n        return f'Vector({self.x}, {self.y})'\n\n    def __repr__(self):\n        return f'Vector({self.x}, {self.y})'\n\nv = Vector(1, 2)\nprint(v)\nprint(repr(v))\nprint([v])",
+      "walkthrough": "`print(v)` uses `__str__`. `repr(v)` and printing a list of vectors use `__repr__`.\nFor a simple class both return the same thing, so they're written identically."
+    },
+    {
+      "id": "39.2",
+      "description": "Add `__add__` to your Vector class so you can use `v1 + v2`. Test: Vector(1, 2) + Vector(3, 4) should give Vector(4, 6).",
+      "hint": "`def __add__(self, other): return Vector(self.x + other.x, self.y + other.y)`\nThis makes the `+` operator work on your objects.\nPython translates `v1 + v2` into `v1.__add__(v2)` automatically.",
+      "expected": "Vector(4, 6)",
+      "solution": "class Vector:\n    def __init__(self, x, y):\n        self.x = x\n        self.y = y\n\n    def __str__(self):\n        return f'Vector({self.x}, {self.y})'\n\n    def __add__(self, other):\n        return Vector(self.x + other.x, self.y + other.y)\n\nprint(Vector(1, 2) + Vector(3, 4))",
+      "walkthrough": "Python turns `a + b` into `a.__add__(b)`. The method builds a new Vector from the summed components.\n`print` then uses `__str__` to show it as `Vector(4, 6)`."
+    },
+    {
+      "id": "39.3",
+      "description": "Add `__len__` to return the number of components (2 for a 2D vector) and `__eq__` to compare two vectors.",
+      "hint": "`def __len__(self): return 2` — makes `len(v)` work.\n`def __eq__(self, other): return self.x == other.x and self.y == other.y`\nNow `len(v)` and `v1 == v2` both work naturally.",
+      "expected": "",
+      "solution": "class Vector:\n    def __init__(self, x, y):\n        self.x = x\n        self.y = y\n\n    def __str__(self):\n        return f'Vector({self.x}, {self.y})'\n\n    def __add__(self, other):\n        return Vector(self.x + other.x, self.y + other.y)\n\n    def __len__(self):\n        return 2\n\n    def __eq__(self, other):\n        return self.x == other.x and self.y == other.y\n\nv1 = Vector(1, 2)\nv2 = Vector(1, 2)\nv3 = Vector(3, 4)\nprint(len(v1))\nprint(v1 == v2)\nprint(v1 == v3)",
+      "walkthrough": "`__len__` returns 2 because a 2D vector has two components.\n`__eq__` compares both components, so two separate objects with the same values count as equal."
+    },
+    {
+      "id": "39.4",
+      "description": "Create a `Stack` class with `__len__`, `__bool__` (True if non-empty), and `__contains__` (for the `in` operator).",
+      "hint": "`__len__(self): return len(self._items)` — use a list internally.\n`__bool__(self): return len(self) > 0` — empty stack is falsy.\n`__contains__(self, item): return item in self._items` — makes `x in stack` work.",
+      "expected": "",
+      "solution": "class Stack:\n    def __init__(self):\n        self._items = []\n\n    def push(self, item):\n        self._items.append(item)\n\n    def pop(self):\n        return self._items.pop()\n\n    def __len__(self):\n        return len(self._items)\n\n    def __bool__(self):\n        return len(self._items) > 0\n\n    def __contains__(self, item):\n        return item in self._items\n\ns = Stack()\nprint(bool(s))\ns.push(10)\ns.push(20)\nprint(len(s))\nprint(bool(s))\nprint(10 in s)\nprint(99 in s)",
+      "walkthrough": "The stack keeps its items in a private list and forwards the three dunders to it.\n`__bool__` makes an empty stack falsy, which lets you write `while stack:` to drain it.\n`__contains__` is what makes the `in` keyword work."
+    },
+    {
+      "id": "39.5",
+      "description": "Implement `__iter__` and `__next__` on a class `Countdown` that counts down from n to 0.",
+      "hint": "`def __iter__(self): return self` — returns the iterator itself.\n`def __next__(self): if self.current < 0: raise StopIteration; val = self.current; self.current -= 1; return val`\n`for n in Countdown(5): print(n)` now works!",
+      "expected": "",
+      "solution": "class Countdown:\n    def __init__(self, start):\n        self.current = start\n\n    def __iter__(self):\n        return self\n\n    def __next__(self):\n        if self.current < 0:\n            raise StopIteration\n        value = self.current\n        self.current -= 1\n        return value\n\nfor n in Countdown(5):\n    print(n)",
+      "walkthrough": "`__iter__` returns the object itself, saying \"I'm my own iterator\".\nEach `__next__` call hands out the current value and steps down. When it drops below zero, StopIteration tells the loop to end."
+    }
+  ],
+  "lesson": {
+    "intro": "\"Dunder\" is short for double underscore. Methods like `__init__` and `__str__`\nhave those names because Python calls them for you at particular moments:\nwhen an object is created, printed, added, compared, or looped over. Define\nthe right ones and your own classes behave like built-in types.",
+    "sections": [
+      {
+        "heading": "__str__ and __repr__",
+        "body": "`__str__` is the friendly version, used by `print`. `__repr__` is the\ndeveloper version, used in the interactive shell and inside lists. If you\nonly define one, make it `__repr__`; `str` falls back to it.",
+        "code": "class Vector:\n    def __init__(self, x, y):\n        self.x, self.y = x, y\n\n    def __repr__(self):\n        return f'Vector({self.x}, {self.y})'\n\nv = Vector(1, 2)\nprint(v)\nprint([v, v])",
+        "output": "Vector(1, 2)\n[Vector(1, 2), Vector(1, 2)]"
+      },
+      {
+        "heading": "__add__ and __eq__: operators",
+        "body": "`v1 + v2` calls `v1.__add__(v2)`. `v1 == v2` calls `v1.__eq__(v2)`. Define\nthem and the operators work on your objects. `__add__` should return a new\nobject rather than changing either operand.",
+        "code": "class Vector:\n    def __init__(self, x, y):\n        self.x, self.y = x, y\n\n    def __repr__(self):\n        return f'Vector({self.x}, {self.y})'\n\n    def __add__(self, other):\n        return Vector(self.x + other.x, self.y + other.y)\n\n    def __eq__(self, other):\n        return self.x == other.x and self.y == other.y\n\nprint(Vector(1, 2) + Vector(3, 4))\nprint(Vector(1, 2) == Vector(1, 2))",
+        "output": "Vector(4, 6)\nTrue"
+      },
+      {
+        "heading": "__len__, __bool__, __contains__",
+        "body": "`len(obj)`, `if obj:` and `x in obj` each have a dunder behind them. A\ncontainer class that wraps a list can forward them.",
+        "code": "class Stack:\n    def __init__(self):\n        self._items = []\n\n    def push(self, item):\n        self._items.append(item)\n\n    def __len__(self):\n        return len(self._items)\n\n    def __bool__(self):\n        return len(self._items) > 0\n\n    def __contains__(self, item):\n        return item in self._items\n\ns = Stack()\nprint(bool(s), len(s))\ns.push('a')\nprint(bool(s), len(s), 'a' in s)",
+        "output": "False 0\nTrue 1 True"
+      },
+      {
+        "heading": "__iter__ and __next__: making something loopable",
+        "body": "A `for` loop calls `iter()` on the object, then `next()` repeatedly until\nStopIteration is raised. Implement those two and your class works in a loop.",
+        "code": "class Countdown:\n    def __init__(self, start):\n        self.current = start\n\n    def __iter__(self):\n        return self\n\n    def __next__(self):\n        if self.current < 0:\n            raise StopIteration\n        value = self.current\n        self.current -= 1\n        return value\n\nfor n in Countdown(3):\n    print(n, end=' ')",
+        "output": "3 2 1 0"
+      }
+    ],
+    "watch_out": [
+      "`__str__` and `__repr__` must return strings. Printing inside them is wrong.",
+      "If you define `__eq__` without `__hash__`, objects can no longer go in sets or be dict keys. Usually fine.",
+      "`__len__` must return a non-negative integer.",
+      "`__next__` must raise StopIteration to end the loop, not return None."
+    ]
+  }
+}

@@ -1,0 +1,97 @@
+{
+  "day": 7,
+  "title": "Dictionaries",
+  "tasks": [
+    {
+      "id": "7.1",
+      "description": "Create `person = {'name': 'Alice', 'age': 25}`. Print the value for the key 'name'.",
+      "hint": "Access a dictionary value using its key in square brackets: `dictionary['key']`\n`person['name']` → `'Alice'`\nNote: if the key doesn't exist, you'll get a KeyError — use `.get()` to be safe.",
+      "expected": "Alice",
+      "solution": "person = {'name': 'Alice', 'age': 25}\nprint(person['name'])",
+      "walkthrough": "The key goes inside square brackets, in quotes because it's a string.\nPython finds the matching entry and hands back its value."
+    },
+    {
+      "id": "7.2",
+      "description": "Create `person = {'name': 'Alice', 'age': 25}`. Add a key 'city' with value 'London'. Print the 'city' value.",
+      "hint": "Adding a new key is the same syntax as updating an existing one: `dict['key'] = value`\n`person['city'] = 'London'` creates the key if it doesn't exist.\nThen `print(person['city'])` → `'London'`",
+      "expected": "London",
+      "solution": "person = {'name': 'Alice', 'age': 25}\nperson['city'] = 'London'\nprint(person['city'])",
+      "walkthrough": "Assigning to `person['city']` creates the key because it didn't exist yet.\nReading it back with the same square-bracket syntax gives London."
+    },
+    {
+      "id": "7.3",
+      "description": "Create `scores = {'math': 90, 'english': 85, 'science': 92}`. Print each subject and score on a line like: 'math: 90'",
+      "hint": "`.items()` returns pairs of (key, value) you can unpack in a for loop.\n`for subject, score in scores.items():` gives you both pieces each iteration.\n`print(f'{subject}: {score}')` formats each line.",
+      "expected": "math: 90\nenglish: 85\nscience: 92",
+      "solution": "scores = {'math': 90, 'english': 85, 'science': 92}\nfor subject, score in scores.items():\n    print(f'{subject}: {score}')",
+      "walkthrough": "`.items()` produces each pair as (key, value).\nWriting two names after `for` unpacks each pair, so `subject` is the key and `score` is the value on every pass.\nDictionaries keep the order you added things in, so the output matches the order in the code."
+    },
+    {
+      "id": "7.4",
+      "description": "Create `person = {'name': 'Alice', 'age': 25}`. Try to get a key 'email' that doesn't exist. Use .get() so it returns 'not found' instead of crashing.",
+      "hint": "`dict['key']` raises a KeyError if the key doesn't exist — your program crashes.\n`.get(key, default)` is safe — it returns the default if the key is missing.\n`person.get('email', 'not found')` → `'not found'` without any error.",
+      "expected": "not found",
+      "solution": "person = {'name': 'Alice', 'age': 25}\nprint(person.get('email', 'not found'))",
+      "walkthrough": "`.get()` takes the key to look for and a fallback to return if it's missing.\nThere's no email key, so the fallback string is returned and printed. No crash."
+    },
+    {
+      "id": "7.5",
+      "description": "Create `person = {'name': 'Alice', 'age': 25, 'city': 'London'}`. Print True if 'age' is a key, False if not.",
+      "hint": "The `in` keyword checks dictionary KEYS (not values): `'age' in person`\nThis returns `True` because 'age' exists as a key.\n`print('age' in person)` prints the boolean result directly.",
+      "expected": "True",
+      "solution": "person = {'name': 'Alice', 'age': 25, 'city': 'London'}\nprint('age' in person)",
+      "walkthrough": "`in` on a dictionary checks whether the key exists.\n'age' is one of the keys, so the result is `True`."
+    },
+    {
+      "id": "7.6",
+      "description": "Create `inventory = {'apples': 5, 'bananas': 3}`. Update apples to 10, then print the total count of all items (sum of all values).",
+      "hint": "Update: `inventory['apples'] = 10` — same syntax as creating a new key.\n`.values()` returns all the values: `inventory.values()` → `dict_values([10, 3])`\n`sum(inventory.values())` adds them all up → `13`",
+      "expected": "13",
+      "solution": "inventory = {'apples': 5, 'bananas': 3}\ninventory['apples'] = 10\nprint(sum(inventory.values()))",
+      "walkthrough": "Assigning to an existing key replaces its value, so apples goes from 5 to 10.\n`.values()` gives just the numbers, and `sum()` adds them: 10 + 3 = 13."
+    },
+    {
+      "id": "7.7",
+      "description": "Create `data = {'x': 1, 'y': 2, 'z': 3}`. Print the number of key-value pairs in the dictionary.",
+      "hint": "`len()` works on dictionaries — it counts the number of key-value pairs.\n`len({'x': 1, 'y': 2, 'z': 3})` → `3`\nIt counts keys (not values), so each key-value pair counts as one.",
+      "expected": "3",
+      "solution": "data = {'x': 1, 'y': 2, 'z': 3}\nprint(len(data))",
+      "walkthrough": "`len()` on a dictionary counts the key-value pairs.\nThree keys means three pairs, so the answer is 3."
+    }
+  ],
+  "lesson": {
+    "intro": "A list finds things by position. A dictionary finds things by name. If you've ever\nused a contacts app, that's a dictionary: you look up \"Alice\" and get her number.\nDictionaries store pairs of a key and a value.",
+    "sections": [
+      {
+        "heading": "Keys and values",
+        "body": "Curly braces, and each entry is `key: value`. Keys are usually strings.\nTo look something up, put the key in square brackets after the name,\nthe same way you'd use a position with a list.",
+        "code": "person = {'name': 'Alice', 'age': 25}\nprint(person['name'])\nprint(person['age'])",
+        "output": "Alice\n25"
+      },
+      {
+        "heading": "Adding and changing entries",
+        "body": "Assigning to a key that doesn't exist creates it. Assigning to one that\ndoes exist overwrites the value. Same syntax for both.",
+        "code": "person = {'name': 'Alice', 'age': 25}\nperson['city'] = 'London'\nperson['age'] = 26\nprint(person)",
+        "output": "{'name': 'Alice', 'age': 26, 'city': 'London'}"
+      },
+      {
+        "heading": "Looking up a key that might not exist",
+        "body": "`person['email']` crashes with a KeyError if there's no such key.\n`person.get('email', 'not found')` returns the fallback instead. Use `.get()`\nwhenever you're not sure the key is there.\n\nTo just check, `'email' in person` gives `True` or `False`. Note that `in`\nlooks at the keys, not the values.",
+        "code": "person = {'name': 'Alice', 'age': 25}\nprint(person.get('email', 'not found'))\nprint('age' in person)\nprint('Alice' in person)",
+        "output": "not found\nTrue\nFalse"
+      },
+      {
+        "heading": "Looping over a dictionary",
+        "body": "`.items()` gives you each key and value together, which you can unpack into\ntwo loop variables. There's also `.keys()` and `.values()` if you only need\none side.",
+        "code": "scores = {'math': 90, 'english': 85}\nfor subject, score in scores.items():\n    print(f'{subject}: {score}')\n\nprint(sum(scores.values()))\nprint(len(scores))",
+        "output": "math: 90\nenglish: 85\n175\n2"
+      }
+    ],
+    "watch_out": [
+      "Keys are case-sensitive and exact. `person['Name']` and `person['name']` are different keys.",
+      "`'1'` and `1` are different keys. Text and numbers don't mix here either.",
+      "`x in my_dict` checks keys. To check values, use `x in my_dict.values()`.",
+      "Square-bracket lookup on a missing key crashes. Reach for `.get()` when in doubt."
+    ]
+  }
+}

@@ -1,0 +1,99 @@
+{
+  "day": 10,
+  "title": "Review: Simple Calculator",
+  "tasks": [
+    {
+      "id": "10.1",
+      "description": "Ask the user for two numbers and print their sum. Use float() so decimals work.",
+      "hint": "Use `float()` instead of `int()` so decimal inputs like `3.5` work correctly.\n`a = float(input('First number: '))` — convert immediately when reading.\nThen `print(a + b)` — Python adds the floats.",
+      "expected": "",
+      "solution": "a = float(input('First number: '))\nb = float(input('Second number: '))\nprint(a + b)",
+      "walkthrough": "Each `input()` returns a string, and `float()` converts it to a number that can have decimals.\nAdding the two floats gives a float, so `3.5 + 2` prints as `5.5`.",
+      "solution_stdin": "3.5\n2\n"
+    },
+    {
+      "id": "10.2",
+      "description": "Extend your calculator to also print the difference (a - b) and the product (a * b).",
+      "hint": "Three separate `print()` calls after getting the two numbers.\nLabel each result clearly: `print(f'Sum: {a + b}')` etc.\nYou can compute the expression directly inside the f-string.",
+      "expected": "",
+      "solution": "a = float(input('First number: '))\nb = float(input('Second number: '))\nprint(f'Sum: {a + b}')\nprint(f'Difference: {a - b}')\nprint(f'Product: {a * b}')",
+      "walkthrough": "The maths happens right inside the braces of each f-string.\nLabelling each line makes the output readable, which matters more as programs grow.",
+      "solution_stdin": "6\n3\n"
+    },
+    {
+      "id": "10.3",
+      "description": "Add division to your calculator, but print an error message if the user tries to divide by zero.",
+      "hint": "Before dividing, check: `if b == 0: print('Cannot divide by zero')`\nUse an `else` block to do the actual division: `else: print(a / b)`\nNever let Python try `a / 0` — that raises a ZeroDivisionError.",
+      "expected": "",
+      "solution": "a = float(input('First number: '))\nb = float(input('Second number: '))\nif b == 0:\n    print('Cannot divide by zero')\nelse:\n    print(a / b)",
+      "walkthrough": "Dividing by zero would crash the program, so the `if` checks `b` before any division happens.\nOnly when `b` is not zero does the `else` branch do the actual division.",
+      "solution_stdin": "10\n0\n"
+    },
+    {
+      "id": "10.4",
+      "description": "Ask the user which operation they want (+, -, *, /), then perform just that operation on two numbers.",
+      "hint": "Get the operator string: `op = input('Operation (+, -, *, /): ')`\nUse `if/elif/else` to check which operator was entered.\nFor division, still check for zero before dividing.",
+      "expected": "",
+      "solution": "a = float(input('First number: '))\nb = float(input('Second number: '))\nop = input('Operation (+, -, *, /): ')\n\nif op == '+':\n    print(a + b)\nelif op == '-':\n    print(a - b)\nelif op == '*':\n    print(a * b)\nelif op == '/':\n    if b == 0:\n        print('Cannot divide by zero')\n    else:\n        print(a / b)\nelse:\n    print('Unknown operation')",
+      "walkthrough": "The operator is read as a plain string and compared to each symbol in turn.\nDivision keeps its own zero check nested inside the `/` branch.\nThe final `else` handles typos, so the program never silently does nothing.",
+      "solution_stdin": "8\n2\n/\n"
+    },
+    {
+      "id": "10.5",
+      "description": "Format the result of 10 / 3 to exactly 2 decimal places when printing.",
+      "hint": "f-string format spec: `f'{value:.2f}'` — the `.2f` means 'fixed-point, 2 decimal places'.\n`f'{10/3:.2f}'` → `'3.33'`\nThis rounds the display automatically.",
+      "expected": "3.33",
+      "solution": "print(f'{10 / 3:.2f}')",
+      "walkthrough": "The colon inside the braces starts a format spec. `.2f` means fixed-point with two decimal places.\n10 / 3 is 3.333..., which rounds to 3.33 for display."
+    },
+    {
+      "id": "10.6",
+      "description": "Create a function `calculate(a, b, op)` that takes two numbers and an operation string, returns the result. Test it with (10, 4, '+') and print.",
+      "hint": "The function should handle `'+'`, `'-'`, `'*'`, `'/'` with `if/elif` branches.\n`return a + b` for `'+'`, etc.\nCall: `print(calculate(10, 4, '+'))` → `14`",
+      "expected": "14",
+      "solution": "def calculate(a, b, op):\n    if op == '+':\n        return a + b\n    elif op == '-':\n        return a - b\n    elif op == '*':\n        return a * b\n    elif op == '/':\n        if b == 0:\n            return 'Cannot divide by zero'\n        return a / b\n    else:\n        return 'Unknown operation'\n\nprint(calculate(10, 4, '+'))",
+      "walkthrough": "The same if/elif ladder from earlier, but each branch returns instead of prints.\nThat means the caller can print the result, store it, or use it in another calculation.\n`calculate(10, 4, '+')` returns 14, and the print shows it."
+    }
+  ],
+  "lesson": {
+    "intro": "Nothing new today. Instead you'll combine the last nine days into one small\nprogram, a calculator, growing it a step at a time. This is what real programming\nfeels like: get a small thing working, then add to it.",
+    "sections": [
+      {
+        "heading": "Read numbers, do something, show the result",
+        "body": "The skeleton of almost every small program. Read input and convert it,\ncompute, print. Use `float()` for the conversion so decimals work.",
+        "code": "a = float(input('First number: '))\nb = float(input('Second number: '))\nprint(f'Sum: {a + b}')\nprint(f'Difference: {a - b}')\nprint(f'Product: {a * b}')",
+        "output": "First number: Second number: Sum: 9.0\nDifference: 3.0\nProduct: 18.0"
+      },
+      {
+        "heading": "Guarding against division by zero",
+        "body": "Dividing by zero crashes with a ZeroDivisionError. Check first with an `if`.\nChecking before doing something risky is a habit worth building early.",
+        "code": "a, b = 10, 0\nif b == 0:\n    print('Cannot divide by zero')\nelse:\n    print(a / b)",
+        "output": "Cannot divide by zero"
+      },
+      {
+        "heading": "Choosing an operation with if/elif",
+        "body": "Read a symbol as a string and compare it against each option.\nThe `else` at the end catches anything unexpected.",
+        "code": "op = '*'\na, b = 6, 7\nif op == '+':\n    print(a + b)\nelif op == '-':\n    print(a - b)\nelif op == '*':\n    print(a * b)\nelif op == '/':\n    print(a / b if b != 0 else 'Cannot divide by zero')\nelse:\n    print('Unknown operation')",
+        "output": "42"
+      },
+      {
+        "heading": "Tidy decimals with a format spec",
+        "body": "Inside an f-string, `:.2f` after a value means \"show it with exactly two\ndecimal places\". It rounds for you.",
+        "code": "print(10 / 3)\nprint(f'{10 / 3:.2f}')",
+        "output": "3.3333333333333335\n3.33"
+      },
+      {
+        "heading": "Wrapping it in a function",
+        "body": "Once the logic works, move it into a function that takes the numbers and the\noperator and returns the answer. Now it can be reused and tested easily.",
+        "code": "def calculate(a, b, op):\n    if op == '+':\n        return a + b\n    if op == '-':\n        return a - b\n    if op == '*':\n        return a * b\n    if op == '/':\n        return a / b if b != 0 else 'Cannot divide by zero'\n    return 'Unknown operation'\n\nprint(calculate(10, 4, '+'))\nprint(calculate(10, 0, '/'))",
+        "output": "14\nCannot divide by zero"
+      }
+    ],
+    "watch_out": [
+      "Reading input and forgetting `float()`. `'3' + '4'` is `'34'`.",
+      "Comparing the operator without quotes. `op == +` is a syntax error; it's `op == '+'`.",
+      "Testing division by zero after dividing. The check has to come first.",
+      "Using `print` inside `calculate` instead of `return`. Then `print(calculate(...))` shows the answer and then `None`."
+    ]
+  }
+}

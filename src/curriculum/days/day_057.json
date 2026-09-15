@@ -1,0 +1,85 @@
+{
+  "day": 57,
+  "title": "Testing with Python",
+  "tasks": [
+    {
+      "id": "57.1",
+      "description": "Write a function `is_palindrome(s)`. Use `assert` statements to test it with 'racecar' (True) and 'hello' (False).",
+      "hint": "`assert condition, 'error message'` — raises AssertionError if condition is False.\n`assert is_palindrome('racecar') == True`\n`assert is_palindrome('hello') == False`\nAssertions are quick tests — great for simple checks.",
+      "expected": "",
+      "solution": "def is_palindrome(s):\n    s = s.lower()\n    return s == s[::-1]\n\nassert is_palindrome('racecar') == True\nassert is_palindrome('hello') == False\nassert is_palindrome('Madam') == True, 'should ignore case'\nprint('All assertions passed')",
+      "walkthrough": "Each `assert` checks one case. If any were false, Python would stop with an AssertionError and the final print would never run.\nSeeing the message means every check passed."
+    },
+    {
+      "id": "57.2",
+      "description": "Write a `TestPalindrome` class using `unittest.TestCase`. Add test methods for True cases, False cases, and edge cases.",
+      "hint": "`import unittest`\n`class TestPalindrome(unittest.TestCase):`\n`def test_is_palindrome(self): self.assertTrue(is_palindrome('racecar'))`\n`def test_not_palindrome(self): self.assertFalse(is_palindrome('hello'))`",
+      "expected": "",
+      "solution": "import unittest\n\ndef is_palindrome(s):\n    if not isinstance(s, str):\n        raise TypeError('expected a string')\n    s = s.lower().replace(' ', '')\n    return s == s[::-1]\n\nclass TestPalindrome(unittest.TestCase):\n    def test_true_cases(self):\n        self.assertTrue(is_palindrome('racecar'))\n        self.assertTrue(is_palindrome('madam'))\n\n    def test_false_cases(self):\n        self.assertFalse(is_palindrome('hello'))\n        self.assertFalse(is_palindrome('python'))\n\n    def test_edge_cases(self):\n        self.assertTrue(is_palindrome(''))\n        self.assertTrue(is_palindrome('a'))\n        self.assertTrue(is_palindrome('A man a plan a canal Panama'))\n\nunittest.main(argv=['x'], exit=False)",
+      "walkthrough": "Three test methods group related checks: things that should be palindromes, things that shouldn't, and edge cases like empty strings.\n`unittest.main` discovers every method starting with `test` and runs them, reporting a dot for each pass."
+    },
+    {
+      "id": "57.3",
+      "description": "Run your tests using `unittest.main()`. Understand the output: dots for passing, E for errors, F for failures.",
+      "hint": "At the bottom: `if __name__ == '__main__': unittest.main()`\nDots (`.`) = test passed; `F` = assertion failed; `E` = unexpected exception.\nThe final line shows `OK` or the number of failures.",
+      "expected": "",
+      "solution": "import unittest\n\ndef is_palindrome(s):\n    if not isinstance(s, str):\n        raise TypeError('expected a string')\n    s = s.lower().replace(' ', '')\n    return s == s[::-1]\n\nclass TestPalindrome(unittest.TestCase):\n    def test_passes(self):\n        self.assertTrue(is_palindrome('racecar'))\n\n    def test_fails_on_purpose(self):\n        self.assertTrue(is_palindrome('hello'))\n\n    def test_errors_on_purpose(self):\n        is_palindrome(12321)\n\nunittest.main(argv=['x'], exit=False)",
+      "walkthrough": "This run deliberately includes one passing test, one failing assertion (F) and one that raises an unexpected exception (E), so you can see all three symbols.\nThe summary at the end lists each failure with its traceback and finishes with FAILED and the counts."
+    },
+    {
+      "id": "57.4",
+      "description": "Use `setUp()` in your test class to create shared test data before each test method runs.",
+      "hint": "`def setUp(self):` runs before EACH test method — use it to set up state.\n`self.palindromes = ['racecar', 'madam', 'level']` — shared across all tests.\nThis avoids repeating setup code in every test method.",
+      "expected": "",
+      "solution": "import unittest\n\ndef is_palindrome(s):\n    if not isinstance(s, str):\n        raise TypeError('expected a string')\n    s = s.lower().replace(' ', '')\n    return s == s[::-1]\n\nclass TestPalindrome(unittest.TestCase):\n    def setUp(self):\n        self.palindromes = ['racecar', 'madam', 'level', 'noon']\n        self.non_palindromes = ['hello', 'world', 'python']\n\n    def test_all_palindromes(self):\n        for word in self.palindromes:\n            self.assertTrue(is_palindrome(word), f'{word} should be a palindrome')\n\n    def test_all_non_palindromes(self):\n        for word in self.non_palindromes:\n            self.assertFalse(is_palindrome(word), f'{word} should not be a palindrome')\n\nunittest.main(argv=['x'], exit=False)",
+      "walkthrough": "`setUp` builds the two word lists before each test, so each method has fresh copies to work with.\nThe tests loop over the lists, and the message argument names the word if a check fails."
+    },
+    {
+      "id": "57.5",
+      "description": "Use `self.assertRaises()` to test that your function raises the right exception for bad input.",
+      "hint": "`with self.assertRaises(ValueError): my_function(bad_input)`\nThe test passes if the ValueError is raised; fails if it isn't.\nThis tests that your error handling works correctly.",
+      "expected": "",
+      "solution": "import unittest\n\ndef is_palindrome(s):\n    if not isinstance(s, str):\n        raise TypeError('expected a string')\n    s = s.lower().replace(' ', '')\n    return s == s[::-1]\n\nclass TestPalindrome(unittest.TestCase):\n    def test_rejects_non_string(self):\n        with self.assertRaises(TypeError):\n            is_palindrome(12321)\n\n    def test_rejects_none(self):\n        with self.assertRaises(TypeError):\n            is_palindrome(None)\n\n    def test_still_works_for_strings(self):\n        self.assertTrue(is_palindrome('level'))\n\nunittest.main(argv=['x'], exit=False)",
+      "walkthrough": "`is_palindrome` raises TypeError for anything that isn't a string, and these tests confirm that.\n`assertRaises` as a context manager passes only if the expected exception happens inside the `with` block."
+    }
+  ],
+  "lesson": {
+    "intro": "Tests are small programs that check your other programs. Write them once and\nrun them every time you change something, and you find out immediately if\nyou've broken anything. Python's `unittest` module is built in. Today: assert\nstatements, test classes, and how to read the results.",
+    "sections": [
+      {
+        "heading": "assert: the simplest test",
+        "body": "`assert condition, message` does nothing if the condition is true and\nraises AssertionError if it's false. A row of asserts at the bottom of a\nfile is a perfectly good first test suite.",
+        "code": "def is_palindrome(s):\n    s = s.lower()\n    return s == s[::-1]\n\nassert is_palindrome('racecar') == True\nassert is_palindrome('hello') == False\nassert is_palindrome('Level'), 'should ignore case'\nprint('All assertions passed')",
+        "output": "All assertions passed"
+      },
+      {
+        "heading": "A TestCase class",
+        "body": "Subclass `unittest.TestCase`. Every method whose name starts with `test`\nis a test. Use `self.assertTrue`, `self.assertFalse`, `self.assertEqual`\nand friends; they give better messages than plain `assert`.",
+        "code": "import unittest\n\ndef is_palindrome(s):\n    return s == s[::-1]\n\nclass TestPalindrome(unittest.TestCase):\n    def test_palindrome(self):\n        self.assertTrue(is_palindrome('racecar'))\n\n    def test_not_palindrome(self):\n        self.assertFalse(is_palindrome('hello'))\n\n    def test_empty(self):\n        self.assertTrue(is_palindrome(''))\n\nunittest.main(argv=['x'], exit=False)",
+        "output": "...\n----------------------------------------------------------------------\nRan 3 tests in 0.001s\n\nOK"
+      },
+      {
+        "heading": "Reading the output",
+        "body": "Each test prints one character: `.` for pass, `F` for a failed assertion,\n`E` for an unexpected exception. Then a summary. The output goes to\nstderr, so in this app it shows under the \"also written to stderr\"\nheading. That's normal.\n\n`unittest.main(argv=['x'], exit=False)` is used here instead of the usual\n`unittest.main()` because this app runs your code with its own arguments\nand `exit=False` stops it from ending the program early."
+      },
+      {
+        "heading": "setUp: shared preparation",
+        "body": "`setUp` runs before every test method. Anything you attach to `self`\nthere is available in each test. It keeps the tests short and stops you\nrepeating the same three lines.",
+        "code": "import unittest\n\nclass TestList(unittest.TestCase):\n    def setUp(self):\n        self.items = [3, 1, 2]\n\n    def test_sorted(self):\n        self.assertEqual(sorted(self.items), [1, 2, 3])\n\n    def test_length(self):\n        self.assertEqual(len(self.items), 3)\n\nunittest.main(argv=['x'], exit=False)",
+        "output": "..\n----------------------------------------------------------------------\nRan 2 tests in 0.001s\n\nOK"
+      },
+      {
+        "heading": "assertRaises: testing that errors happen",
+        "body": "Sometimes the right behaviour is to raise. `with self.assertRaises(X):`\npasses only if the code inside raises that exception.",
+        "code": "import unittest\n\ndef parse_age(text):\n    n = int(text)\n    if n < 0:\n        raise ValueError('negative')\n    return n\n\nclass TestParseAge(unittest.TestCase):\n    def test_negative_raises(self):\n        with self.assertRaises(ValueError):\n            parse_age('-1')\n\n    def test_text_raises(self):\n        with self.assertRaises(ValueError):\n            parse_age('abc')\n\nunittest.main(argv=['x'], exit=False)",
+        "output": "..\n----------------------------------------------------------------------\nRan 2 tests in 0.001s\n\nOK"
+      }
+    ],
+    "watch_out": [
+      "Test methods must start with `test`. A method called `check_thing` is silently ignored.",
+      "`self.assertEqual(a, b)` gives a useful message showing both values. `assert a == b` just says it failed.",
+      "In this app, use `unittest.main(argv=['x'], exit=False)`. Plain `unittest.main()` reads the app's arguments and exits early.",
+      "Test output on stderr isn't an error. Look for OK or FAILED at the end."
+    ]
+  }
+}

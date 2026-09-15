@@ -1,0 +1,95 @@
+{
+  "day": 28,
+  "title": "Hangman: Building the Pieces",
+  "tasks": [
+    {
+      "id": "28.1",
+      "description": "Create a word list and use random.choice() to pick a secret word. Print its length (not the word itself).",
+      "hint": "`words = ['python', 'hangman', 'coding', 'developer', 'function']`\n`secret = random.choice(words)` picks one randomly.\n`print(len(secret))` reveals how many blanks the player needs — without revealing the word.",
+      "expected": "",
+      "solution": "import random\n\nwords = ['python', 'hangman', 'coding', 'developer', 'function']\nsecret = random.choice(words)\nprint(len(secret))",
+      "walkthrough": "`random.choice` picks one word. Only its length is printed, which tells the player how many blanks to expect."
+    },
+    {
+      "id": "28.2",
+      "description": "Given a secret word like 'python' and a set of guessed letters like {'p', 'y'}, print the word as blanks and letters: 'p y _ _ _ _'",
+      "hint": "Build a list: `[c if c in guessed else '_' for c in secret]`\nJoin with spaces: `' '.join(display_list)`\nThis shows guessed letters in place and `_` for unknowns.",
+      "expected": "",
+      "solution": "secret = 'python'\nguessed = {'p', 'y'}\ndisplay = ' '.join(c if c in guessed else '_' for c in secret)\nprint(display)",
+      "walkthrough": "For each character `c` in the secret, the expression gives `c` if it has been guessed and `'_'` otherwise.\n`' '.join` turns that sequence into one string with spaces between."
+    },
+    {
+      "id": "28.3",
+      "description": "Write a function `check_guess(word, guess, guessed)` that adds the guess to the guessed set and returns True if the guess is in the word.",
+      "hint": "`guessed.add(guess)` adds to the set (sets ignore duplicates automatically).\n`return guess in word` checks if the letter appears anywhere in the word.\nSets are ideal here — adding the same letter twice is handled gracefully.",
+      "expected": "",
+      "solution": "def check_guess(word, guess, guessed):\n    guessed.add(guess)\n    return guess in word\n\nguessed = set()\nprint(check_guess('python', 'p', guessed))\nprint(check_guess('python', 'q', guessed))\nprint(guessed)",
+      "walkthrough": "The function records the guess in the set (which ignores duplicates) and returns whether the letter is in the word.\nBecause sets are passed by reference, the caller's `guessed` set is updated too."
+    },
+    {
+      "id": "28.4",
+      "description": "Write a function `is_won(word, guessed)` that returns True if all letters in word have been guessed.",
+      "hint": "`all(c in guessed for c in word)` — `all()` returns True only if EVERY item is True.\nThis checks each character in the word is in the guessed set.\nShorter than writing a loop — very Pythonic.",
+      "expected": "",
+      "solution": "def is_won(word, guessed):\n    return all(c in guessed for c in word)\n\nprint(is_won('python', {'p', 'y', 't'}))\nprint(is_won('python', {'p', 'y', 't', 'h', 'o', 'n'}))",
+      "walkthrough": "`all()` checks every letter of the word against the guessed set.\nIf even one letter is missing it returns False; only a complete set gives True."
+    },
+    {
+      "id": "28.5",
+      "description": "Simulate 3 wrong guesses with a `tries` counter. Print the visual: 'Tries left: X' and 'Wrong guesses: [a, b, c]'",
+      "hint": "Track wrong guesses separately: `wrong = []` — append to it when a guess isn't in the word.\n`tries_left = 6 - len(wrong)` calculates dynamically.\n`print(f'Tries left: {tries_left}')` and `print(f'Wrong guesses: {wrong}')`",
+      "expected": "",
+      "solution": "max_tries = 6\nwrong = []\n\nfor guess in ['a', 'e', 'i']:\n    wrong.append(guess)\n\ntries_left = max_tries - len(wrong)\nprint(f'Tries left: {tries_left}')\nprint(f'Wrong guesses: {wrong}')",
+      "walkthrough": "Three wrong guesses are appended to the list to simulate play.\nThe number of tries left is calculated from the list length rather than tracked separately, so the two can never disagree."
+    },
+    {
+      "id": "28.6",
+      "description": "Combine pieces 28.1-28.5: pick a word, show the blank display, process one fake guess, and show the updated state.",
+      "hint": "Pick a word → `guessed = set()` → show display → call `check_guess()` → show updated display.\nIf the guess was wrong, add to wrong list and reduce tries.\nThis is the core game loop skeleton — you're almost there!",
+      "expected": "",
+      "solution": "import random\n\ndef display_word(word, guessed):\n    return ' '.join(c if c in guessed else '_' for c in word)\n\ndef check_guess(word, guess, guessed):\n    guessed.add(guess)\n    return guess in word\n\nwords = ['python', 'hangman', 'coding', 'developer', 'function']\nsecret = random.choice(words)\nguessed = set()\nwrong = []\nmax_tries = 6\n\nprint(display_word(secret, guessed))\n\nguess = 'e'\nif check_guess(secret, guess, guessed):\n    print(f'{guess} is in the word')\nelse:\n    wrong.append(guess)\n    print(f'{guess} is not in the word')\n\nprint(display_word(secret, guessed))\nprint(f'Tries left: {max_tries - len(wrong)}')",
+      "walkthrough": "The pieces from the earlier tasks are put together in order: pick a word, show blanks, process one guess, show the updated state.\nThe guess is hard-coded as 'e' so you can see both branches work depending on the word chosen.\nTomorrow this single guess becomes a loop."
+    }
+  ],
+  "lesson": {
+    "intro": "Over the next three days you'll build Hangman. Today is the parts: pick a word,\nshow it with blanks, check a guess, work out if the player has won. Each part\nis a small function you can test on its own. Tomorrow you'll wire them into a\ngame loop.",
+    "sections": [
+      {
+        "heading": "Pick a secret word",
+        "body": "A list of words and `random.choice`. Printing the length lets the player\nknow how many blanks there are without giving the word away.",
+        "code": "import random\n\nwords = ['python', 'hangman', 'coding']\nsecret = random.choice(words)\nprint(len(secret))",
+        "output": "6"
+      },
+      {
+        "heading": "Show the word with blanks",
+        "body": "For each letter in the secret, show it if it's been guessed, otherwise show\nan underscore. A list comprehension with a conditional expression does this\nneatly, and `' '.join` puts spaces between.",
+        "code": "secret = 'python'\nguessed = {'p', 'y'}\ndisplay = ' '.join(c if c in guessed else '_' for c in secret)\nprint(display)",
+        "output": "p y _ _ _ _"
+      },
+      {
+        "heading": "Sets for guessed letters",
+        "body": "A set is perfect here: adding the same letter twice does nothing, and\nchecking membership is quick. `check_guess` records the guess and reports\nwhether it hit.",
+        "code": "def check_guess(word, guess, guessed):\n    guessed.add(guess)\n    return guess in word\n\nguessed = set()\nprint(check_guess('python', 'p', guessed))\nprint(check_guess('python', 'z', guessed))\nprint(sorted(guessed))",
+        "output": "True\nFalse\n['p', 'z']"
+      },
+      {
+        "heading": "Has the player won?",
+        "body": "They've won when every letter of the word is in the guessed set. `all()`\nreturns True only if every item in the sequence is True.",
+        "code": "def is_won(word, guessed):\n    return all(c in guessed for c in word)\n\nprint(is_won('hi', {'h'}))\nprint(is_won('hi', {'h', 'i'}))",
+        "output": "False\nTrue"
+      },
+      {
+        "heading": "Tracking wrong guesses",
+        "body": "Keep wrong guesses in a list. The tries left is the maximum minus how many\nare wrong, so you never have to update a separate counter.",
+        "code": "wrong = ['a', 'e', 'i']\ntries_left = 6 - len(wrong)\nprint(f'Tries left: {tries_left}')\nprint(f'Wrong guesses: {wrong}')",
+        "output": "Tries left: 3\nWrong guesses: ['a', 'e', 'i']"
+      }
+    ],
+    "watch_out": [
+      "Using a list for guessed letters and forgetting to check for repeats. A set handles that for free.",
+      "`' '.join(...)` needs strings. If you build a list of characters that's fine; numbers would need `str()`.",
+      "`all()` on an empty sequence is True, which is fine here because words are never empty.",
+      "Test each function with a fixed word before using `random.choice`, so the output is predictable."
+    ]
+  }
+}

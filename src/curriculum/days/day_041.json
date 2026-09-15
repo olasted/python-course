@@ -1,0 +1,81 @@
+{
+  "day": 41,
+  "title": "Type Hints",
+  "tasks": [
+    {
+      "id": "41.1",
+      "description": "Add type hints to a function `greet(name: str) -> str` that returns 'Hello, {name}!'. Call it and print.",
+      "hint": "Type hints use the `:` syntax for parameters and `->` for return type.\n`def greet(name: str) -> str: return f'Hello, {name}!'`\nHints are NOT enforced at runtime — they're for IDEs and static analysis tools.",
+      "expected": "Hello, World!",
+      "solution": "def greet(name: str) -> str:\n    return f'Hello, {name}!'\n\nprint(greet('World'))",
+      "walkthrough": "`name: str` says the parameter should be a string and `-> str` says the function returns one.\nThe body is unchanged; the hints are documentation that tools can check."
+    },
+    {
+      "id": "41.2",
+      "description": "Use `List[int]` and `Optional[str]` from `typing`. Write a function `get_first(items: List[int]) -> Optional[int]`.",
+      "hint": "`from typing import List, Optional`\n`Optional[T]` means the value can be `T` or `None`.\n`def get_first(items: List[int]) -> Optional[int]: return items[0] if items else None`",
+      "expected": "",
+      "solution": "from typing import List, Optional\n\ndef get_first(items: List[int]) -> Optional[int]:\n    return items[0] if items else None\n\nprint(get_first([10, 20, 30]))\nprint(get_first([]))",
+      "walkthrough": "`Optional[int]` warns callers that they might get `None` back, which happens for an empty list.\nThe conditional expression returns the first item when there is one and None otherwise."
+    },
+    {
+      "id": "41.3",
+      "description": "Use `Dict[str, int]` to type-hint a function that takes a word count dict and returns the total count.",
+      "hint": "`from typing import Dict`\n`def total_words(counts: Dict[str, int]) -> int: return sum(counts.values())`\nIn Python 3.9+, you can write `dict[str, int]` directly without importing.",
+      "expected": "",
+      "solution": "from typing import Dict\n\ndef total_words(counts: Dict[str, int]) -> int:\n    return sum(counts.values())\n\nprint(total_words({'hello': 3, 'world': 2, 'python': 5}))",
+      "walkthrough": "`Dict[str, int]` describes a dictionary of word to count.\nThe function adds up the values and returns an int, as the hint promises."
+    },
+    {
+      "id": "41.4",
+      "description": "Use `Union[int, float]` to type-hint a function `square(n)` that works for both int and float inputs.",
+      "hint": "`from typing import Union`\n`def square(n: Union[int, float]) -> Union[int, float]: return n * n`\nIn Python 3.10+, you can write `int | float` instead of `Union[int, float]`.",
+      "expected": "",
+      "solution": "from typing import Union\n\ndef square(n: Union[int, float]) -> Union[int, float]:\n    return n * n\n\nprint(square(4))\nprint(square(2.5))",
+      "walkthrough": "`Union[int, float]` means either type is acceptable. The result has the same type as the input: 16 for an int, 6.25 for a float.\nIn newer Python, `int | float` means the same thing."
+    },
+    {
+      "id": "41.5",
+      "description": "Use `TypeVar` to write a generic function `first(items)` that returns the first element of any list type.",
+      "hint": "`from typing import TypeVar, List`\n`T = TypeVar('T')` defines a placeholder type.\n`def first(items: List[T]) -> T: return items[0]` — works for list of any type.",
+      "expected": "",
+      "solution": "from typing import TypeVar, List\n\nT = TypeVar('T')\n\ndef first(items: List[T]) -> T:\n    return items[0]\n\nprint(first([1, 2, 3]))\nprint(first(['apple', 'banana']))\nprint(first([True, False]))",
+      "walkthrough": "`T` stands for whatever type the list contains. Because the return is also `T`, a checker knows `first([1, 2])` gives an int and `first(['a'])` gives a str.\nAt runtime it's just \"return the first item\"."
+    }
+  ],
+  "lesson": {
+    "intro": "Type hints are notes about what type a function expects and returns. Python\ndoesn't enforce them; the program runs the same with or without. But editors\nuse them for autocompletion and to spot mistakes, and other people use them to\nunderstand your code. Most modern Python has them.",
+    "sections": [
+      {
+        "heading": "The basic syntax",
+        "body": "A colon after a parameter name for its type, an arrow before the colon for\nthe return type. The built-in names `str`, `int`, `float`, `bool`, `list`,\n`dict` all work directly.",
+        "code": "def greet(name: str) -> str:\n    return f'Hello, {name}!'\n\ndef average(nums: list[float]) -> float:\n    return sum(nums) / len(nums)\n\nprint(greet('World'))\nprint(average([1.0, 2.0, 3.0]))",
+        "output": "Hello, World!\n2.0"
+      },
+      {
+        "heading": "Optional: it might be None",
+        "body": "`Optional[int]` means \"an int or None\". A function that might not find\nanything is the classic case. Since Python 3.10 you can write `int | None`\ninstead, which reads more naturally.",
+        "code": "from typing import Optional\n\ndef get_first(items: list[int]) -> Optional[int]:\n    return items[0] if items else None\n\nprint(get_first([5, 6]))\nprint(get_first([]))",
+        "output": "5\nNone"
+      },
+      {
+        "heading": "Containers with contents",
+        "body": "Square brackets describe what's inside. `dict[str, int]` is a dictionary\nwith string keys and int values. The older `typing` names `List`, `Dict`\nand `Union` still work and you'll see them in existing code.",
+        "code": "from typing import Dict, Union\n\ndef total_words(counts: Dict[str, int]) -> int:\n    return sum(counts.values())\n\ndef square(n: Union[int, float]) -> Union[int, float]:\n    return n * n\n\nprint(total_words({'a': 2, 'b': 3}))\nprint(square(3), square(1.5))",
+        "output": "5\n9 2.25"
+      },
+      {
+        "heading": "TypeVar: the same type in and out",
+        "body": "A generic function like \"first item of a list\" returns whatever type the\nlist holds. `TypeVar` is a placeholder that stands for \"some type, the same\none everywhere it appears\".",
+        "code": "from typing import TypeVar\n\nT = TypeVar('T')\n\ndef first(items: list[T]) -> T:\n    return items[0]\n\nprint(first([1, 2, 3]))\nprint(first(['a', 'b']))",
+        "output": "1\na"
+      }
+    ],
+    "watch_out": [
+      "Hints don't convert anything. `def f(n: int)` called with `'5'` still gets a string.",
+      "`list[int]` needs Python 3.9+; older code uses `List[int]` from `typing`.",
+      "`Optional[int]` is a type, not a default. You still need `= None` if the parameter should be optional to pass.",
+      "Don't over-annotate. Simple local variables rarely need hints."
+    ]
+  }
+}

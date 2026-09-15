@@ -1,0 +1,81 @@
+{
+  "day": 26,
+  "title": "Working with JSON",
+  "tasks": [
+    {
+      "id": "26.1",
+      "description": "Convert the Python dict {'name': 'Alice', 'age': 30} to a JSON string using json.dumps(). Print it.",
+      "hint": "`import json` at the top.\n`json.dumps(data)` converts Python objects → JSON string.\n`json.dumps({'name': 'Alice', 'age': 30})` → `'{\"name\": \"Alice\", \"age\": 30}'`\nNote: JSON uses double quotes, Python dicts can use single or double.",
+      "expected": "{\"name\": \"Alice\", \"age\": 30}",
+      "solution": "import json\n\ndata = {'name': 'Alice', 'age': 30}\nprint(json.dumps(data))",
+      "walkthrough": "`dumps` converts the dictionary into a JSON-formatted string.\nThe single quotes become double quotes because that's what JSON requires."
+    },
+    {
+      "id": "26.2",
+      "description": "Parse this JSON string back to a Python dict and print the 'name' value: '{\"city\": \"Paris\", \"country\": \"France\"}'",
+      "hint": "`json.loads(string)` parses a JSON string → Python dict.\nAfter parsing, access it like any dict: `data['city']`\nMemory trick: `loads` = load from String, `load` = load from File.",
+      "expected": "Paris",
+      "solution": "import json\n\ntext = '{\"city\": \"Paris\", \"country\": \"France\"}'\ndata = json.loads(text)\nprint(data['city'])",
+      "walkthrough": "The JSON text is wrapped in single quotes so the double quotes inside don't need escaping.\n`loads` parses it into a dictionary, which can be indexed with `['city']`."
+    },
+    {
+      "id": "26.3",
+      "description": "Write a Python list of dicts (3 people with name and age) to a file 'people.json' using json.dump(). Then read it back with json.load() and print.",
+      "hint": "`json.dump(data, file_handle)` writes JSON directly to an open file.\n`with open('people.json', 'w') as f: json.dump(people, f)`\nRead back: `with open('people.json', 'r') as f: data = json.load(f)` then print.",
+      "expected": "",
+      "solution": "import json\n\npeople = [\n    {'name': 'Alice', 'age': 30},\n    {'name': 'Bob', 'age': 25},\n    {'name': 'Carol', 'age': 35},\n]\n\nwith open('people.json', 'w') as f:\n    json.dump(people, f)\n\nwith open('people.json', 'r') as f:\n    loaded = json.load(f)\n\nprint(loaded)",
+      "walkthrough": "`json.dump` takes the data and an open file and writes the JSON directly.\n`json.load` reads it back into an equivalent list of dictionaries.\nWhat comes back is a fresh copy, equal to the original but not the same object."
+    },
+    {
+      "id": "26.4",
+      "description": "Use json.dumps() with indent=2 to pretty-print a nested dict. This makes JSON human-readable.",
+      "hint": "`json.dumps(data, indent=2)` adds line breaks and indentation for readability.\nEach nesting level is indented by 2 spaces.\nTry with a nested structure: `{'person': {'name': 'Bob', 'scores': [90, 85, 92]}}`",
+      "expected": "",
+      "solution": "import json\n\ndata = {'person': {'name': 'Bob', 'scores': [90, 85, 92]}}\nprint(json.dumps(data, indent=2))",
+      "walkthrough": "`indent=2` tells `dumps` to break the output into lines and indent each nesting level by two spaces.\nNested dictionaries and lists get their own indented blocks."
+    },
+    {
+      "id": "26.5",
+      "description": "Load a JSON string with a list of numbers, find the maximum value, and print it.",
+      "hint": "Start with a JSON string like: `s = '[5, 12, 3, 42, 7]'`\n`data = json.loads(s)` gives you a Python list.\n`print(max(data))` finds the maximum.",
+      "expected": "",
+      "solution": "import json\n\ntext = '[5, 12, 3, 42, 7]'\nnumbers = json.loads(text)\nprint(max(numbers))",
+      "walkthrough": "The JSON text describes a list of numbers. `loads` turns it into a Python list.\n`max()` then works normally and finds 42."
+    }
+  ],
+  "lesson": {
+    "intro": "JSON is a text format for data that nearly every language and web service\nunderstands. It looks a lot like Python dictionaries and lists, which is why\nPython makes converting between the two so easy. Saving settings, reading an\nAPI response, storing a game's high scores: all JSON.",
+    "sections": [
+      {
+        "heading": "Python to JSON: dumps",
+        "body": "`json.dumps(data)` turns a dictionary or list into a JSON string. The s\nstands for string. Notice JSON always uses double quotes, and `True` becomes\n`true`.",
+        "code": "import json\n\ndata = {'name': 'Alice', 'age': 30, 'admin': True}\ntext = json.dumps(data)\nprint(text)\nprint(type(text))",
+        "output": "{\"name\": \"Alice\", \"age\": 30, \"admin\": true}\n<class 'str'>"
+      },
+      {
+        "heading": "JSON to Python: loads",
+        "body": "`json.loads(text)` goes the other way and gives you a real dictionary or list\nyou can index into.",
+        "code": "import json\n\ntext = '{\"city\": \"Paris\", \"country\": \"France\"}'\ndata = json.loads(text)\nprint(data['city'])\nprint(type(data))",
+        "output": "Paris\n<class 'dict'>"
+      },
+      {
+        "heading": "Files: dump and load",
+        "body": "Without the s, `json.dump(data, f)` writes straight to an open file and\n`json.load(f)` reads from one. This is the standard way to save program data.",
+        "code": "import json\n\npeople = [{'name': 'Alice', 'age': 30}, {'name': 'Bob', 'age': 25}]\nwith open('people.json', 'w') as f:\n    json.dump(people, f)\n\nwith open('people.json') as f:\n    loaded = json.load(f)\nprint(loaded[1]['name'])",
+        "output": "Bob"
+      },
+      {
+        "heading": "Pretty printing with indent",
+        "body": "`indent=2` spreads the output over multiple lines with nesting shown by\nindentation. Much easier to read for anything more than a few values.",
+        "code": "import json\n\ndata = {'person': {'name': 'Bob', 'scores': [90, 85]}}\nprint(json.dumps(data, indent=2))",
+        "output": "{\n  \"person\": {\n    \"name\": \"Bob\",\n    \"scores\": [\n      90,\n      85\n    ]\n  }\n}"
+      }
+    ],
+    "watch_out": [
+      "JSON needs double quotes. `json.loads(\"{'a': 1}\")` fails because of the single quotes.",
+      "`dumps`/`loads` work with strings; `dump`/`load` work with files. The s is the clue.",
+      "JSON can't store everything. Sets, dates and your own objects need converting to lists, strings or dicts first.",
+      "Keys in JSON are always strings, so `{1: 'a'}` comes back as `{'1': 'a'}`."
+    ]
+  }
+}

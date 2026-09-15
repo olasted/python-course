@@ -1,0 +1,86 @@
+{
+  "day": 29,
+  "title": "Hangman: Game Loop",
+  "tasks": [
+    {
+      "id": "29.1",
+      "description": "Build the main game loop: pick a word, loop until won or out of tries. Ask for a guess each iteration and update the display.",
+      "hint": "`while not is_won(word, guessed) and tries_left > 0:`\nInside: show the blank display, ask for input, call `check_guess()`.\nOnly decrement `tries_left` when the guess is WRONG (not in the word).",
+      "expected": "",
+      "solution": "import random\n\ndef display_word(word, guessed):\n    return ' '.join(c if c in guessed else '_' for c in word)\n\ndef is_won(word, guessed):\n    return all(c in guessed for c in word)\n\nwords = ['python', 'hangman', 'coding', 'developer', 'function']\nword = random.choice(words)\nguessed = set()\nwrong = []\nmax_tries = 6\n\nwhile not is_won(word, guessed) and len(wrong) < max_tries:\n    print(display_word(word, guessed))\n    guess = input('Guess a letter: ').lower()\n    guessed.add(guess)\n    if guess not in word:\n        wrong.append(guess)\n    print(f'Tries left: {max_tries - len(wrong)}')\n\nprint(display_word(word, guessed))",
+      "walkthrough": "The loop keeps going while the word isn't complete and there are tries left.\nEach pass shows the current blanks, reads a letter, records it, and adds it to the wrong list if it isn't in the word.\nThe tries left are calculated from the wrong list each time.",
+      "solution_stdin": "e\nt\na\no\ni\nn\ns\nr\nh\nl\nd\nc\nu\nm\nf\np\ng\nw\ny\nb\nv\nk\nx\nj\nq\nz\n"
+    },
+    {
+      "id": "29.2",
+      "description": "Handle the case where the user guesses a letter they already guessed — print 'Already guessed that!' and don't count it as a try.",
+      "hint": "At the top of each loop iteration: `if guess in guessed: print('Already guessed that!'); continue`\n`continue` skips the rest of the loop body — no try lost, no update.\nOnly process and count guesses that are NEW.",
+      "expected": "",
+      "solution": "import random\n\ndef display_word(word, guessed):\n    return ' '.join(c if c in guessed else '_' for c in word)\n\ndef is_won(word, guessed):\n    return all(c in guessed for c in word)\n\nwords = ['python', 'hangman', 'coding', 'developer', 'function']\nword = random.choice(words)\nguessed = set()\nwrong = []\nmax_tries = 6\n\nwhile not is_won(word, guessed) and len(wrong) < max_tries:\n    print(display_word(word, guessed))\n    guess = input('Guess a letter: ').lower()\n    if guess in guessed:\n        print('Already guessed that!')\n        continue\n    guessed.add(guess)\n    if guess not in word:\n        wrong.append(guess)\n    print(f'Tries left: {max_tries - len(wrong)}')\n\nprint(display_word(word, guessed))",
+      "walkthrough": "The repeat check happens before the guess is added to anything.\n`continue` jumps back to the loop condition, so a repeated letter costs no tries and changes nothing.",
+      "solution_stdin": "e\ne\ne\nt\na\no\ni\nn\ns\nr\nh\nl\nd\nc\nu\nm\nf\np\ng\nw\ny\nb\nv\nk\nx\nj\nq\nz\n"
+    },
+    {
+      "id": "29.3",
+      "description": "At the end of the game: if the player won, print 'You won! The word was: {word}'. If they lost, print 'Game over! The word was: {word}'.",
+      "hint": "After the while loop, check which condition ended it.\n`if is_won(word, guessed): print(f'You won! ...')` else the loss message.\nAlways reveal the word at the end — even on a win.",
+      "expected": "",
+      "solution": "import random\n\ndef display_word(word, guessed):\n    return ' '.join(c if c in guessed else '_' for c in word)\n\ndef is_won(word, guessed):\n    return all(c in guessed for c in word)\n\nwords = ['python', 'hangman', 'coding', 'developer', 'function']\nword = random.choice(words)\nguessed = set()\nwrong = []\nmax_tries = 6\n\nwhile not is_won(word, guessed) and len(wrong) < max_tries:\n    print(display_word(word, guessed))\n    guess = input('Guess a letter: ').lower()\n    if guess in guessed:\n        print('Already guessed that!')\n        continue\n    guessed.add(guess)\n    if guess not in word:\n        wrong.append(guess)\n    print(f'Tries left: {max_tries - len(wrong)}')\n\nif is_won(word, guessed):\n    print(f'You won! The word was: {word}')\nelse:\n    print(f'Game over! The word was: {word}')",
+      "walkthrough": "When the loop stops, `is_won` tells you why: either every letter was found, or the tries ran out.\nThe word is revealed in both messages so the player always learns the answer.",
+      "solution_stdin": "e\nt\na\no\ni\nn\ns\nr\nh\nl\nd\nc\nu\nm\nf\np\ng\nw\ny\nb\nv\nk\nx\nj\nq\nz\n"
+    },
+    {
+      "id": "29.4",
+      "description": "Add input validation: only accept single letters. If the user enters more than one character or a non-letter, ask again.",
+      "hint": "After getting input: `if len(guess) != 1 or not guess.isalpha(): print('Enter a single letter!'); continue`\n`.isalpha()` returns True only for alphabetic characters.\nThis prevents crashes from numbers, spaces, or empty input.",
+      "expected": "",
+      "solution": "import random\n\ndef display_word(word, guessed):\n    return ' '.join(c if c in guessed else '_' for c in word)\n\ndef is_won(word, guessed):\n    return all(c in guessed for c in word)\n\nwords = ['python', 'hangman', 'coding', 'developer', 'function']\nword = random.choice(words)\nguessed = set()\nwrong = []\nmax_tries = 6\n\nwhile not is_won(word, guessed) and len(wrong) < max_tries:\n    print(display_word(word, guessed))\n    guess = input('Guess a letter: ').lower()\n    if len(guess) != 1 or not guess.isalpha():\n        print('Enter a single letter!')\n        continue\n    if guess in guessed:\n        print('Already guessed that!')\n        continue\n    guessed.add(guess)\n    if guess not in word:\n        wrong.append(guess)\n    print(f'Tries left: {max_tries - len(wrong)}')\n\nif is_won(word, guessed):\n    print(f'You won! The word was: {word}')\nelse:\n    print(f'Game over! The word was: {word}')",
+      "walkthrough": "The validation check comes first so that bad input never reaches the game logic.\n`len(guess) != 1` rejects empty input and multi-letter strings; `not guess.isalpha()` rejects digits and symbols.",
+      "solution_stdin": "ab\n7\n\ne\nt\na\no\ni\nn\ns\nr\nh\nl\nd\nc\nu\nm\nf\np\ng\nw\ny\nb\nv\nk\nx\nj\nq\nz\n"
+    },
+    {
+      "id": "29.5",
+      "description": "Add a visual lives counter. Print a row of hearts ❤ for remaining tries: '❤ ❤ ❤ _ _' (hearts for tries left, _ for lost).",
+      "hint": "Calculate tries lost: `lost = max_tries - tries_left`\nBuild the display: `'❤ ' * tries_left + '_ ' * lost`\nStrip the trailing space: `.strip()` or use `join()`.",
+      "expected": "",
+      "solution": "import random\n\ndef display_word(word, guessed):\n    return ' '.join(c if c in guessed else '_' for c in word)\n\ndef is_won(word, guessed):\n    return all(c in guessed for c in word)\n\nwords = ['python', 'hangman', 'coding', 'developer', 'function']\nword = random.choice(words)\nguessed = set()\nwrong = []\nmax_tries = 6\n\ndef lives(tries_left, max_tries):\n    lost = max_tries - tries_left\n    return ('❤ ' * tries_left + '_ ' * lost).strip()\n\nwhile not is_won(word, guessed) and len(wrong) < max_tries:\n    print(display_word(word, guessed))\n    print(lives(max_tries - len(wrong), max_tries))\n    guess = input('Guess a letter: ').lower()\n    if len(guess) != 1 or not guess.isalpha():\n        print('Enter a single letter!')\n        continue\n    if guess in guessed:\n        print('Already guessed that!')\n        continue\n    guessed.add(guess)\n    if guess not in word:\n        wrong.append(guess)\n\nif is_won(word, guessed):\n    print(f'You won! The word was: {word}')\nelse:\n    print(f'Game over! The word was: {word}')",
+      "walkthrough": "`lives()` builds the bar from two repeated strings: one heart per try left, one underscore per try lost.\n`.strip()` removes the trailing space so the line ends cleanly.\nIt's printed at the top of every round, so the player always sees where they stand.",
+      "solution_stdin": "e\nt\na\no\ni\nn\ns\nr\nh\nl\nd\nc\nu\nm\nf\np\ng\nw\ny\nb\nv\nk\nx\nj\nq\nz\n"
+    }
+  ],
+  "lesson": {
+    "intro": "Today the pieces become a game. The heart of it is one loop: while the player\nhasn't won and still has tries, show the word, ask for a letter, update. Then a\nfew improvements that make it feel finished: rejecting repeats, validating\ninput, and a lives display.",
+    "sections": [
+      {
+        "heading": "The main loop",
+        "body": "The loop condition combines two checks with `and`. Inside, the same three\nsteps every time. A wrong guess adds to the wrong list; a right one doesn't\ncost anything.",
+        "code": "def display_word(word, guessed):\n    return ' '.join(c if c in guessed else '_' for c in word)\n\ndef is_won(word, guessed):\n    return all(c in guessed for c in word)\n\nword = 'hi'\nguessed = set()\nwrong = []\nwhile not is_won(word, guessed) and len(wrong) < 6:\n    print(display_word(word, guessed))\n    guess = input('Letter: ')\n    guessed.add(guess)\n    if guess not in word:\n        wrong.append(guess)\nprint('Loop ended')",
+        "output": "_ _\nLetter: h _\nLetter: Loop ended"
+      },
+      {
+        "heading": "Repeated and invalid guesses",
+        "body": "Check the input before doing anything with it. `continue` sends the loop\nstraight back to the top without counting the guess. `.isalpha()` is True\nonly for letters.",
+        "code": "guessed = {'a'}\nfor guess in ['a', '7', 'ab', 'b']:\n    if len(guess) != 1 or not guess.isalpha():\n        print(f'{guess!r}: enter a single letter')\n        continue\n    if guess in guessed:\n        print(f'{guess!r}: already guessed')\n        continue\n    print(f'{guess!r}: ok')",
+        "output": "'a': already guessed\n'7': enter a single letter\n'ab': enter a single letter\n'b': ok"
+      },
+      {
+        "heading": "Win or lose message",
+        "body": "After the loop, one of the two conditions must have failed. Check `is_won`\nto know which. Reveal the word either way.",
+        "code": "def is_won(word, guessed):\n    return all(c in guessed for c in word)\n\nword = 'hi'\nguessed = {'h', 'i'}\nif is_won(word, guessed):\n    print(f'You won! The word was: {word}')\nelse:\n    print(f'Game over! The word was: {word}')",
+        "output": "You won! The word was: hi"
+      },
+      {
+        "heading": "A lives display",
+        "body": "Repeating a string with `*` is a quick way to draw a bar. Hearts for tries\nleft, underscores for tries lost, then strip the trailing space.",
+        "code": "max_tries = 5\ntries_left = 3\nlost = max_tries - tries_left\nprint(('❤ ' * tries_left + '_ ' * lost).strip())",
+        "output": "❤ ❤ ❤ _ _"
+      }
+    ],
+    "watch_out": [
+      "Counting a repeated guess as a wrong one. Check `guess in guessed` before anything else.",
+      "Lowercasing the input. If the word is lowercase, `guess.lower()` avoids a mismatch on capital letters.",
+      "Reducing the tries on every guess instead of only wrong ones.",
+      "In this app, list all your guesses in the input box, one per line, before you run."
+    ]
+  }
+}

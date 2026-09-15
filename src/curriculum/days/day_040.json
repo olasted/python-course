@@ -1,0 +1,87 @@
+{
+  "day": 40,
+  "title": "OOP: Class Methods, Static Methods, Properties",
+  "tasks": [
+    {
+      "id": "40.1",
+      "description": "Create a `Person` class with a `@classmethod` called `from_string(cls, s)` that parses 'Alice,30' into a Person. Print the person's name.",
+      "hint": "`@classmethod` receives the CLASS as the first arg (by convention named `cls`).\n`def from_string(cls, s): name, age = s.split(','); return cls(name, int(age))`\nThis is an alternative constructor — very common in Python.",
+      "expected": "",
+      "solution": "class Person:\n    def __init__(self, name, age):\n        self.name = name\n        self.age = age\n\n    @classmethod\n    def from_string(cls, s):\n        name, age = s.split(',')\n        return cls(name, int(age))\n\nperson = Person.from_string('Alice,30')\nprint(person.name)",
+      "walkthrough": "`from_string` is called on the class, not an object. It splits the text, converts the age, and calls `cls(...)` to build a Person.\nUsing `cls` instead of `Person` means subclasses get a working version too."
+    },
+    {
+      "id": "40.2",
+      "description": "Add a `@staticmethod` called `is_adult(age)` that returns True if age >= 18. Call it without creating an instance.",
+      "hint": "`@staticmethod` doesn't receive `self` or `cls` — it's just a regular function grouped with the class.\n`@staticmethod def is_adult(age): return age >= 18`\nCall it directly: `Person.is_adult(20)` — no instance needed.",
+      "expected": "",
+      "solution": "class Person:\n    def __init__(self, name, age):\n        self.name = name\n        self.age = age\n\n    @staticmethod\n    def is_adult(age):\n        return age >= 18\n\nprint(Person.is_adult(20))\nprint(Person.is_adult(15))",
+      "walkthrough": "`is_adult` needs neither `self` nor `cls`, only the number passed in.\n`@staticmethod` tells Python not to inject anything, so it can be called as `Person.is_adult(20)` with no object."
+    },
+    {
+      "id": "40.3",
+      "description": "Use `@property` to create a read-only `full_name` property on a Person class that combines first_name and last_name.",
+      "hint": "`@property` turns a method into an attribute you access without `()` parentheses.\n`@property def full_name(self): return f'{self.first_name} {self.last_name}'`\nAccess: `person.full_name` — not `person.full_name()`",
+      "expected": "",
+      "solution": "class Person:\n    def __init__(self, first_name, last_name):\n        self.first_name = first_name\n        self.last_name = last_name\n\n    @property\n    def full_name(self):\n        return f'{self.first_name} {self.last_name}'\n\nperson = Person('Ada', 'Lovelace')\nprint(person.full_name)",
+      "walkthrough": "`@property` turns the method into a read-only attribute.\n`person.full_name` runs the method behind the scenes and gives back the joined name. No brackets needed."
+    },
+    {
+      "id": "40.4",
+      "description": "Add a `@property` for `temperature_c` and a setter `@temperature_c.setter` that validates the value is above -273.15.",
+      "hint": "`@property def temperature_c(self): return self._temp`\n`@temperature_c.setter def temperature_c(self, value): if value < -273.15: raise ValueError('Below absolute zero!'); self._temp = value`\nThe `_temp` prefix marks it as private by convention.",
+      "expected": "",
+      "solution": "class Thermometer:\n    def __init__(self, temperature_c):\n        self.temperature_c = temperature_c\n\n    @property\n    def temperature_c(self):\n        return self._temp\n\n    @temperature_c.setter\n    def temperature_c(self, value):\n        if value < -273.15:\n            raise ValueError('Below absolute zero!')\n        self._temp = value\n\nt = Thermometer(21.5)\nprint(t.temperature_c)\nt.temperature_c = 30\nprint(t.temperature_c)\n\ntry:\n    t.temperature_c = -500\nexcept ValueError as e:\n    print(e)",
+      "walkthrough": "Reading `t.temperature_c` goes through the getter; assigning to it goes through the setter.\nThe setter validates and then stores the value in `_temp`. Even the `__init__` assignment goes through the setter, so bad starting values are rejected too."
+    },
+    {
+      "id": "40.5",
+      "description": "Add a class variable `count` to track how many instances have been created. Use `__init__` to increment it and a classmethod to retrieve it.",
+      "hint": "`count = 0` at the class level (outside __init__).\nIn `__init__`: `ClassName.count += 1` (or `type(self).count += 1`).\n`@classmethod def get_count(cls): return cls.count` — call as `MyClass.get_count()`",
+      "expected": "",
+      "solution": "class Person:\n    count = 0\n\n    def __init__(self, name):\n        self.name = name\n        Person.count += 1\n\n    @classmethod\n    def get_count(cls):\n        return cls.count\n\nPerson('Alice')\nPerson('Bob')\nPerson('Carol')\nprint(Person.get_count())",
+      "walkthrough": "`count` is defined on the class, so there's one shared copy.\nEach `__init__` bumps `Person.count`, and the classmethod reads it back through `cls`."
+    }
+  ],
+  "lesson": {
+    "intro": "Three decorators that change what a method inside a class is for. `@classmethod`\nworks on the class rather than an object. `@staticmethod` is a plain function\nthat happens to live in the class. `@property` makes a method look like an\nattribute. They all show up constantly in real code.",
+    "sections": [
+      {
+        "heading": "@classmethod: alternative constructors",
+        "body": "A classmethod receives the class as its first argument, named `cls` by\nconvention. The most common use is building an object from a different\nkind of input, like a string.",
+        "code": "class Person:\n    def __init__(self, name, age):\n        self.name, self.age = name, age\n\n    @classmethod\n    def from_string(cls, text):\n        name, age = text.split(',')\n        return cls(name, int(age))\n\np = Person.from_string('Alice,30')\nprint(p.name, p.age)",
+        "output": "Alice 30"
+      },
+      {
+        "heading": "@staticmethod: a function in a class",
+        "body": "No `self`, no `cls`. It doesn't use the object or the class; it's just\ngrouped there because it belongs with them conceptually. Call it on the\nclass.",
+        "code": "class Person:\n    @staticmethod\n    def is_adult(age):\n        return age >= 18\n\nprint(Person.is_adult(20))\nprint(Person.is_adult(12))",
+        "output": "True\nFalse"
+      },
+      {
+        "heading": "@property: computed attributes",
+        "body": "A property is read like an attribute, with no brackets, but it runs a method\nto produce the value. Useful for values derived from others.",
+        "code": "class Person:\n    def __init__(self, first, last):\n        self.first, self.last = first, last\n\n    @property\n    def full_name(self):\n        return f'{self.first} {self.last}'\n\np = Person('Ada', 'Lovelace')\nprint(p.full_name)",
+        "output": "Ada Lovelace"
+      },
+      {
+        "heading": "Setters: validating on assignment",
+        "body": "Add `@name.setter` to make the property assignable, and put validation\nin the setter. The real value is stored under a different name, usually\nwith a leading underscore.",
+        "code": "class Thermometer:\n    def __init__(self, c):\n        self.temperature_c = c\n\n    @property\n    def temperature_c(self):\n        return self._temp\n\n    @temperature_c.setter\n    def temperature_c(self, value):\n        if value < -273.15:\n            raise ValueError('Below absolute zero!')\n        self._temp = value\n\nt = Thermometer(20)\nt.temperature_c = 25\nprint(t.temperature_c)\ntry:\n    t.temperature_c = -300\nexcept ValueError as e:\n    print(e)",
+        "output": "25\nBelow absolute zero!"
+      },
+      {
+        "heading": "Class variables: shared by every instance",
+        "body": "A variable defined directly in the class body (not in `__init__`) is\nshared. Incrementing it in `__init__` counts how many objects have been\nmade.",
+        "code": "class Widget:\n    count = 0\n\n    def __init__(self):\n        Widget.count += 1\n\n    @classmethod\n    def get_count(cls):\n        return cls.count\n\nWidget(); Widget(); Widget()\nprint(Widget.get_count())",
+        "output": "3"
+      }
+    ],
+    "watch_out": [
+      "Calling a property with brackets: `p.full_name()` fails because the result is a string, not a function.",
+      "In a setter, storing to `self.temperature_c` instead of `self._temp` calls the setter again forever.",
+      "`self.count += 1` on a class variable creates an instance variable instead. Use `Widget.count` or `type(self).count`.",
+      "The setter must have the same name as the property."
+    ]
+  }
+}

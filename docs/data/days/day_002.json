@@ -1,0 +1,97 @@
+{
+  "day": 2,
+  "title": "Variables and Types",
+  "tasks": [
+    {
+      "id": "2.1",
+      "description": "Create an integer variable `age` with value 30. Print its type using type().",
+      "hint": "`type(value)` returns the data type of any value — very useful for debugging.\nWrap it inside print: `print(type(age))`\nIntegers display as `<class 'int'>` — this is Python's way of naming the type.",
+      "expected": "<class 'int'>",
+      "solution": "age = 30\nprint(type(age))",
+      "walkthrough": "`30` has no decimal point and no quotes, so Python stores it as an int.\n`type(age)` looks up that type, and printing it shows `<class 'int'>`."
+    },
+    {
+      "id": "2.2",
+      "description": "Create a float variable `price = 19.99`. Print it rounded to the nearest whole number.",
+      "hint": "`round(value)` with no second argument rounds to the nearest whole number.\n`round(19.99)` → `20`, `round(19.49)` → `19`\nCommon pitfall: `round()` returns an int when rounding to 0 places, so the output is `20` not `20.0`.",
+      "expected": "20",
+      "solution": "price = 19.99\nprint(round(price))",
+      "walkthrough": "`round()` with just one argument rounds to the nearest whole number.\n19.99 is closest to 20, and because no decimal places were asked for, the result is the int `20`."
+    },
+    {
+      "id": "2.3",
+      "description": "Create a string variable `city = 'paris'`. Print it converted to ALL UPPERCASE.",
+      "hint": "Strings have built-in methods you call with a dot: `variable.method()`\n`.upper()` returns a NEW uppercase string — it does not modify the original.\n`print(city.upper())` → `PARIS`",
+      "expected": "PARIS",
+      "solution": "city = 'paris'\nprint(city.upper())",
+      "walkthrough": "`.upper()` is a method that belongs to strings. You call it with a dot after the variable.\nIt returns a new uppercase string, which goes straight into `print`."
+    },
+    {
+      "id": "2.4",
+      "description": "Create a boolean variable `is_sunny = True`. Print the variable, then print its type on a new line.",
+      "hint": "Boolean values in Python are `True` and `False` — capital first letter is required.\nTwo separate `print()` calls: first `print(is_sunny)`, then `print(type(is_sunny))`\nBoolean type shows as `<class 'bool'>`.",
+      "expected": "True\n<class 'bool'>",
+      "solution": "is_sunny = True\nprint(is_sunny)\nprint(type(is_sunny))",
+      "walkthrough": "`True` with a capital T is one of Python's two boolean values.\nThe first print shows the value itself, the second shows its type, `<class 'bool'>`."
+    },
+    {
+      "id": "2.5",
+      "description": "Print the type of each of these values on separate lines: 42, 3.14, 'hello', True",
+      "hint": "Call `print(type(...))` four times — you can pass the value directly without storing in a variable.\nOrder matters for matching the expected output: int, float, str, bool.\n`print(type(42))` → `<class 'int'>`",
+      "expected": "<class 'int'>\n<class 'float'>\n<class 'str'>\n<class 'bool'>",
+      "solution": "print(type(42))\nprint(type(3.14))\nprint(type('hello'))\nprint(type(True))",
+      "walkthrough": "You can pass a value straight into `type()` without storing it in a variable first.\nWhole number, decimal, quoted text, and True map to int, float, str and bool.\nThe order matters because the checker compares line by line."
+    },
+    {
+      "id": "2.6",
+      "description": "The string '15' cannot be used for math. Convert it to an integer using int(), then add 5 and print the result.",
+      "hint": "`int('15')` converts the string `'15'` to the number `15` so you can do math with it.\nYou can do this in one expression: `print(int('15') + 5)`\nCommon error: `'15' + 5` raises a TypeError — Python won't mix strings and numbers.",
+      "expected": "20",
+      "solution": "text = '15'\nprint(int(text) + 5)",
+      "walkthrough": "`int('15')` reads the characters and produces the number 15.\nNow it's a real number, so `+ 5` does arithmetic and gives 20.\nWithout the conversion, Python would refuse to add a string and a number."
+    },
+    {
+      "id": "2.7",
+      "description": "Create a variable `pi = 3.14159`. Print it, then print it rounded to 2 decimal places.",
+      "hint": "`round(value, n)` takes a second argument: the number of decimal places to keep.\n`round(pi, 2)` → `3.14`\nUse two separate `print()` calls: first the raw value, then the rounded one.",
+      "expected": "3.14159\n3.14",
+      "solution": "pi = 3.14159\nprint(pi)\nprint(round(pi, 2))",
+      "walkthrough": "The first print shows the full value as stored.\n`round(pi, 2)` keeps two digits after the decimal point, giving `3.14`.\nThe second argument to `round` is how many decimal places to keep."
+    }
+  ],
+  "lesson": {
+    "intro": "Every value in Python has a type: a whole number, a decimal, some text, or a\ntrue/false. Most of the confusing errors you'll hit early on come from mixing\ntypes up, so today is about learning to see them.",
+    "sections": [
+      {
+        "heading": "The four types you'll meet first",
+        "body": "- `int` is a whole number like `30` or `-2`.\n- `float` is a number with a decimal point like `19.99` or `5.0`.\n- `str` is text, always in quotes, like `'paris'`.\n- `bool` is either `True` or `False`, capital letter required.\n\nYou don't declare types. Python works out the type from what you write.\nThe `type()` function tells you what it decided.",
+        "code": "age = 30\nprice = 19.99\ncity = 'paris'\nis_sunny = True\n\nprint(type(age))\nprint(type(price))\nprint(type(city))\nprint(type(is_sunny))",
+        "output": "<class 'int'>\n<class 'float'>\n<class 'str'>\n<class 'bool'>"
+      },
+      {
+        "heading": "Text that looks like a number is still text",
+        "body": "`'15'` with quotes is a string, even though it looks like a number. You can't\ndo maths with it until you convert it. `int()` turns text into a whole number,\n`float()` into a decimal, and `str()` turns a number back into text.",
+        "code": "text = '15'\nnumber = int(text)\nprint(number + 5)\nprint(text + '5')",
+        "output": "20\n155"
+      },
+      {
+        "heading": "Strings come with built-in tools",
+        "body": "Text values have methods you call with a dot. `.upper()` gives you an uppercase\ncopy, `.lower()` a lowercase one. They don't change the original; they hand you\na new string.",
+        "code": "city = 'paris'\nprint(city.upper())\nprint(city)",
+        "output": "PARIS\nparis"
+      },
+      {
+        "heading": "Rounding",
+        "body": "`round(x)` rounds to the nearest whole number and gives you an int.\n`round(x, 2)` keeps two decimal places and gives you a float.",
+        "code": "pi = 3.14159\nprint(round(pi))\nprint(round(pi, 2))",
+        "output": "3\n3.14"
+      }
+    ],
+    "watch_out": [
+      "`'15' + 5` crashes with a TypeError. Python won't guess whether you want text or maths. Convert first.",
+      "`true` and `false` in lowercase aren't Python. It's `True` and `False`.",
+      "`city.upper()` doesn't change `city`. If you want to keep the result, assign it: `city = city.upper()`.",
+      "`round(19.99)` gives `20`, not `20.0`. Rounding to zero places returns an int."
+    ]
+  }
+}

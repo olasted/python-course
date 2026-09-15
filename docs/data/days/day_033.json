@@ -1,0 +1,81 @@
+{
+  "day": 33,
+  "title": "Context Managers",
+  "tasks": [
+    {
+      "id": "33.1",
+      "description": "Use `with open('test.txt', 'w') as f:` to write 'Context managers are great!' to a file. Then read it back.",
+      "hint": "The `with` statement guarantees the file is closed when the block exits — even if an error occurs.\n`with open('test.txt', 'w') as f: f.write('...')`\nNo need to call `f.close()` — `with` handles it automatically.",
+      "expected": "Context managers are great!",
+      "solution": "with open('test.txt', 'w') as f:\n    f.write('Context managers are great!')\n\nwith open('test.txt', 'r') as f:\n    print(f.read())",
+      "walkthrough": "The first `with` writes and closes the file automatically when the block ends.\nThe second reopens it for reading. No `close()` calls anywhere."
+    },
+    {
+      "id": "33.2",
+      "description": "Write a context manager class `Timer` using `__enter__` and `__exit__`. It should print the elapsed time when the `with` block exits.",
+      "hint": "`__enter__` runs when entering the `with` block — record `self.start = time.time()`\n`__exit__(self, exc_type, exc_val, exc_tb)` runs on exit — print elapsed time.\nUsage: `with Timer(): # some code here`",
+      "expected": "",
+      "solution": "import time\n\nclass Timer:\n    def __enter__(self):\n        self.start = time.time()\n        return self\n\n    def __exit__(self, exc_type, exc_value, traceback):\n        elapsed = time.time() - self.start\n        print(f'Elapsed: {elapsed:.4f} seconds')\n\nwith Timer():\n    total = sum(range(1_000_000))\nprint(total)",
+      "walkthrough": "Entering the block records the start time. Leaving it, however that happens, runs `__exit__`, which prints the elapsed time.\nThe three extra parameters of `__exit__` carry exception details; they're unused here but must be declared."
+    },
+    {
+      "id": "33.3",
+      "description": "Use `contextlib.contextmanager` to write a generator-based context manager `managed_resource()` that prints 'Acquiring' and 'Releasing'.",
+      "hint": "`from contextlib import contextmanager`\n`@contextmanager def managed_resource(): print('Acquiring'); yield; print('Releasing')`\nThe `yield` is where the `with` block body runs.",
+      "expected": "Acquiring\nReleasing",
+      "solution": "from contextlib import contextmanager\n\n@contextmanager\ndef managed_resource():\n    print('Acquiring')\n    yield\n    print('Releasing')\n\nwith managed_resource():\n    pass",
+      "walkthrough": "The decorator turns the generator into a context manager.\nEverything before `yield` runs on entry, the `with` body runs at the `yield`, and everything after runs on exit.\nThe body here is just `pass`, so only the two messages are printed."
+    },
+    {
+      "id": "33.4",
+      "description": "Use a context manager to safely open a file that may not exist. Catch the FileNotFoundError and print 'File not found'.",
+      "hint": "Wrap the `with open(...)` in a `try/except FileNotFoundError:` block.\nAlternatively, check existence first with `import os; os.path.exists(path)`.\nThe `with` statement and try/except work together cleanly.",
+      "expected": "",
+      "solution": "try:\n    with open('does_not_exist.txt', 'r') as f:\n        print(f.read())\nexcept FileNotFoundError:\n    print('File not found')",
+      "walkthrough": "`open()` raises FileNotFoundError before the `with` block even starts.\nWrapping the whole `with` in `try` catches it and prints a friendly message."
+    },
+    {
+      "id": "33.5",
+      "description": "Open two files simultaneously in one `with` statement: one for reading, one for writing. Copy contents from one to the other.",
+      "hint": "Python allows multiple context managers in one `with`: `with open('in.txt') as r, open('out.txt', 'w') as w:`\nInside: `w.write(r.read())` copies everything.\nBoth files are automatically closed when the block exits.",
+      "expected": "",
+      "solution": "with open('source.txt', 'w') as f:\n    f.write('Some text to copy.\\nAnd a second line.')\n\nwith open('source.txt', 'r') as reader, open('copy.txt', 'w') as writer:\n    writer.write(reader.read())\n\nwith open('copy.txt', 'r') as f:\n    print(f.read())",
+      "walkthrough": "The first block creates something to copy so the task runs on its own.\nThe middle `with` opens both files at once, reads everything from one and writes it to the other.\nBoth files close when that block ends."
+    }
+  ],
+  "lesson": {
+    "intro": "You've been writing `with open(...) as f:` for a while. The thing that makes\n`with` work is called a context manager: something that sets up when you enter\nthe block and cleans up when you leave, no matter how you leave. Today you'll\nsee how they work and write your own.",
+    "sections": [
+      {
+        "heading": "Why with matters",
+        "body": "Without `with`, you have to remember to close the file, and if an error\nhappens before the `close()` line, it never runs. `with` guarantees the\ncleanup.",
+        "code": "with open('test.txt', 'w') as f:\n    f.write('Context managers are great!')\n\nwith open('test.txt') as f:\n    print(f.read())\nprint(f.closed)",
+        "output": "Context managers are great!\nTrue"
+      },
+      {
+        "heading": "A class with __enter__ and __exit__",
+        "body": "Any object with these two methods can be used in a `with`. `__enter__` runs\nat the start (its return value is what `as` binds). `__exit__` runs at the\nend, even if an exception happened inside the block.",
+        "code": "import time\n\nclass Timer:\n    def __enter__(self):\n        self.start = time.time()\n        return self\n\n    def __exit__(self, exc_type, exc_value, traceback):\n        elapsed = time.time() - self.start\n        print(f'Elapsed: {elapsed:.3f}s')\n\nwith Timer():\n    sum(range(1_000_000))",
+        "output": "Elapsed: 0.031s"
+      },
+      {
+        "heading": "The shortcut: @contextmanager",
+        "body": "Writing a class is a lot for something simple. `contextlib.contextmanager`\nturns a generator into a context manager: everything before `yield` is the\nsetup, everything after is the cleanup, and the `with` block runs at the\n`yield`.",
+        "code": "from contextlib import contextmanager\n\n@contextmanager\ndef managed_resource():\n    print('Acquiring')\n    yield\n    print('Releasing')\n\nwith managed_resource():\n    print('Using it')",
+        "output": "Acquiring\nUsing it\nReleasing"
+      },
+      {
+        "heading": "Two at once, and files that might not exist",
+        "body": "A single `with` can open several things, separated by commas. And `with`\ndoesn't catch errors for you, so wrap it in `try` if the file might be\nmissing.",
+        "code": "with open('in.txt', 'w') as f:\n    f.write('copy me')\n\nwith open('in.txt') as src, open('out.txt', 'w') as dst:\n    dst.write(src.read())\n\ntry:\n    with open('missing.txt') as f:\n        print(f.read())\nexcept FileNotFoundError:\n    print('File not found')",
+        "output": "File not found"
+      }
+    ],
+    "watch_out": [
+      "`__exit__` must accept three extra parameters (exception type, value, traceback) even if you ignore them.",
+      "In a `@contextmanager` generator, there must be exactly one `yield`.",
+      "Code after the `with` block can't use the file; it's closed. Do the reading inside.",
+      "`with` on its own doesn't handle FileNotFoundError. That's what `try`/`except` is for."
+    ]
+  }
+}

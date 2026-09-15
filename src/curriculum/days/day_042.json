@@ -1,0 +1,87 @@
+{
+  "day": 42,
+  "title": "Dataclasses",
+  "tasks": [
+    {
+      "id": "42.1",
+      "description": "Use `@dataclass` to create a `Point` class with `x: float` and `y: float`. Create a point and print it.",
+      "hint": "`from dataclasses import dataclass`\n`@dataclass class Point: x: float; y: float`\nDataclasses automatically generate `__init__`, `__repr__`, and `__eq__` for you!\nCreate: `p = Point(1.0, 2.0)` — no `__init__` needed.",
+      "expected": "",
+      "solution": "from dataclasses import dataclass\n\n@dataclass\nclass Point:\n    x: float\n    y: float\n\np = Point(1.0, 2.0)\nprint(p)",
+      "walkthrough": "The decorator reads the two annotated fields and writes `__init__` and `__repr__` for you.\nPrinting shows the class name and every field, which the generated `__repr__` provides."
+    },
+    {
+      "id": "42.2",
+      "description": "Add a default value to a dataclass field: `name: str = 'Unknown'`. Show that creating an instance without name uses the default.",
+      "hint": "Fields with defaults: `name: str = 'Unknown'`\nFields WITH defaults must come AFTER fields WITHOUT defaults (same rule as function params).\n`Person()` uses 'Unknown'; `Person('Alice')` uses 'Alice'.",
+      "expected": "",
+      "solution": "from dataclasses import dataclass\n\n@dataclass\nclass Person:\n    age: int\n    name: str = 'Unknown'\n\nprint(Person(30))\nprint(Person(25, 'Alice'))",
+      "walkthrough": "`name` has a default, so it comes after `age`, which doesn't.\nCreating a Person with just an age fills in 'Unknown'; supplying a name overrides it."
+    },
+    {
+      "id": "42.3",
+      "description": "Use `field(default_factory=list)` to give a dataclass an empty list attribute that's unique per instance.",
+      "hint": "`from dataclasses import dataclass, field`\nNEVER use `tags: list = []` as a default — all instances share the same list!\nCorrect: `tags: list = field(default_factory=list)` — creates a new list per instance.",
+      "expected": "",
+      "solution": "from dataclasses import dataclass, field\n\n@dataclass\nclass Article:\n    title: str\n    tags: list = field(default_factory=list)\n\na = Article('First')\nb = Article('Second')\na.tags.append('python')\n\nprint(a.tags)\nprint(b.tags)",
+      "walkthrough": "`default_factory=list` means each new Article gets its own empty list.\nAppending to one doesn't affect the other, which is the whole point. With `tags: list = []` both would show ['python']."
+    },
+    {
+      "id": "42.4",
+      "description": "Create a frozen dataclass `Color` with r, g, b fields. Show that trying to modify a field raises an error.",
+      "hint": "`@dataclass(frozen=True)` makes instances immutable — like a named tuple.\nTrying to set an attribute: `color.r = 255` raises `FrozenInstanceError`.\nFrozen dataclasses are hashable and can be used as dict keys or in sets.",
+      "expected": "",
+      "solution": "from dataclasses import dataclass, FrozenInstanceError\n\n@dataclass(frozen=True)\nclass Color:\n    r: int\n    g: int\n    b: int\n\nred = Color(255, 0, 0)\nprint(red)\n\ntry:\n    red.r = 128\nexcept FrozenInstanceError as e:\n    print(f'Cannot modify: {e}')",
+      "walkthrough": "`frozen=True` makes the generated class reject attribute assignment after creation.\nThe attempt raises FrozenInstanceError, which is caught and reported instead of crashing."
+    },
+    {
+      "id": "42.5",
+      "description": "Add a `__post_init__` method to validate that a `Rectangle` dataclass has positive width and height.",
+      "hint": "`__post_init__(self)` is called automatically after `__init__` by the dataclass machinery.\nInside it, add validation: `if self.width <= 0: raise ValueError('Width must be positive')`\nThis is cleaner than overriding `__init__` entirely.",
+      "expected": "",
+      "solution": "from dataclasses import dataclass\n\n@dataclass\nclass Rectangle:\n    width: float\n    height: float\n\n    def __post_init__(self):\n        if self.width <= 0:\n            raise ValueError('Width must be positive')\n        if self.height <= 0:\n            raise ValueError('Height must be positive')\n\n    def area(self):\n        return self.width * self.height\n\nr = Rectangle(4, 5)\nprint(r.area())\n\ntry:\n    Rectangle(-1, 5)\nexcept ValueError as e:\n    print(e)",
+      "walkthrough": "The generated `__init__` sets the fields and then calls `__post_init__`, where the checks live.\nA valid rectangle is created normally; a negative width raises ValueError before the object is usable."
+    }
+  ],
+  "lesson": {
+    "intro": "A lot of classes exist just to hold a few fields. Writing `__init__`, `__repr__`\nand `__eq__` for every one is tedious. `@dataclass` generates them from a list\nof fields with type hints. Less code, fewer mistakes.",
+    "sections": [
+      {
+        "heading": "The basics",
+        "body": "Decorate the class and list the fields with type hints. You get a\nconstructor that takes them in order, a readable `repr`, and equality\nthat compares field by field.",
+        "code": "from dataclasses import dataclass\n\n@dataclass\nclass Point:\n    x: float\n    y: float\n\np = Point(1.0, 2.0)\nprint(p)\nprint(p.x)\nprint(p == Point(1.0, 2.0))",
+        "output": "Point(x=1.0, y=2.0)\n1.0\nTrue"
+      },
+      {
+        "heading": "Defaults",
+        "body": "Give a field a default with `=`. Fields with defaults must come after\nfields without, the same rule as function parameters.",
+        "code": "from dataclasses import dataclass\n\n@dataclass\nclass Person:\n    name: str = 'Unknown'\n    age: int = 0\n\nprint(Person())\nprint(Person('Alice', 30))",
+        "output": "Person(name='Unknown', age=0)\nPerson(name='Alice', age=30)"
+      },
+      {
+        "heading": "Mutable defaults need default_factory",
+        "body": "`tags: list = []` would share one list between every instance, which is\nalmost never what you want. `field(default_factory=list)` calls `list()`\nfresh for each new object.",
+        "code": "from dataclasses import dataclass, field\n\n@dataclass\nclass Article:\n    title: str\n    tags: list = field(default_factory=list)\n\na = Article('One')\nb = Article('Two')\na.tags.append('python')\nprint(a.tags, b.tags)",
+        "output": "['python'] []"
+      },
+      {
+        "heading": "frozen: read-only objects",
+        "body": "`@dataclass(frozen=True)` makes instances immutable. Trying to assign a\nfield raises FrozenInstanceError. Frozen dataclasses can be used as\ndictionary keys and set members.",
+        "code": "from dataclasses import dataclass, FrozenInstanceError\n\n@dataclass(frozen=True)\nclass Color:\n    r: int\n    g: int\n    b: int\n\nc = Color(255, 0, 0)\ntry:\n    c.r = 128\nexcept FrozenInstanceError:\n    print('Cannot change a frozen dataclass')\nprint({c: 'red'})",
+        "output": "Cannot change a frozen dataclass\n{Color(r=255, g=0, b=0): 'red'}"
+      },
+      {
+        "heading": "__post_init__: validation",
+        "body": "The generated `__init__` stores the fields, then calls `__post_init__` if\nyou define one. That's the spot for checks.",
+        "code": "from dataclasses import dataclass\n\n@dataclass\nclass Rectangle:\n    width: float\n    height: float\n\n    def __post_init__(self):\n        if self.width <= 0 or self.height <= 0:\n            raise ValueError('Width and height must be positive')\n\nprint(Rectangle(2, 3))\ntry:\n    Rectangle(-1, 3)\nexcept ValueError as e:\n    print(e)",
+        "output": "Rectangle(width=2, height=3)\nWidth and height must be positive"
+      }
+    ],
+    "watch_out": [
+      "Forgetting the type hint. `x = 0` in a dataclass body is a class variable, not a field; it must be `x: int = 0`.",
+      "Using `[]` or `{}` as a default. Use `field(default_factory=list)` or `dict`.",
+      "Frozen dataclasses can't be changed even inside their own methods.",
+      "`@dataclass` needs the brackets only when passing options like `frozen=True`."
+    ]
+  }
+}

@@ -1,0 +1,87 @@
+{
+  "day": 58,
+  "title": "Logging",
+  "tasks": [
+    {
+      "id": "58.1",
+      "description": "Use the `logging` module to log messages at different levels: DEBUG, INFO, WARNING, ERROR, CRITICAL.",
+      "hint": "`import logging`\nDefault level is WARNING — DEBUG and INFO are hidden by default.\n`logging.basicConfig(level=logging.DEBUG)` shows all levels.\nThen use `logging.debug()`, `logging.info()`, `logging.warning()` etc.",
+      "expected": "",
+      "solution": "import logging\n\nlogging.basicConfig(level=logging.DEBUG)\n\nlogging.debug('This is a debug message')\nlogging.info('This is an info message')\nlogging.warning('This is a warning')\nlogging.error('This is an error')\nlogging.critical('This is critical')",
+      "walkthrough": "`basicConfig(level=logging.DEBUG)` lowers the threshold so every level is shown.\nEach call produces one line prefixed with its level and the logger name, root.\nThe lines appear in the stderr section of the output panel, which is where logging writes by default."
+    },
+    {
+      "id": "58.2",
+      "description": "Configure logging to write to a file 'app.log' instead of the console. Verify the file is created.",
+      "hint": "`logging.basicConfig(filename='app.log', level=logging.DEBUG)`\nThis redirects all log messages to the file.\nCheck the file with `open('app.log').read()` after logging.",
+      "expected": "",
+      "solution": "import logging\n\nlogging.basicConfig(filename='app.log', filemode='w', level=logging.DEBUG)\n\nlogging.info('Application started')\nlogging.warning('Low disk space')\nlogging.error('Failed to connect')\nlogging.shutdown()\n\nwith open('app.log') as f:\n    print('Contents of app.log:')\n    print(f.read().strip())",
+      "walkthrough": "With `filename` set, nothing goes to the console; every message is written to app.log.\n`filemode='w'` starts the file fresh each run. `shutdown` flushes it, and the file is then read back and printed to prove it worked."
+    },
+    {
+      "id": "58.3",
+      "description": "Add a custom format to log messages: include timestamp, level, and message like: '2025-01-01 12:00:00 - INFO - Message here'.",
+      "hint": "`format='%(asctime)s - %(levelname)s - %(message)s'` in `basicConfig`.\n`%(asctime)s` = timestamp, `%(levelname)s` = DEBUG/INFO etc, `%(message)s` = your message.\nPass it as `datefmt='%Y-%m-%d %H:%M:%S'` for clean timestamps.",
+      "expected": "",
+      "solution": "import logging\n\nlogging.basicConfig(\n    level=logging.INFO,\n    format='%(asctime)s - %(levelname)s - %(message)s',\n    datefmt='%Y-%m-%d %H:%M:%S',\n)\n\nlogging.info('User logged in')\nlogging.warning('Password expires soon')\nlogging.error('Payment declined')",
+      "walkthrough": "The format string is a template: each `%(...)s` is replaced with a field from the log record.\n`datefmt` shapes the timestamp so it reads as a clean date and time rather than including milliseconds."
+    },
+    {
+      "id": "58.4",
+      "description": "Create a named logger for a module. Use `logging.getLogger(__name__)` and set its level independently.",
+      "hint": "`logger = logging.getLogger(__name__)` creates a logger named after the current module.\n`logger.setLevel(logging.DEBUG)` controls what this specific logger captures.\nNamed loggers let you control log levels per module in large applications.",
+      "expected": "",
+      "solution": "import logging\n\nlogging.basicConfig(level=logging.WARNING, format='%(name)s - %(levelname)s - %(message)s')\n\nlogger = logging.getLogger(__name__)\nlogger.setLevel(logging.DEBUG)\n\nlogger.debug('Debug from the named logger')\nlogger.info('Info from the named logger')\nlogging.info('Info from the root logger (hidden)')\nlogging.warning('Warning from the root logger')",
+      "walkthrough": "The root logger is set to WARNING, so its own info message is hidden.\nThe named logger has its level lowered to DEBUG independently, so its debug and info messages get through.\n`__name__` is '__main__' when run directly, which is the name that appears in the output."
+    },
+    {
+      "id": "58.5",
+      "description": "Use `try/except` with `logging.exception()` to log an error with its full traceback when an exception occurs.",
+      "hint": "`except Exception: logging.exception('An error occurred')` logs the message AND the full traceback.\nThis is much better than `logging.error(str(e))` which loses the stack trace.\nYou can find exactly WHERE the error happened in production logs.",
+      "expected": "",
+      "solution": "import logging\n\nlogging.basicConfig(level=logging.ERROR, format='%(levelname)s - %(message)s')\n\ndef divide(a, b):\n    return a / b\n\ntry:\n    divide(10, 0)\nexcept ZeroDivisionError:\n    logging.exception('Division failed')\n\nprint('Program continues after logging the error')",
+      "walkthrough": "`logging.exception` must be called from inside an `except` block. It logs at ERROR level and appends the full traceback automatically.\nThe traceback shows the line inside `divide` where it went wrong, which `logging.error(str(e))` would not."
+    }
+  ],
+  "lesson": {
+    "intro": "`print` is fine for finding out what's going on while you build something.\nFor a program that runs on its own, you want messages with timestamps and\nseverity levels, that can be turned up or down and sent to a file. That's\nthe `logging` module.",
+    "sections": [
+      {
+        "heading": "Levels",
+        "body": "Five levels, from chatty to serious: DEBUG, INFO, WARNING, ERROR,\nCRITICAL. The default threshold is WARNING, so debug and info messages\nare hidden until you lower it with `basicConfig`. Logging writes to\nstderr, which this app shows under its own heading.",
+        "code": "import logging\n\nlogging.basicConfig(level=logging.DEBUG)\nlogging.debug('fine detail')\nlogging.info('something happened')\nlogging.warning('something odd')\nlogging.error('something failed')\nlogging.critical('everything is on fire')",
+        "output": "DEBUG:root:fine detail\nINFO:root:something happened\nWARNING:root:something odd\nERROR:root:something failed\nCRITICAL:root:everything is on fire"
+      },
+      {
+        "heading": "Formatting and timestamps",
+        "body": "`format=` controls each line. `%(asctime)s` is the time, `%(levelname)s`\nthe level, `%(message)s` your text. `datefmt` tidies the timestamp.",
+        "code": "import logging\n\nlogging.basicConfig(\n    level=logging.INFO,\n    format='%(asctime)s - %(levelname)s - %(message)s',\n    datefmt='%Y-%m-%d %H:%M:%S',\n)\nlogging.info('Server started')",
+        "output": "2026-09-15 14:32:07 - INFO - Server started"
+      },
+      {
+        "heading": "Logging to a file",
+        "body": "Add `filename=` to `basicConfig` and everything goes to that file instead\nof the console. `filemode='w'` starts fresh each run; the default appends.",
+        "code": "import logging\n\nlogging.basicConfig(filename='app.log', filemode='w', level=logging.DEBUG)\nlogging.info('written to the file')\nlogging.shutdown()\nprint(open('app.log').read().strip())",
+        "output": "INFO:root:written to the file"
+      },
+      {
+        "heading": "Named loggers",
+        "body": "`logging.getLogger(__name__)` gives a logger named after the module. In\na big program each module logs under its own name, and you can turn\nindividual ones up or down. The name appears in the output.",
+        "code": "import logging\n\nlogging.basicConfig(level=logging.WARNING, format='%(name)s %(levelname)s %(message)s')\nlogger = logging.getLogger('payments')\nlogger.setLevel(logging.DEBUG)\nlogger.debug('this logger is chattier than the root')\nlogging.debug('this is hidden')",
+        "output": "payments DEBUG this logger is chattier than the root"
+      },
+      {
+        "heading": "logging.exception: keep the traceback",
+        "body": "Inside an `except` block, `logging.exception(msg)` logs at ERROR level\nand attaches the full traceback. That's far more useful than\n`logging.error(str(e))`, which loses where the error happened.",
+        "code": "import logging\n\nlogging.basicConfig(level=logging.ERROR, format='%(levelname)s %(message)s')\ntry:\n    1 / 0\nexcept ZeroDivisionError:\n    logging.exception('Calculation failed')",
+        "output": "ERROR Calculation failed\nTraceback (most recent call last):\n  File \"...\", line 5, in <module>\n    1 / 0\nZeroDivisionError: division by zero"
+      }
+    ],
+    "watch_out": [
+      "`basicConfig` only works the first time it's called. Later calls are ignored, so set everything up once at the top.",
+      "Debug and info messages don't appear until you set `level=logging.DEBUG` or `INFO`.",
+      "Log output is on stderr. In this app it appears below the normal output, not mixed in.",
+      "A logger's own level can't go lower than what its handlers allow; when in doubt, set `basicConfig(level=logging.DEBUG)`."
+    ]
+  }
+}

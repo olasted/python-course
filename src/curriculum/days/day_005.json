@@ -1,0 +1,103 @@
+{
+  "day": 5,
+  "title": "Loops (for)",
+  "tasks": [
+    {
+      "id": "5.1",
+      "description": "Print the numbers 1 to 5 on separate lines using a for loop and range().",
+      "hint": "`range(start, stop)` generates numbers from start up to — but NOT including — stop.\nTo get 1 through 5, use `range(1, 6)` (6 is excluded).\n`for i in range(1, 6):` then `print(i)` inside the indented block.",
+      "expected": "1\n2\n3\n4\n5",
+      "solution": "for i in range(1, 6):\n    print(i)",
+      "walkthrough": "`range(1, 6)` produces the numbers 1 up to but not including 6.\nEach time round the loop, `i` takes the next number and the indented `print(i)` shows it."
+    },
+    {
+      "id": "5.2",
+      "description": "Print each character of the string 'Python' on its own line.",
+      "hint": "You can loop directly over a string — each iteration gives one character.\n`for char in 'Python':` — no range() needed!\n`print(char)` inside the loop prints each character on its own line.",
+      "expected": "P\ny\nt\nh\no\nn",
+      "solution": "for char in 'Python':\n    print(char)",
+      "walkthrough": "Looping over a string visits one character at a time.\nThe name `char` is just a variable name; `letter` or `c` would work the same."
+    },
+    {
+      "id": "5.3",
+      "description": "Use a for loop to calculate the sum of numbers 1 through 100. Print the result.",
+      "hint": "Create an accumulator variable BEFORE the loop: `total = 0`\nInside the loop, add each number to it: `total += i` (short for `total = total + i`)\nAfter the loop ends, `print(total)` — the answer is 5050.",
+      "expected": "5050",
+      "solution": "total = 0\nfor i in range(1, 101):\n    total += i\nprint(total)",
+      "walkthrough": "`total` starts at 0 before the loop.\nEach pass adds the current number to it, so after 100 passes it holds 1 + 2 + ... + 100.\nThe `print` is outside the loop (not indented), so it runs once at the end and shows 5050."
+    },
+    {
+      "id": "5.4",
+      "description": "Print a countdown from 5 down to 1 using a for loop.",
+      "hint": "`range()` accepts a third argument: the step size.\n`range(5, 0, -1)` counts 5, 4, 3, 2, 1 — stopping before 0.\nThe negative step makes it count downwards.",
+      "expected": "5\n4\n3\n2\n1",
+      "solution": "for i in range(5, 0, -1):\n    print(i)",
+      "walkthrough": "The third argument to `range` is the step. A step of -1 counts downwards.\nIt starts at 5 and stops before reaching 0, so the last value printed is 1."
+    },
+    {
+      "id": "5.5",
+      "description": "Print only the odd numbers from 1 to 15 using a for loop.",
+      "hint": "Approach 1: use a step of 2 → `range(1, 16, 2)` gives 1, 3, 5, 7...\nApproach 2: loop all numbers and filter → `if i % 2 != 0: print(i)`\nThe step approach is more efficient; the filter approach is more flexible.",
+      "expected": "1\n3\n5\n7\n9\n11\n13\n15",
+      "solution": "for i in range(1, 16, 2):\n    print(i)",
+      "walkthrough": "Starting at 1 and stepping by 2 lands on every odd number: 1, 3, 5 and so on.\nThe stop value 16 means 15 is the last one included.\nAnother way is `for i in range(1, 16): if i % 2 != 0: print(i)`, which checks each number instead."
+    },
+    {
+      "id": "5.6",
+      "description": "Print the multiplication table for 3 (from 3×1 to 3×10). Each line: '3 x N = result'",
+      "hint": "Loop `for i in range(1, 11):` to get 1 through 10.\nCalculate the result inside: `result = 3 * i`\nFormat the line with an f-string: `print(f'3 x {i} = {3 * i}')`",
+      "expected": "3 x 1 = 3\n3 x 2 = 6\n3 x 3 = 9\n3 x 4 = 12\n3 x 5 = 15\n3 x 6 = 18\n3 x 7 = 21\n3 x 8 = 24\n3 x 9 = 27\n3 x 10 = 30",
+      "solution": "for i in range(1, 11):\n    print(f'3 x {i} = {3 * i}')",
+      "walkthrough": "`range(1, 11)` gives 1 through 10.\nThe f-string builds each line, working out `3 * i` right inside the braces.\nThe letter x in the middle is just text in the string, not multiplication."
+    },
+    {
+      "id": "5.7",
+      "description": "Use a for loop to print the squares of numbers 1 to 6 (1, 4, 9, 16, 25, 36).",
+      "hint": "Loop `for i in range(1, 7):` — range(1, 7) gives 1 through 6.\n`i ** 2` raises i to the power of 2 (squaring it). `i * i` also works.\n`print(i ** 2)` inside the loop prints each result.",
+      "expected": "1\n4\n9\n16\n25\n36",
+      "solution": "for i in range(1, 7):\n    print(i ** 2)",
+      "walkthrough": "`**` is the power operator, so `i ** 2` squares the number.\n`range(1, 7)` covers 1 to 6, giving the six squares 1, 4, 9, 16, 25, 36."
+    }
+  ],
+  "lesson": {
+    "intro": "A loop repeats a block of code so you don't have to copy and paste it. A `for` loop\nis the one you'll reach for most: it walks through a sequence of things and runs\nthe block once for each one.",
+    "sections": [
+      {
+        "heading": "range() gives you a run of numbers",
+        "body": "`range(1, 6)` produces 1, 2, 3, 4, 5. The second number is where it stops,\nand it's not included. That off-by-one takes a little getting used to.\n\nWith a single argument, `range(5)` starts at 0: 0, 1, 2, 3, 4.",
+        "code": "for i in range(1, 6):\n    print(i)",
+        "output": "1\n2\n3\n4\n5"
+      },
+      {
+        "heading": "The loop variable changes each time round",
+        "body": "`i` is just a variable. On the first pass it's 1, on the next it's 2, and so on.\nYou can use it in calculations inside the block.",
+        "code": "for i in range(1, 4):\n    print(f'{i} squared is {i ** 2}')",
+        "output": "1 squared is 1\n2 squared is 4\n3 squared is 9"
+      },
+      {
+        "heading": "Counting down or skipping with a step",
+        "body": "`range` takes an optional third number, the step. `range(5, 0, -1)` counts\ndown 5, 4, 3, 2, 1. `range(1, 10, 2)` goes 1, 3, 5, 7, 9.",
+        "code": "for i in range(5, 0, -1):\n    print(i)",
+        "output": "5\n4\n3\n2\n1"
+      },
+      {
+        "heading": "Looping over text",
+        "body": "A `for` loop doesn't need `range`. Give it a string and it visits each\ncharacter. Later you'll do the same with lists.",
+        "code": "for letter in 'hey':\n    print(letter)",
+        "output": "h\ne\ny"
+      },
+      {
+        "heading": "Adding things up: the accumulator pattern",
+        "body": "To total a set of numbers, make a variable that starts at 0 before the loop,\nadd to it inside the loop, and print it after. The `+=` is shorthand for\n`total = total + i`.\n\nWhere you put the `print` matters. Inside the loop, it prints every step.\nAfter the loop (unindented), it prints once with the final answer.",
+        "code": "total = 0\nfor i in range(1, 5):\n    total += i\nprint(total)",
+        "output": "10"
+      }
+    ],
+    "watch_out": [
+      "`range(1, 5)` stops at 4. If you want 1 to 5, write `range(1, 6)`.",
+      "Putting the final `print` inside the loop by mistake. Check its indentation.",
+      "Forgetting the colon at the end of the `for` line.",
+      "Creating the total inside the loop (`total = 0` indented) resets it every time round. It goes before the loop."
+    ]
+  }
+}

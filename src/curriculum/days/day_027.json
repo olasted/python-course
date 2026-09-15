@@ -1,0 +1,95 @@
+{
+  "day": 27,
+  "title": "More Useful Modules",
+  "tasks": [
+    {
+      "id": "27.1",
+      "description": "Import the math module. Print the value of math.pi rounded to 5 decimal places.",
+      "hint": "`import math` — then `math.pi` is the constant π.\n`round(math.pi, 5)` rounds to 5 decimal places.\nResult: `3.14159`",
+      "expected": "3.14159",
+      "solution": "import math\n\nprint(round(math.pi, 5))",
+      "walkthrough": "`math.pi` is the constant 3.14159265..., and `round(..., 5)` keeps five decimal places."
+    },
+    {
+      "id": "27.2",
+      "description": "Use math.sqrt() and math.pow() to compute sqrt(81) and 2^8. Print both results.",
+      "hint": "`math.sqrt(81)` → `9.0` (always returns a float)\n`math.pow(2, 8)` → `256.0` (also always float)\nTwo separate `print()` calls.",
+      "expected": "9.0\n256.0",
+      "solution": "import math\n\nprint(math.sqrt(81))\nprint(math.pow(2, 8))",
+      "walkthrough": "Both functions return floats, so the answers show as 9.0 and 256.0 even though they're whole numbers."
+    },
+    {
+      "id": "27.3",
+      "description": "Import datetime. Print today's date in the format: 'Today is YYYY-MM-DD'",
+      "hint": "`from datetime import date` — then `date.today()` returns today's date object.\nConvert to string with `str(date.today())` which uses YYYY-MM-DD format by default.\n`print(f'Today is {date.today()}')`",
+      "expected": "",
+      "solution": "from datetime import date\n\nprint(f'Today is {date.today()}')",
+      "walkthrough": "`date.today()` returns a date object. Inside an f-string it's converted to text in YYYY-MM-DD form automatically."
+    },
+    {
+      "id": "27.4",
+      "description": "Import os. Print the current working directory using os.getcwd().",
+      "hint": "`import os` — then `os.getcwd()` returns the current directory as a string.\nThis is where your script is running from.\n`print(os.getcwd())`",
+      "expected": "",
+      "solution": "import os\n\nprint(os.getcwd())",
+      "walkthrough": "`getcwd` stands for \"get current working directory\". In this app that's the workspace folder where your files are saved."
+    },
+    {
+      "id": "27.5",
+      "description": "Use the random module to simulate flipping a coin 10 times. Print 'H' or 'T' for each flip.",
+      "hint": "`random.choice(['H', 'T'])` picks one at random each time.\nLoop 10 times with `for _ in range(10):`\nPrint the result of each flip.",
+      "expected": "",
+      "solution": "import random\n\nfor _ in range(10):\n    print(random.choice(['H', 'T']))",
+      "walkthrough": "Each pass of the loop picks H or T at random and prints it.\nTen passes, ten flips, a different sequence every run."
+    },
+    {
+      "id": "27.6",
+      "description": "Use the string module (import string) to print all uppercase letters, then all digits.",
+      "hint": "`import string` gives you pre-built character constants.\n`string.ascii_uppercase` → `'ABCDEFGHIJKLMNOPQRSTUVWXYZ'`\n`string.digits` → `'0123456789'`\nPrint each on its own line.",
+      "expected": "ABCDEFGHIJKLMNOPQRSTUVWXYZ\n0123456789",
+      "solution": "import string\n\nprint(string.ascii_uppercase)\nprint(string.digits)",
+      "walkthrough": "The `string` module provides these as plain strings, ready to print or loop over."
+    }
+  ],
+  "lesson": {
+    "intro": "A short tour of a few more built-in modules you'll keep bumping into: `math`\nfor maths, `datetime` for dates, `os` for talking to the operating system,\n`random` again, and `string` for ready-made sets of characters. Nothing deep\ntoday, just knowing what's on the shelf.",
+    "sections": [
+      {
+        "heading": "math",
+        "body": "Constants like `math.pi` and functions like `sqrt`, `pow`, `floor`, `ceil`.\nMost return floats.",
+        "code": "import math\n\nprint(round(math.pi, 5))\nprint(math.sqrt(81))\nprint(math.pow(2, 8))",
+        "output": "3.14159\n9.0\n256.0"
+      },
+      {
+        "heading": "datetime",
+        "body": "`date.today()` gives today's date as an object. Converting it to a string,\nor putting it in an f-string, produces the standard YYYY-MM-DD form. You'll\nspend a whole day on dates later.",
+        "code": "from datetime import date\n\ntoday = date.today()\nprint(f'Today is {today}')\nprint(today.year)",
+        "output": "Today is 2026-09-15\n2026"
+      },
+      {
+        "heading": "os",
+        "body": "The `os` module deals with the machine your program is running on: the\ncurrent folder, listing files, environment variables.",
+        "code": "import os\n\nprint(os.getcwd())",
+        "output": "D:\\PythonFullCourse\\src\\workspace"
+      },
+      {
+        "heading": "string",
+        "body": "Not to be confused with the `str` type. The `string` module holds constants:\nall the letters, all the digits, punctuation. Handy for validation and\nfor generating random text.",
+        "code": "import string\n\nprint(string.ascii_uppercase)\nprint(string.digits)\nprint(string.ascii_lowercase[:5])",
+        "output": "ABCDEFGHIJKLMNOPQRSTUVWXYZ\n0123456789\nabcde"
+      },
+      {
+        "heading": "random, one more time",
+        "body": "A coin flip is `random.choice(['H', 'T'])`. Run it in a loop for several\nflips.",
+        "code": "import random\n\nflips = [random.choice(['H', 'T']) for _ in range(10)]\nprint(' '.join(flips))",
+        "output": "H T T H H T H T T H"
+      }
+    ],
+    "watch_out": [
+      "`import datetime` and `from datetime import date` give you different names. With the first, it's `datetime.date.today()`.",
+      "`math.pow` returns a float; `**` keeps ints as ints.",
+      "`string.digits` is the text `'0123456789'`, not a list of numbers.",
+      "`os.getcwd()` is where the program runs from, which isn't always where the file lives."
+    ]
+  }
+}

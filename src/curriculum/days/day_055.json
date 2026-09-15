@@ -1,0 +1,87 @@
+{
+  "day": 55,
+  "title": "Modules and Packages",
+  "tasks": [
+    {
+      "id": "55.1",
+      "description": "Create a module file `mymath.py` with functions `add(a,b)` and `multiply(a,b)`. Import and use them in your main script.",
+      "hint": "Create `mymath.py` with two function definitions.\nIn your main script: `import mymath; print(mymath.add(3, 4))`\nOr: `from mymath import add, multiply` to use names directly.",
+      "expected": "",
+      "solution": "with open('mymath.py', 'w') as f:\n    f.write('def add(a, b):\\n')\n    f.write('    return a + b\\n\\n')\n    f.write('def multiply(a, b):\\n')\n    f.write('    return a * b\\n')\n\nimport mymath\nprint(mymath.add(3, 4))\nprint(mymath.multiply(3, 4))\n\nfrom mymath import add\nprint(add(10, 20))",
+      "walkthrough": "The first block creates mymath.py in the working folder. In a real project you'd write that file in your editor instead.\n`import mymath` loads it, and its functions are reached with a dot. `from mymath import add` brings one name in directly."
+    },
+    {
+      "id": "55.2",
+      "description": "Use `if __name__ == '__main__':` in your module. Show that the block only runs when the file is executed directly, not when imported.",
+      "hint": "Python sets `__name__` to `'__main__'` when a file is run directly.\nWhen imported as a module, `__name__` is the module's filename (without .py).\nCode under `if __name__ == '__main__':` is like a 'main entry point'.",
+      "expected": "",
+      "solution": "module_code = '''\ndef greet():\n    return \"Hello from the module\"\n\nif __name__ == \"__main__\":\n    print(\"This only runs when executed directly\")\n'''\n\nwith open('greeter.py', 'w') as f:\n    f.write(module_code)\n\nimport greeter\nprint(greeter.greet())\nprint('Module name when imported:', greeter.__name__)\n\nimport subprocess, sys\nprint(subprocess.run([sys.executable, 'greeter.py'], capture_output=True, text=True).stdout.strip())",
+      "walkthrough": "When `greeter` is imported, its `__name__` is 'greeter', so the guarded print doesn't fire.\nThe last lines run greeter.py as its own program using subprocess, and this time the guarded print does appear, because `__name__` is '__main__' there."
+    },
+    {
+      "id": "55.3",
+      "description": "Create a package folder `utils/` with `__init__.py` and a `strings.py` module inside. Import from the package.",
+      "hint": "Create the folder `utils/`, then inside it create `__init__.py` (can be empty) and `strings.py`.\n`from utils.strings import some_function` imports from the package.\n`__init__.py` makes the folder a Python package.",
+      "expected": "",
+      "solution": "import os\n\nos.makedirs('utils', exist_ok=True)\nwith open('utils/__init__.py', 'w') as f:\n    f.write('')\nwith open('utils/strings.py', 'w') as f:\n    f.write('def shout(text):\\n')\n    f.write('    return text.upper() + \"!\"\\n\\n')\n    f.write('def whisper(text):\\n')\n    f.write('    return text.lower() + \"...\"\\n')\n\nfrom utils.strings import shout, whisper\nprint(shout('hello'))\nprint(whisper('HELLO'))",
+      "walkthrough": "The folder plus an `__init__.py` file is what makes `utils` a package.\nThe dotted import path mirrors the folder structure: `utils.strings` is `utils/strings.py`."
+    },
+    {
+      "id": "55.4",
+      "description": "Use `dir()` and `help()` to explore the `math` module. Print all available names, then get help on `math.factorial`.",
+      "hint": "`import math; print(dir(math))` lists all names in the module.\n`help(math.factorial)` prints the docstring and signature.\nThis is how you explore any module you're unfamiliar with.",
+      "expected": "",
+      "solution": "import math\n\nnames = [name for name in dir(math) if not name.startswith('_')]\nprint(names)\nprint()\nhelp(math.factorial)",
+      "walkthrough": "`dir` returns every attribute name in the module. Filtering out the ones starting with an underscore hides internal bits.\n`help` prints the docstring and signature, which is the quickest way to learn what a function does."
+    },
+    {
+      "id": "55.5",
+      "description": "Use `importlib.reload()` to reload a module after changing its content (simulate hot-reloading).",
+      "hint": "`import importlib; importlib.reload(mymodule)` re-executes the module file.\nThis is useful for development/testing — changes take effect without restarting Python.\nNote: existing references to old objects are not updated.",
+      "expected": "",
+      "solution": "import importlib\n\nwith open('settings.py', 'w') as f:\n    f.write('DEBUG = False\\n')\n\nimport settings\nprint('Before:', settings.DEBUG)\n\nwith open('settings.py', 'w') as f:\n    f.write('DEBUG = True\\n')\n\nprint('After edit, before reload:', settings.DEBUG)\nimportlib.reload(settings)\nprint('After reload:', settings.DEBUG)",
+      "walkthrough": "The module is imported, then the file on disk is changed. The imported copy still shows the old value because Python cached it.\n`importlib.reload` re-executes the file and the new value appears."
+    }
+  ],
+  "lesson": {
+    "intro": "As a program grows, one file stops being enough. A module is just a `.py`\nfile you import; a package is a folder of them. Today is about splitting code\nacross files and understanding what `import` actually does.\n\nThis app has a single editor, so the solutions create the extra files with\n`open()` before importing them. In a normal project you'd make the files in\nyour editor and skip that part.",
+    "sections": [
+      {
+        "heading": "Your own module",
+        "body": "Any `.py` file in the same folder can be imported by its name without the\nextension. The functions inside become `module.function`.",
+        "code": "with open('mymath.py', 'w') as f:\n    f.write('def add(a, b):\\n    return a + b\\n')\n    f.write('def multiply(a, b):\\n    return a * b\\n')\n\nimport mymath\nprint(mymath.add(3, 4))\nprint(mymath.multiply(3, 4))",
+        "output": "7\n12"
+      },
+      {
+        "heading": "if __name__ == '__main__'",
+        "body": "When a file is run directly, Python sets `__name__` to `'__main__'`. When\nit's imported, `__name__` is the module's name. So code under that `if`\nonly runs when the file is the program, not when it's a library. It's\nwhere test code or a script's entry point goes.",
+        "code": "code = '''\ndef greet():\n    return \"hi from greeter\"\n\nif __name__ == \"__main__\":\n    print(\"greeter run directly\")\n'''\nwith open('greeter.py', 'w') as f:\n    f.write(code)\n\nimport greeter\nprint(greeter.greet())\nprint(greeter.__name__)",
+        "output": "hi from greeter\ngreeter"
+      },
+      {
+        "heading": "Packages: a folder with __init__.py",
+        "body": "A folder containing `__init__.py` (which can be empty) is a package.\nModules inside are imported with dots: `from utils.strings import shout`.",
+        "code": "import os\nos.makedirs('utils', exist_ok=True)\nopen('utils/__init__.py', 'w').close()\nwith open('utils/strings.py', 'w') as f:\n    f.write('def shout(s):\\n    return s.upper() + \"!\"\\n')\n\nfrom utils.strings import shout\nprint(shout('hello'))",
+        "output": "HELLO!"
+      },
+      {
+        "heading": "Exploring a module: dir and help",
+        "body": "`dir(module)` lists every name inside. `help(thing)` prints its\ndocumentation. Both are handy when you're in a module you don't know.",
+        "code": "import math\nnames = [n for n in dir(math) if not n.startswith('_')]\nprint(names[:6])\nhelp(math.factorial)",
+        "output": "['acos', 'acosh', 'asin', 'asinh', 'atan', 'atan2']\nHelp on built-in function factorial in module math:\n\nfactorial(n, /)\n    Find n!."
+      },
+      {
+        "heading": "reload: pick up changes without restarting",
+        "body": "Python imports a module once and caches it. If the file changes,\n`importlib.reload(module)` re-runs it. Mostly useful in interactive\nsessions.",
+        "code": "import importlib\n\nwith open('version.py', 'w') as f:\n    f.write('VERSION = 1\\n')\nimport version\nprint(version.VERSION)\n\nwith open('version.py', 'w') as f:\n    f.write('VERSION = 2\\n')\nimportlib.reload(version)\nprint(version.VERSION)",
+        "output": "1\n2"
+      }
+    ],
+    "watch_out": [
+      "Naming your file the same as a standard module (`random.py`, `json.py`). Your file shadows the real one.",
+      "Importing before the file exists. In these tasks the `open()` that writes the module must come before the `import`.",
+      "`import mymath.py` is wrong. Leave off the extension.",
+      "`reload` updates the module object, but names you imported with `from module import name` keep the old value."
+    ]
+  }
+}

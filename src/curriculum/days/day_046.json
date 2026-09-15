@@ -1,0 +1,81 @@
+{
+  "day": 46,
+  "title": "Working with CSV",
+  "tasks": [
+    {
+      "id": "46.1",
+      "description": "Use the `csv` module to write a CSV file 'students.csv' with columns Name, Grade, Score. Include 3 student rows.",
+      "hint": "`import csv`\n`with open('students.csv', 'w', newline='') as f: writer = csv.writer(f)`\n`writer.writerow(['Name', 'Grade', 'Score'])` writes the header.\nThen `writer.writerow(['Alice', 'A', 95])` for each student.",
+      "expected": "",
+      "solution": "import csv\n\nwith open('students.csv', 'w', newline='') as f:\n    writer = csv.writer(f)\n    writer.writerow(['Name', 'Grade', 'Score'])\n    writer.writerow(['Alice', 'A', 95])\n    writer.writerow(['Bob', 'B', 87])\n    writer.writerow(['Carol', 'A', 92])\n\nprint('students.csv written')",
+      "walkthrough": "The writer turns each list into one comma-separated line. The header goes first, then one row per student.\n`newline=''` lets the csv module control line endings so there are no stray blank lines."
+    },
+    {
+      "id": "46.2",
+      "description": "Read 'students.csv' back using `csv.reader`. Print each row.",
+      "hint": "`with open('students.csv', 'r') as f: reader = csv.reader(f)`\n`for row in reader: print(row)` — each row is a list of strings.\nThe first row is the header — you may want to skip it with `next(reader)`.",
+      "expected": "",
+      "solution": "import csv\n\nwith open('students.csv', 'w', newline='') as f:\n    writer = csv.writer(f)\n    writer.writerow(['Name', 'Grade', 'Score'])\n    writer.writerow(['Alice', 'A', 95])\n    writer.writerow(['Bob', 'B', 87])\n    writer.writerow(['Carol', 'A', 92])\n\nwith open('students.csv', 'r', newline='') as f:\n    reader = csv.reader(f)\n    for row in reader:\n        print(row)",
+      "walkthrough": "The file is written first so this task runs on its own.\n`csv.reader` yields each line as a list of strings, header included."
+    },
+    {
+      "id": "46.3",
+      "description": "Use `csv.DictReader` to read 'students.csv' and print each row as a dictionary (keys from the header).",
+      "hint": "`csv.DictReader(f)` automatically uses the first row as keys.\nEach row is an `OrderedDict` — access by key: `row['Name']`, `row['Score']`\nThis is more readable than using index numbers.",
+      "expected": "",
+      "solution": "import csv\n\nwith open('students.csv', 'w', newline='') as f:\n    writer = csv.writer(f)\n    writer.writerow(['Name', 'Grade', 'Score'])\n    writer.writerow(['Alice', 'A', 95])\n    writer.writerow(['Bob', 'B', 87])\n    writer.writerow(['Carol', 'A', 92])\n\nwith open('students.csv', 'r', newline='') as f:\n    reader = csv.DictReader(f)\n    for row in reader:\n        print(dict(row))",
+      "walkthrough": "`DictReader` reads the header itself and uses it as the keys for every following row.\nEach row is a dictionary-like object; wrapping in `dict()` prints it in the familiar form."
+    },
+    {
+      "id": "46.4",
+      "description": "Read the scores from 'students.csv' and compute the average score. Print it formatted to 2 decimal places.",
+      "hint": "Use `DictReader` — access `row['Score']` for each row.\nConvert to float: `float(row['Score'])` — CSV data is always strings.\nCompute: `total / count` or `sum(scores) / len(scores)`",
+      "expected": "",
+      "solution": "import csv\n\nwith open('students.csv', 'w', newline='') as f:\n    writer = csv.writer(f)\n    writer.writerow(['Name', 'Grade', 'Score'])\n    writer.writerow(['Alice', 'A', 95])\n    writer.writerow(['Bob', 'B', 87])\n    writer.writerow(['Carol', 'A', 92])\n\nwith open('students.csv', 'r', newline='') as f:\n    reader = csv.DictReader(f)\n    scores = [float(row['Score']) for row in reader]\n\naverage = sum(scores) / len(scores)\nprint(f'Average score: {average:.2f}')",
+      "walkthrough": "The scores are read by column name and converted to floats as they're collected.\nThe average is the total divided by the count, formatted to two decimal places."
+    },
+    {
+      "id": "46.5",
+      "description": "Use `csv.DictWriter` to write a list of dicts to a new CSV file. Include a proper header row.",
+      "hint": "`fieldnames = ['Name', 'Age']` — define the column order.\n`writer = csv.DictWriter(f, fieldnames=fieldnames)`\n`writer.writeheader()` writes the header; `writer.writerows(list_of_dicts)` writes all data.",
+      "expected": "",
+      "solution": "import csv\n\npeople = [\n    {'Name': 'Alice', 'Age': 30},\n    {'Name': 'Bob', 'Age': 25},\n    {'Name': 'Carol', 'Age': 35},\n]\n\nwith open('people.csv', 'w', newline='') as f:\n    writer = csv.DictWriter(f, fieldnames=['Name', 'Age'])\n    writer.writeheader()\n    writer.writerows(people)\n\nwith open('people.csv', 'r') as f:\n    print(f.read().strip())",
+      "walkthrough": "`fieldnames` fixes the column order. `writeheader` writes those names as the first line.\n`writerows` takes the list of dictionaries and writes each one in that column order."
+    }
+  ],
+  "lesson": {
+    "intro": "CSV files are the plain-text spreadsheets of the world. You wrote one by hand\non day 25. The `csv` module does the fiddly parts properly: commas inside\nvalues, quoting, and reading rows straight into dictionaries.",
+    "sections": [
+      {
+        "heading": "Writing with csv.writer",
+        "body": "Open the file with `newline=''` (the module handles line endings itself),\nmake a writer, and pass each row as a list. `writerows` takes a list of\nrows at once.",
+        "code": "import csv\n\nwith open('students.csv', 'w', newline='') as f:\n    writer = csv.writer(f)\n    writer.writerow(['Name', 'Grade', 'Score'])\n    writer.writerows([['Alice', 'A', 95], ['Bob', 'B', 87]])\n\nprint(open('students.csv').read())",
+        "output": "Name,Grade,Score\nAlice,A,95\nBob,B,87"
+      },
+      {
+        "heading": "Reading with csv.reader",
+        "body": "Each row comes back as a list of strings. The first row is the header;\n`next(reader)` skips it if you don't want it.",
+        "code": "import csv\n\nwith open('students.csv', newline='') as f:\n    reader = csv.reader(f)\n    header = next(reader)\n    for row in reader:\n        print(row)",
+        "output": "['Alice', 'A', '95']\n['Bob', 'B', '87']"
+      },
+      {
+        "heading": "DictReader: rows as dictionaries",
+        "body": "`DictReader` uses the header row as keys, so you can write `row['Score']`\ninstead of `row[2]`. Values are still strings; convert numbers yourself.",
+        "code": "import csv\n\nwith open('students.csv', newline='') as f:\n    scores = [float(row['Score']) for row in csv.DictReader(f)]\nprint(scores)\nprint(f'{sum(scores) / len(scores):.2f}')",
+        "output": "[95.0, 87.0]\n91.00"
+      },
+      {
+        "heading": "DictWriter: dictionaries to rows",
+        "body": "Give it the column names, call `writeheader()`, then pass dictionaries.\nKeys that aren't in `fieldnames` cause an error, so the columns are\nalways consistent.",
+        "code": "import csv\n\npeople = [{'Name': 'Alice', 'Age': 30}, {'Name': 'Bob', 'Age': 25}]\nwith open('people.csv', 'w', newline='') as f:\n    writer = csv.DictWriter(f, fieldnames=['Name', 'Age'])\n    writer.writeheader()\n    writer.writerows(people)\n\nprint(open('people.csv').read())",
+        "output": "Name,Age\nAlice,30\nBob,25"
+      }
+    ],
+    "watch_out": [
+      "Forgetting `newline=''` when opening for writing on Windows gives blank lines between rows.",
+      "Everything read from a CSV is a string. `'95' + '87'` is `'9587'`.",
+      "`writerow` takes one list. `writerow('abc')` writes a, b, c as three columns.",
+      "The header row is data to `csv.reader`. Skip it with `next()` if you're summing a column."
+    ]
+  }
+}

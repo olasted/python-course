@@ -1,0 +1,81 @@
+{
+  "day": 36,
+  "title": "The collections Module",
+  "tasks": [
+    {
+      "id": "36.1",
+      "description": "Use `Counter` to count how many times each word appears in 'the cat sat on the mat the cat'. Print the result.",
+      "hint": "`from collections import Counter`\n`Counter(iterable)` counts occurrences of each element.\n`Counter('the cat sat on the mat the cat'.split())` → counts each word.\nAccess like a dict: `c['the']` → 3",
+      "expected": "",
+      "solution": "from collections import Counter\n\ntext = 'the cat sat on the mat the cat'\ncounts = Counter(text.split())\nprint(counts)",
+      "walkthrough": "`.split()` breaks the sentence into words, and `Counter` tallies each one.\nPrinting shows every word with its count, most common first."
+    },
+    {
+      "id": "36.2",
+      "description": "Use `Counter.most_common(2)` to find the 2 most frequent letters in 'mississippi'. Print them.",
+      "hint": "`Counter('mississippi')` counts each character.\n`.most_common(n)` returns the n most common as a list of (element, count) tuples.\n`Counter('mississippi').most_common(2)` → `[('s', 4), ('i', 4)]`",
+      "expected": "",
+      "solution": "from collections import Counter\n\nprint(Counter('mississippi').most_common(2))",
+      "walkthrough": "The string is counted character by character. i and s both appear four times.\n`most_common(2)` returns the top two as (item, count) pairs."
+    },
+    {
+      "id": "36.3",
+      "description": "Use `defaultdict(list)` to group words by their first letter from ['apple', 'banana', 'avocado', 'blueberry', 'cherry'].",
+      "hint": "`from collections import defaultdict`\n`d = defaultdict(list)` — accessing a missing key auto-creates an empty list.\n`for word in words: d[word[0]].append(word)` groups by first letter without KeyError.",
+      "expected": "",
+      "solution": "from collections import defaultdict\n\nwords = ['apple', 'banana', 'avocado', 'blueberry', 'cherry']\ngroups = defaultdict(list)\n\nfor word in words:\n    groups[word[0]].append(word)\n\nfor letter, group in groups.items():\n    print(f'{letter}: {group}')",
+      "walkthrough": "`word[0]` is the first letter. Using it as a key on the defaultdict creates an empty list if needed, then the word is appended.\nWithout defaultdict you'd need to check for the key first every time."
+    },
+    {
+      "id": "36.4",
+      "description": "Create a `namedtuple` called `Point` with fields `x` and `y`. Create a point (3, 4) and print its x, y, and the distance from origin.",
+      "hint": "`from collections import namedtuple`\n`Point = namedtuple('Point', ['x', 'y'])`\nCreate: `p = Point(3, 4)` — access with `p.x`, `p.y`.\nDistance: `import math; math.sqrt(p.x**2 + p.y**2)` → 5.0",
+      "expected": "",
+      "solution": "from collections import namedtuple\nimport math\n\nPoint = namedtuple('Point', ['x', 'y'])\np = Point(3, 4)\n\nprint(p.x)\nprint(p.y)\nprint(math.sqrt(p.x ** 2 + p.y ** 2))",
+      "walkthrough": "`namedtuple` builds a small class called Point with fields x and y.\nThe fields are accessed by name. The distance formula gives 5.0 for (3, 4)."
+    },
+    {
+      "id": "36.5",
+      "description": "Use `deque` from collections to implement a queue: append items to the right, pop from the left. Demonstrate with 3 items.",
+      "hint": "`from collections import deque`\n`q = deque()` — `q.append(item)` adds to right, `q.popleft()` removes from left.\nThis is O(1) for both operations — much faster than a list's `list.pop(0)`.",
+      "expected": "",
+      "solution": "from collections import deque\n\nqueue = deque()\nqueue.append('first')\nqueue.append('second')\nqueue.append('third')\nprint(queue)\n\nprint(queue.popleft())\nprint(queue.popleft())\nprint(queue)",
+      "walkthrough": "Items go in at the right with `append` and come out at the left with `popleft`, so the first one added is the first one out.\nBoth operations are fast regardless of how long the queue gets."
+    }
+  ],
+  "lesson": {
+    "intro": "The `collections` module has a few specialised containers that solve problems\nyou've probably already hit by hand: counting things, grouping things, tuples\nwith named fields, and fast queues. Each one replaces a chunk of boilerplate.",
+    "sections": [
+      {
+        "heading": "Counter",
+        "body": "Give `Counter` any sequence and it counts each distinct item. It behaves\nlike a dictionary of item to count, plus `.most_common(n)` for the top n.",
+        "code": "from collections import Counter\n\nwords = 'the cat sat on the mat the cat'.split()\nc = Counter(words)\nprint(c['the'])\nprint(c.most_common(2))\nprint(Counter('mississippi').most_common(2))",
+        "output": "3\n[('the', 3), ('cat', 2)]\n[('i', 4), ('s', 4)]"
+      },
+      {
+        "heading": "defaultdict",
+        "body": "A dictionary that creates a default value the first time you touch a\nmissing key. `defaultdict(list)` gives an empty list, so grouping needs\nno \"if key not in d\" check.",
+        "code": "from collections import defaultdict\n\ngroups = defaultdict(list)\nfor word in ['apple', 'banana', 'avocado', 'blueberry', 'cherry']:\n    groups[word[0]].append(word)\n\nfor letter, words in groups.items():\n    print(letter, words)",
+        "output": "a ['apple', 'avocado']\nb ['banana', 'blueberry']\nc ['cherry']"
+      },
+      {
+        "heading": "namedtuple",
+        "body": "A tuple whose fields have names. `p.x` reads better than `p[0]`, and\nprinting one shows the field names. It's a quick way to make a small\nrecord type without writing a class.",
+        "code": "from collections import namedtuple\nimport math\n\nPoint = namedtuple('Point', ['x', 'y'])\np = Point(3, 4)\nprint(p)\nprint(p.x, p.y)\nprint(math.sqrt(p.x ** 2 + p.y ** 2))",
+        "output": "Point(x=3, y=4)\n3 4\n5.0"
+      },
+      {
+        "heading": "deque",
+        "body": "A double-ended queue. Adding or removing at either end is fast, which a\nnormal list isn't for the front. That makes it the right choice for a\nfirst-in, first-out queue.",
+        "code": "from collections import deque\n\nq = deque()\nq.append('a')\nq.append('b')\nq.append('c')\nprint(q.popleft())\nprint(q.popleft())\nprint(q)",
+        "output": "a\nb\ndeque(['c'])"
+      }
+    ],
+    "watch_out": [
+      "`Counter` on a string counts characters, including spaces. Call `.split()` first if you want words.",
+      "`defaultdict(list)` takes the `list` function itself, not `list()` or `[]`.",
+      "namedtuple fields are still immutable; you can't do `p.x = 5`.",
+      "`most_common` breaks ties by first-seen order, so results for equal counts depend on input order."
+    ]
+  }
+}

@@ -1,0 +1,87 @@
+{
+  "day": 48,
+  "title": "Sorting and Algorithms",
+  "tasks": [
+    {
+      "id": "48.1",
+      "description": "Sort a list of dicts by multiple keys: first by 'age' (ascending), then by 'name' (alphabetical) as a tiebreaker.",
+      "hint": "`sorted(people, key=lambda p: (p['age'], p['name']))` — tuple keys sort by first element, then second on ties.\nThis is how you implement multi-key sorting in Python.\nTest with two people of the same age.",
+      "expected": "",
+      "solution": "people = [\n    {'name': 'Carol', 'age': 30},\n    {'name': 'Alice', 'age': 30},\n    {'name': 'Bob', 'age': 25},\n    {'name': 'Dave', 'age': 25},\n]\n\nfor p in sorted(people, key=lambda p: (p['age'], p['name'])):\n    print(f\"{p['age']} {p['name']}\")",
+      "walkthrough": "The key returns a pair. Python sorts by age first; when two ages tie, it falls back to comparing names alphabetically.\nBob and Dave are both 25, so Bob comes first."
+    },
+    {
+      "id": "48.2",
+      "description": "Implement binary search: find the index of a target value in a sorted list. Return -1 if not found.",
+      "hint": "Binary search uses `low, high = 0, len(arr) - 1`.\nEach step: `mid = (low + high) // 2` then compare `arr[mid]` to target.\nIf equal → found; if target > arr[mid] → search right half; else left half.",
+      "expected": "",
+      "solution": "def binary_search(arr, target):\n    low, high = 0, len(arr) - 1\n    while low <= high:\n        mid = (low + high) // 2\n        if arr[mid] == target:\n            return mid\n        elif arr[mid] < target:\n            low = mid + 1\n        else:\n            high = mid - 1\n    return -1\n\nnums = [1, 3, 5, 7, 9, 11, 13]\nprint(binary_search(nums, 9))\nprint(binary_search(nums, 1))\nprint(binary_search(nums, 6))",
+      "walkthrough": "`low` and `high` mark the part of the list still worth searching. Each step looks at the middle and throws away the half that can't contain the target.\nWhen `low` passes `high`, nothing is left and the function returns -1."
+    },
+    {
+      "id": "48.3",
+      "description": "Write a bubble sort function. Sort [64, 34, 25, 12, 22, 11, 90] and print each pass.",
+      "hint": "Bubble sort: compare adjacent elements and swap if out of order.\nOuter loop: repeat n-1 times; inner loop: compare adjacent pairs.\nAfter each pass, the largest unsorted element 'bubbles' to its correct position.",
+      "expected": "",
+      "solution": "def bubble_sort(arr):\n    n = len(arr)\n    for i in range(n - 1):\n        swapped = False\n        for j in range(n - 1 - i):\n            if arr[j] > arr[j + 1]:\n                arr[j], arr[j + 1] = arr[j + 1], arr[j]\n                swapped = True\n        print(f'Pass {i + 1}: {arr}')\n        if not swapped:\n            break\n    return arr\n\nbubble_sort([64, 34, 25, 12, 22, 11, 90])",
+      "walkthrough": "The inner loop compares neighbours and swaps them when out of order. After each full pass, one more item is in its final place at the end, so the inner range shrinks by `i`.\nThe `swapped` flag lets it stop early once a pass makes no changes."
+    },
+    {
+      "id": "48.4",
+      "description": "Use Python's `sorted()` with `reverse=True` and a custom key to sort words by length (longest first).",
+      "hint": "`sorted(words, key=len, reverse=True)` sorts by length, longest first.\nCombine with `reverse=True` to flip any sort order.\nTest with ['python', 'is', 'amazing', 'and', 'fun']",
+      "expected": "",
+      "solution": "words = ['python', 'is', 'amazing', 'and', 'fun']\nprint(sorted(words, key=len, reverse=True))",
+      "walkthrough": "`key=len` sorts by word length, `reverse=True` makes it longest first.\nTies keep their original order, so 'and' stays ahead of 'fun'."
+    },
+    {
+      "id": "48.5",
+      "description": "Write a function that finds the two numbers in a list that sum to a target. Return the indices.",
+      "hint": "Brute force: nested loops checking all pairs — O(n²).\nBetter: use a dict to store seen values: `{value: index}`.\nFor each number, check if `target - number` is already in the dict.",
+      "expected": "",
+      "solution": "def two_sum(nums, target):\n    seen = {}\n    for i, n in enumerate(nums):\n        needed = target - n\n        if needed in seen:\n            return seen[needed], i\n        seen[n] = i\n    return None\n\nprint(two_sum([2, 7, 11, 15], 9))\nprint(two_sum([3, 2, 4], 6))\nprint(two_sum([1, 2, 3], 100))",
+      "walkthrough": "As the loop visits each number, it checks whether the partner it needs has already been seen. If so, both indices are known.\nOtherwise the current number is remembered and the loop moves on. One pass, no nested loops."
+    }
+  ],
+  "lesson": {
+    "intro": "Sorting is something you'll do constantly, and Python's `sorted` handles nearly\nevery case with the right `key`. Then two classic algorithms, binary search and\nbubble sort, not because you'll write them in real code, but because they show\nhow to think about efficiency.",
+    "sections": [
+      {
+        "heading": "Sorting by several things at once",
+        "body": "Return a tuple from the key function. Python compares the first element,\nand only looks at the second when the first is tied.",
+        "code": "people = [\n    {'name': 'Carol', 'age': 30},\n    {'name': 'Alice', 'age': 30},\n    {'name': 'Bob', 'age': 25},\n]\nfor p in sorted(people, key=lambda p: (p['age'], p['name'])):\n    print(p['age'], p['name'])",
+        "output": "25 Bob\n30 Alice\n30 Carol"
+      },
+      {
+        "heading": "reverse and key=len",
+        "body": "`reverse=True` flips any sort. `key=len` sorts by length. Together:\nlongest first.",
+        "code": "words = ['python', 'is', 'amazing', 'and', 'fun']\nprint(sorted(words, key=len, reverse=True))",
+        "output": "['amazing', 'python', 'and', 'fun', 'is']"
+      },
+      {
+        "heading": "Binary search",
+        "body": "On a sorted list you can find something by halving: look at the middle,\ndecide which half the target is in, repeat. A million items takes about\ntwenty steps instead of a million.",
+        "code": "def binary_search(arr, target):\n    low, high = 0, len(arr) - 1\n    while low <= high:\n        mid = (low + high) // 2\n        if arr[mid] == target:\n            return mid\n        if arr[mid] < target:\n            low = mid + 1\n        else:\n            high = mid - 1\n    return -1\n\nnums = [1, 3, 5, 7, 9, 11]\nprint(binary_search(nums, 7))\nprint(binary_search(nums, 4))",
+        "output": "3\n-1"
+      },
+      {
+        "heading": "Bubble sort",
+        "body": "Compare each pair of neighbours and swap if they're out of order. After\none pass the biggest item has bubbled to the end. Repeat. It's slow\n(n squared) but the code is short and easy to trace, which is why it's\ntaught.",
+        "code": "def bubble_sort(arr):\n    arr = arr[:]\n    n = len(arr)\n    for i in range(n - 1):\n        for j in range(n - 1 - i):\n            if arr[j] > arr[j + 1]:\n                arr[j], arr[j + 1] = arr[j + 1], arr[j]\n        print(f'pass {i + 1}: {arr}')\n    return arr\n\nbubble_sort([5, 1, 4, 2])",
+        "output": "pass 1: [1, 4, 2, 5]\npass 2: [1, 2, 4, 5]\npass 3: [1, 2, 4, 5]"
+      },
+      {
+        "heading": "Two-sum with a dictionary",
+        "body": "Find two numbers that add to a target. The slow way checks every pair.\nThe fast way walks the list once, remembering each number's index in a\ndictionary, and asks \"have I already seen target minus this?\".",
+        "code": "def two_sum(nums, target):\n    seen = {}\n    for i, n in enumerate(nums):\n        if target - n in seen:\n            return seen[target - n], i\n        seen[n] = i\n    return None\n\nprint(two_sum([2, 7, 11, 15], 9))\nprint(two_sum([3, 2, 4], 6))",
+        "output": "(0, 1)\n(1, 2)"
+      }
+    ],
+    "watch_out": [
+      "Binary search only works on a sorted list. On an unsorted one it returns nonsense.",
+      "`(low + high) // 2` with `//`. Plain `/` gives a float, which can't be an index.",
+      "Swapping in Python is one line: `a[j], a[j+1] = a[j+1], a[j]`. No temporary variable needed.",
+      "`sorted()` returns a new list; `.sort()` changes the list in place and returns None."
+    ]
+  }
+}

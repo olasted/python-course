@@ -1,0 +1,103 @@
+{
+  "day": 4,
+  "title": "Conditionals (if / elif / else)",
+  "tasks": [
+    {
+      "id": "4.1",
+      "description": "Set age = 20. Print 'Adult' if age is 18 or over, otherwise print 'Minor'.",
+      "hint": "An `if/else` runs different code depending on whether a condition is True or False.\n`if age >= 18:` checks 'greater than or equal to 18'\nIf True → run the if block. If False → run the else block.",
+      "expected": "Adult",
+      "solution": "age = 20\nif age >= 18:\n    print('Adult')\nelse:\n    print('Minor')",
+      "walkthrough": "`age >= 18` is `True` for 20, so the indented line under `if` runs.\nThe `else` block is skipped entirely. Only one branch ever runs."
+    },
+    {
+      "id": "4.2",
+      "description": "Set num = -5. Print 'Positive', 'Negative', or 'Zero' based on its value.",
+      "hint": "`elif` means 'otherwise, if' — it lets you chain multiple conditions.\nStructure: `if num > 0` → Positive, `elif num < 0` → Negative, `else` → Zero.\nPython checks from top to bottom and stops at the first True condition.",
+      "expected": "Negative",
+      "solution": "num = -5\nif num > 0:\n    print('Positive')\nelif num < 0:\n    print('Negative')\nelse:\n    print('Zero')",
+      "walkthrough": "Three possibilities need three branches: `if`, `elif`, `else`.\nPython checks `num > 0` first. It's false, so it moves on to `num < 0`, which is true, so it prints Negative and stops.\nThe `else` only runs when both of the others are false, which happens only for zero."
+    },
+    {
+      "id": "4.3",
+      "description": "Set score = 85. Print the letter grade: A (>=90), B (>=80), C (>=70), D (>=60), F (below 60).",
+      "hint": "Order the `elif` branches from highest to lowest score — Python stops at the first True.\nStarting with `if score >= 90` then `elif score >= 80` is correct.\nIf you put `>= 60` first, everything 60+ would match it and never reach A/B/C.",
+      "expected": "B",
+      "solution": "score = 85\nif score >= 90:\n    print('A')\nelif score >= 80:\n    print('B')\nelif score >= 70:\n    print('C')\nelif score >= 60:\n    print('D')\nelse:\n    print('F')",
+      "walkthrough": "The checks go from the highest grade down. That way, 85 fails the `>= 90` test and passes the `>= 80` test, so it gets a B.\nIf you wrote the `>= 60` check first, every score above 60 would be a D, because the first true branch wins."
+    },
+    {
+      "id": "4.4",
+      "description": "Set num = 7. Print 'Even' if the number is even, otherwise print 'Odd'.",
+      "hint": "The modulo operator `%` gives the remainder after division.\n`7 % 2` → `1` (odd), `8 % 2` → `0` (even).\nCheck: `if num % 2 == 0: print('Even') else: print('Odd')`",
+      "expected": "Odd",
+      "solution": "num = 7\nif num % 2 == 0:\n    print('Even')\nelse:\n    print('Odd')",
+      "walkthrough": "`7 % 2` is 1, because 7 divided by 2 is 3 with 1 left over.\n1 isn't equal to 0, so the condition is false and the `else` runs."
+    },
+    {
+      "id": "4.5",
+      "description": "Set year = 2024. A leap year is divisible by 4. Print 'Leap year' or 'Not a leap year'.",
+      "hint": "Divisibility check: `year % 4 == 0` is True when year divides evenly by 4.\n2024 % 4 = 0, so it is a leap year.\n(Real leap year logic is more complex, but divisible-by-4 is enough for this task.)",
+      "expected": "Leap year",
+      "solution": "year = 2024\nif year % 4 == 0:\n    print('Leap year')\nelse:\n    print('Not a leap year')",
+      "walkthrough": "2024 divided by 4 is exactly 506, so the remainder is 0 and the condition is true.\nThe real leap year rule has extra cases for centuries, but divisible-by-four is what this task asks for."
+    },
+    {
+      "id": "4.6",
+      "description": "Set temperature = 35. Print 'Hot' if above 30, 'Warm' if 20-30, 'Cool' if 10-19, 'Cold' if below 10.",
+      "hint": "Four ranges need three `elif` branches plus one final `else`.\nCheck the most extreme first: `if temperature > 30` → Hot.\nThen `elif temperature >= 20` → Warm, `elif temperature >= 10` → Cool, `else` → Cold.",
+      "expected": "Hot",
+      "solution": "temperature = 35\nif temperature > 30:\n    print('Hot')\nelif temperature >= 20:\n    print('Warm')\nelif temperature >= 10:\n    print('Cool')\nelse:\n    print('Cold')",
+      "walkthrough": "Four bands need `if`, two `elif`s and an `else`.\nBecause the checks run top to bottom, the `elif temperature >= 20` branch is only reached when the temperature is not above 30, so it naturally covers 20 to 30.\n35 is above 30, so the very first branch prints Hot."
+    },
+    {
+      "id": "4.7",
+      "description": "Set x = 15. Print 'In range' if x is between 10 and 20 (inclusive), otherwise print 'Out of range'.",
+      "hint": "Python supports chained comparisons — very clean: `if 10 <= x <= 20`\nThis is equivalent to `if x >= 10 and x <= 20` but more readable.\nInclusive means 10 and 20 themselves should also pass.",
+      "expected": "In range",
+      "solution": "x = 15\nif 10 <= x <= 20:\n    print('In range')\nelse:\n    print('Out of range')",
+      "walkthrough": "`10 <= x <= 20` is Python shorthand for `x >= 10 and x <= 20`.\nBoth ends use `<=`, so 10 and 20 themselves count as in range, which is what inclusive means."
+    }
+  ],
+  "lesson": {
+    "intro": "Up to now every line of your program has run, in order, every time. Conditionals\nlet a program make choices: do this bit only if something is true. It's how a\nprogram decides whether you passed, whether it's raining, whether the password matched.",
+    "sections": [
+      {
+        "heading": "if and else",
+        "body": "An `if` line ends with a colon. The lines underneath, indented by four spaces,\nonly run when the condition is true. `else` catches everything that wasn't.\n\nThe indentation isn't decoration. It's how Python knows which lines belong\nto the `if`.",
+        "code": "age = 20\nif age >= 18:\n    print('Adult')\nelse:\n    print('Minor')",
+        "output": "Adult"
+      },
+      {
+        "heading": "Comparisons give you True or False",
+        "body": "The condition after `if` is anything that works out to `True` or `False`.\nThe comparison operators are `==` equal, `!=` not equal, `<`, `>`, `<=` and `>=`.\n\nNotice that equality is two equals signs. One `=` assigns a value.",
+        "code": "print(5 == 5)\nprint(5 != 5)\nprint(3 < 10)\nprint('cat' == 'dog')",
+        "output": "True\nFalse\nTrue\nFalse"
+      },
+      {
+        "heading": "More than two options with elif",
+        "body": "`elif` is short for \"else if\". Python checks each condition from the top and\nruns the first one that's true, then skips the rest. Order matters for that\nreason: put the most specific check first.",
+        "code": "score = 85\nif score >= 90:\n    print('A')\nelif score >= 80:\n    print('B')\nelif score >= 70:\n    print('C')\nelse:\n    print('Below C')",
+        "output": "B"
+      },
+      {
+        "heading": "Combining conditions",
+        "body": "`and` needs both sides true. `or` needs at least one. `not` flips it.\nFor \"is x between two values\", Python lets you chain comparisons, which reads\nnicely: `10 <= x <= 20`.",
+        "code": "x = 15\nif 10 <= x <= 20:\n    print('In range')\n\nraining = False\ncold = True\nif raining or cold:\n    print('Take a coat')",
+        "output": "In range\nTake a coat"
+      },
+      {
+        "heading": "The remainder trick",
+        "body": "`%` gives the remainder of a division. `7 % 2` is `1`, `8 % 2` is `0`.\nSo `n % 2 == 0` means \"n is even\", and `year % 4 == 0` means \"divisible by 4\".\nYou'll use this constantly.",
+        "code": "for n in [7, 8]:\n    if n % 2 == 0:\n        print(n, 'is even')\n    else:\n        print(n, 'is odd')",
+        "output": "7 is odd\n8 is even"
+      }
+    ],
+    "watch_out": [
+      "Missing the colon at the end of the `if`, `elif` or `else` line.",
+      "Writing `if x = 5:` with one equals sign. Comparing needs `==`.",
+      "Forgetting to indent the lines under the `if`. Python will tell you it expected an indented block.",
+      "Checking ranges in the wrong order. If you test `score >= 60` before `score >= 90`, a score of 95 gets caught by the first one."
+    ]
+  }
+}

@@ -1,0 +1,81 @@
+{
+  "day": 53,
+  "title": "Async / Await Basics",
+  "tasks": [
+    {
+      "id": "53.1",
+      "description": "Write your first async function using `async def`. Run it with `asyncio.run()`. Print 'Hello from async!'.",
+      "hint": "`import asyncio`\n`async def main(): print('Hello from async!')`\n`asyncio.run(main())` — this is how you run async code from synchronous Python.\nAsync functions are called coroutines — they must be awaited or run with asyncio.",
+      "expected": "Hello from async!",
+      "solution": "import asyncio\n\nasync def main():\n    print('Hello from async!')\n\nasyncio.run(main())",
+      "walkthrough": "`async def` makes `main` a coroutine. `asyncio.run` starts the event loop, runs it to completion, and shuts the loop down."
+    },
+    {
+      "id": "53.2",
+      "description": "Use `await asyncio.sleep(0)` inside an async function to simulate yielding control. Print before and after.",
+      "hint": "`await asyncio.sleep(n)` pauses the coroutine for n seconds without blocking the thread.\n`await asyncio.sleep(0)` yields control immediately — useful to let other tasks run.\nUnlike `time.sleep()`, this doesn't freeze the entire program.",
+      "expected": "",
+      "solution": "import asyncio\n\nasync def main():\n    print('Before yielding control')\n    await asyncio.sleep(0)\n    print('After yielding control')\n\nasyncio.run(main())",
+      "walkthrough": "`await asyncio.sleep(0)` pauses just long enough to let any other ready task run, then resumes.\nWith only one task the effect is invisible, but the pattern is how you keep a long loop cooperative."
+    },
+    {
+      "id": "53.3",
+      "description": "Create two async tasks that 'fetch data' (just sleep for different durations). Run them concurrently with `asyncio.gather()`.",
+      "hint": "`async def fetch(name, delay): await asyncio.sleep(delay); print(f'{name} done')`\n`asyncio.gather(fetch('A', 2), fetch('B', 1))` runs both concurrently.\nB finishes first even though A started first — that's concurrency!",
+      "expected": "",
+      "solution": "import asyncio\n\nasync def fetch(name, delay):\n    print(f'{name} started')\n    await asyncio.sleep(delay)\n    print(f'{name} done')\n\nasync def main():\n    await asyncio.gather(fetch('A', 0.4), fetch('B', 0.2))\n    print('Both finished')\n\nasyncio.run(main())",
+      "walkthrough": "`gather` starts both coroutines and waits for them together.\nA begins first but takes longer, so B finishes first. Total time is about 0.4 seconds, not 0.6."
+    },
+    {
+      "id": "53.4",
+      "description": "Use `asyncio.create_task()` to schedule a task and do other work while it runs. Then await the task result.",
+      "hint": "`task = asyncio.create_task(some_coroutine())` schedules it immediately.\nDo other work, then `result = await task` to get the result.\nThis gives you finer control than `gather()`.",
+      "expected": "",
+      "solution": "import asyncio\n\nasync def compute():\n    await asyncio.sleep(0.3)\n    return 42\n\nasync def main():\n    task = asyncio.create_task(compute())\n    print('Task scheduled, doing other work...')\n    await asyncio.sleep(0.1)\n    print('Still working...')\n    result = await task\n    print(f'Result: {result}')\n\nasyncio.run(main())",
+      "walkthrough": "`create_task` schedules `compute` immediately in the background.\nThe main coroutine does its own work, then `await task` waits for the result, which is already partly done by then."
+    },
+    {
+      "id": "53.5",
+      "description": "Implement async timeout: use `asyncio.wait_for()` to cancel a task that takes longer than 1 second.",
+      "hint": "`await asyncio.wait_for(slow_task(), timeout=1.0)` raises `asyncio.TimeoutError` if it takes too long.\nWrap in `try/except asyncio.TimeoutError:` to handle it gracefully.\nThis prevents tasks from hanging forever.",
+      "expected": "",
+      "solution": "import asyncio\n\nasync def slow_task():\n    await asyncio.sleep(3)\n    return 'finished'\n\nasync def main():\n    try:\n        result = await asyncio.wait_for(slow_task(), timeout=1.0)\n        print(result)\n    except asyncio.TimeoutError:\n        print('Task timed out after 1 second')\n\nasyncio.run(main())",
+      "walkthrough": "`wait_for` wraps the coroutine with a deadline. When the deadline passes, the task is cancelled and TimeoutError is raised.\nCatching it lets the program report the timeout instead of crashing."
+    }
+  ],
+  "lesson": {
+    "intro": "Async is another way to overlap waiting, without threads. One loop runs many\ntasks and switches between them whenever one is waiting on something. The\nkeywords are `async def` to declare a coroutine and `await` to pause inside\none. It looks like normal code with two extra words, and mostly it is.",
+    "sections": [
+      {
+        "heading": "async def and asyncio.run",
+        "body": "An `async def` function is a coroutine. Calling it doesn't run it; it\ncreates an object that `asyncio.run` (or `await`) executes. `asyncio.run`\nis the entry point from ordinary code.",
+        "code": "import asyncio\n\nasync def main():\n    print('Hello from async!')\n\nasyncio.run(main())",
+        "output": "Hello from async!"
+      },
+      {
+        "heading": "await: pause here, let others run",
+        "body": "`await asyncio.sleep(n)` pauses this coroutine without blocking the whole\nprogram. That's the difference from `time.sleep`, which freezes everything.",
+        "code": "import asyncio\n\nasync def main():\n    print('before')\n    await asyncio.sleep(0.1)\n    print('after')\n\nasyncio.run(main())",
+        "output": "before\nafter"
+      },
+      {
+        "heading": "gather: run several at once",
+        "body": "`asyncio.gather(a(), b())` runs the coroutines concurrently and waits for\nall of them. The one with the shorter wait finishes first, regardless of\nthe order they started.",
+        "code": "import asyncio\n\nasync def fetch(name, delay):\n    await asyncio.sleep(delay)\n    print(f'{name} done')\n    return name\n\nasync def main():\n    results = await asyncio.gather(fetch('A', 0.2), fetch('B', 0.1))\n    print(results)\n\nasyncio.run(main())",
+        "output": "B done\nA done\n['A', 'B']"
+      },
+      {
+        "heading": "create_task and wait_for",
+        "body": "`create_task` schedules a coroutine to run in the background right away;\nyou `await` the task later to get its result. `wait_for` puts a time limit\non an await and raises `TimeoutError` if it's exceeded.",
+        "code": "import asyncio\n\nasync def slow():\n    await asyncio.sleep(2)\n    return 'finished'\n\nasync def main():\n    task = asyncio.create_task(slow())\n    print('doing other work')\n    try:\n        print(await asyncio.wait_for(task, timeout=0.2))\n    except asyncio.TimeoutError:\n        print('took too long, cancelled')\n\nasyncio.run(main())",
+        "output": "doing other work\ntook too long, cancelled"
+      }
+    ],
+    "watch_out": [
+      "Calling a coroutine without `await` does nothing except create an object (and a warning).",
+      "`await` only works inside an `async def`.",
+      "`time.sleep` inside async code blocks everything. Use `asyncio.sleep`.",
+      "`asyncio.run` should be called once, at the top level, not inside another coroutine."
+    ]
+  }
+}

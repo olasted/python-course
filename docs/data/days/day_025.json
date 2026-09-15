@@ -1,0 +1,90 @@
+{
+  "day": 25,
+  "title": "File Writing",
+  "tasks": [
+    {
+      "id": "25.1",
+      "description": "Write 'Hello, World!' to a file called 'output.txt'. Then verify by reading it back and printing.",
+      "hint": "Write mode `'w'` creates the file if it doesn't exist and OVERWRITES it if it does.\n`with open('output.txt', 'w') as f: f.write('Hello, World!')`\nThen read: `with open('output.txt', 'r') as f: print(f.read())`",
+      "expected": "Hello, World!",
+      "solution": "with open('output.txt', 'w') as f:\n    f.write('Hello, World!')\n\nwith open('output.txt', 'r') as f:\n    print(f.read())",
+      "walkthrough": "Mode `'w'` creates the file if needed and starts it empty, then the text is written in.\nA second `open` in read mode gets the text back and `read()` returns it whole."
+    },
+    {
+      "id": "25.2",
+      "description": "Write three lines to 'lines.txt'. Use a single write with '\\n' between lines. Read back and print.",
+      "hint": "`\\n` inside a string creates a newline character.\n`f.write('Line 1\\nLine 2\\nLine 3')` writes all three in one call.\nWhen you read it back with `f.read()`, the newlines are preserved.",
+      "expected": "Line 1\nLine 2\nLine 3",
+      "solution": "with open('lines.txt', 'w') as f:\n    f.write('Line 1\\nLine 2\\nLine 3')\n\nwith open('lines.txt', 'r') as f:\n    print(f.read())",
+      "walkthrough": "A single `write` call with `\\n` between the pieces produces three lines in the file.\nReading it back and printing shows the line breaks as real line breaks."
+    },
+    {
+      "id": "25.3",
+      "description": "Append a new line 'Fourth line' to 'lines.txt' without deleting existing content. Then read the whole file.",
+      "hint": "Mode `'a'` (append) adds to the END — it never overwrites.\n`f.write('\\nFourth line')` — the leading `\\n` ensures it starts on a new line.\nThen read the whole file with `f.read()` to confirm all 4 lines are there.",
+      "expected": "Line 1\nLine 2\nLine 3\nFourth line",
+      "solution": "with open('lines.txt', 'w') as f:\n    f.write('Line 1\\nLine 2\\nLine 3')\n\nwith open('lines.txt', 'a') as f:\n    f.write('\\nFourth line')\n\nwith open('lines.txt', 'r') as f:\n    print(f.read())",
+      "walkthrough": "The first block makes sure the file exists with three lines, so this task works on its own.\nAppend mode adds to the end. The new text starts with `\\n` because the existing content doesn't end with one."
+    },
+    {
+      "id": "25.4",
+      "description": "Write a list of 5 fruits to 'fruits.txt', one per line. Use a for loop and f.write().",
+      "hint": "Loop over the list: `for fruit in fruits:`\n`f.write(fruit + '\\n')` writes each fruit followed by a newline.\nAlternative: `f.writelines(fruit + '\\n' for fruit in fruits)` does it without a loop.",
+      "expected": "",
+      "solution": "fruits = ['apple', 'banana', 'cherry', 'mango', 'pear']\nwith open('fruits.txt', 'w') as f:\n    for fruit in fruits:\n        f.write(fruit + '\\n')\n\nwith open('fruits.txt', 'r') as f:\n    print(f.read())",
+      "walkthrough": "Each pass of the loop writes one fruit and a newline.\nReading the file back afterwards is not required by the task, but it's a good habit to confirm what you wrote."
+    },
+    {
+      "id": "25.5",
+      "description": "Write a CSV-style file 'scores.csv' with headers 'Name,Score' and 3 student rows. Then read it back and print each row.",
+      "hint": "CSV (Comma-Separated Values) is just a plain text file with commas between values.\n`f.write('Name,Score\\n')` writes the header.\nThen `f.write(f'{name},{score}\\n')` for each student row.",
+      "expected": "",
+      "solution": "with open('scores.csv', 'w') as f:\n    f.write('Name,Score\\n')\n    f.write('Alice,95\\n')\n    f.write('Bob,87\\n')\n    f.write('Carol,91\\n')\n\nwith open('scores.csv', 'r') as f:\n    for line in f:\n        print(line.strip())",
+      "walkthrough": "The header line names the columns. Each data line has the values separated by a comma.\nReading back line by line and stripping the newline shows the table as text."
+    },
+    {
+      "id": "25.6",
+      "description": "Create a program that lets the user type lines and saves them to a file until they type 'quit'. Then print the saved file.",
+      "hint": "Open in append mode `'a'` at the start (or write mode if you want a fresh file each run).\n`while True: line = input('>') if line == 'quit': break else: f.write(line + '\\n')`\nAfter the loop, re-open with `'r'` and print.",
+      "expected": "",
+      "solution": "with open('user_lines.txt', 'w') as f:\n    while True:\n        line = input('> ')\n        if line == 'quit':\n            break\n        f.write(line + '\\n')\n\nwith open('user_lines.txt', 'r') as f:\n    print(f.read())",
+      "walkthrough": "The file stays open for the whole loop. Each typed line is written with a newline, until the word quit ends the loop.\nWhen the `with` block finishes the file is closed, and the last block reads it back.",
+      "solution_stdin": "hello\nsecond line\nquit\n"
+    }
+  ],
+  "lesson": {
+    "intro": "Yesterday was mostly about reading. Today is about writing: several lines at\nonce, one item per line from a list, and a simple comma-separated table. Same\n`open` and `with`, different habits.",
+    "sections": [
+      {
+        "heading": "Newlines are your job",
+        "body": "`f.write()` writes exactly what you give it and nothing more. To get separate\nlines, include `\\n` in the string. You can write several lines in one call.",
+        "code": "with open('lines.txt', 'w') as f:\n    f.write('Line 1\\nLine 2\\nLine 3')\n\nwith open('lines.txt') as f:\n    print(f.read())",
+        "output": "Line 1\nLine 2\nLine 3"
+      },
+      {
+        "heading": "Writing a list, one item per line",
+        "body": "Loop and write each item with a newline after it. `writelines()` takes a\nsequence of strings, but it doesn't add newlines either, so you still have\nto include them.",
+        "code": "fruits = ['apple', 'banana', 'cherry']\nwith open('fruits.txt', 'w') as f:\n    for fruit in fruits:\n        f.write(fruit + '\\n')\n\nwith open('fruits.txt') as f:\n    print(f.read().strip())",
+        "output": "apple\nbanana\ncherry"
+      },
+      {
+        "heading": "A CSV file by hand",
+        "body": "CSV is just text with commas between values and one record per line. Write\na header line, then one line per record. Later in the course you'll use the\n`csv` module, but it helps to see that there's no magic.",
+        "code": "students = [('Alice', 95), ('Bob', 87)]\nwith open('scores.csv', 'w') as f:\n    f.write('Name,Score\\n')\n    for name, score in students:\n        f.write(f'{name},{score}\\n')\n\nwith open('scores.csv') as f:\n    for line in f:\n        print(line.strip().split(','))",
+        "output": "['Name', 'Score']\n['Alice', '95']\n['Bob', '87']"
+      },
+      {
+        "heading": "Writing what the user types",
+        "body": "Open the file, loop reading input, stop on a magic word, write everything\nelse. Open in `'w'` mode for a fresh file each run, or `'a'` to keep adding.",
+        "code": "with open('diary.txt', 'w') as f:\n    while True:\n        line = input('> ')\n        if line == 'quit':\n            break\n        f.write(line + '\\n')\n\nwith open('diary.txt') as f:\n    print(f.read().strip())",
+        "output": "> > > first thought\nsecond thought"
+      }
+    ],
+    "watch_out": [
+      "Opening with `'w'` and then reading from the same handle. Write and read are separate opens.",
+      "Forgetting the `\\n` and getting all your items squashed onto one line.",
+      "Writing numbers directly. `f.write(95)` fails; it needs a string, so `f.write(str(95))` or an f-string.",
+      "When appending, remember the file may not end with a newline. Start the new text with `\\n` if needed."
+    ]
+  }
+}

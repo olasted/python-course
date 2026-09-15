@@ -1,0 +1,97 @@
+{
+  "day": 17,
+  "title": "Modules and Import",
+  "tasks": [
+    {
+      "id": "17.1",
+      "description": "Import the math module. Print the square root of 144.",
+      "hint": "`import math` at the top gives you access to all math functions.\nAccess them with dot notation: `math.sqrt(144)`\n`math.sqrt()` always returns a float, so the result is `12.0`.",
+      "expected": "12.0",
+      "solution": "import math\n\nprint(math.sqrt(144))",
+      "walkthrough": "`import math` loads the module. `math.sqrt` is the square root function inside it.\nIt always returns a float, so 12 appears as 12.0."
+    },
+    {
+      "id": "17.2",
+      "description": "Import only pi from the math module. Print it rounded to 5 decimal places.",
+      "hint": "`from math import pi` imports just `pi` — you can use it directly without `math.pi`.\n`round(pi, 5)` rounds to 5 decimal places.\nResult: `3.14159`",
+      "expected": "3.14159",
+      "solution": "from math import pi\n\nprint(round(pi, 5))",
+      "walkthrough": "This style imports only `pi`, so it's used on its own without `math.` in front.\n`round(pi, 5)` trims it to five decimal places."
+    },
+    {
+      "id": "17.3",
+      "description": "Use math.ceil() and math.floor() on 3.7. Print both results on separate lines.",
+      "hint": "`math.ceil(3.7)` rounds UP to the nearest integer → `4`\n`math.floor(3.7)` rounds DOWN to the nearest integer → `3`\nThese always return integers, unlike `round()` which rounds to nearest.",
+      "expected": "4\n3",
+      "solution": "import math\n\nprint(math.ceil(3.7))\nprint(math.floor(3.7))",
+      "walkthrough": "`ceil` always rounds up to the next whole number, `floor` always rounds down.\nUnlike `round()`, they ignore how close the number is to either side."
+    },
+    {
+      "id": "17.4",
+      "description": "Import random. Use random.randint() to print 3 random numbers between 1 and 6 (like dice rolls).",
+      "hint": "`random.randint(a, b)` returns a random integer where `a <= result <= b` (BOTH ends inclusive).\n`random.randint(1, 6)` simulates a dice roll.\nThe numbers will be different each run — that's expected behaviour.",
+      "expected": "",
+      "solution": "import random\n\nfor _ in range(3):\n    print(random.randint(1, 6))",
+      "walkthrough": "The loop runs three times and each pass asks for a fresh random number from 1 to 6 inclusive.\nYour numbers will differ from anyone else's, which is why this task isn't checked automatically."
+    },
+    {
+      "id": "17.5",
+      "description": "Use random.choice() to pick a random item from ['rock', 'paper', 'scissors'] and print it.",
+      "hint": "`random.choice(sequence)` picks one random element from any sequence.\nPass your list directly: `random.choice(['rock', 'paper', 'scissors'])`\nThe result changes each run.",
+      "expected": "",
+      "solution": "import random\n\nprint(random.choice(['rock', 'paper', 'scissors']))",
+      "walkthrough": "`random.choice()` takes any list and returns one of its items at random."
+    },
+    {
+      "id": "17.6",
+      "description": "Use random.shuffle() to shuffle the list [1, 2, 3, 4, 5] and print the shuffled list.",
+      "hint": "`random.shuffle(list)` modifies the list IN PLACE — it doesn't return a new list.\nCall it, then print the list: `random.shuffle(nums); print(nums)`\nDon't do `print(random.shuffle(nums))` — that prints `None`!",
+      "expected": "",
+      "solution": "import random\n\nnums = [1, 2, 3, 4, 5]\nrandom.shuffle(nums)\nprint(nums)",
+      "walkthrough": "`shuffle` rearranges the list you give it and returns nothing.\nThat's why the shuffle and the print are two separate lines."
+    },
+    {
+      "id": "17.7",
+      "description": "Use the math module to find the value of 2 to the power of 10 using math.pow(). Print as an integer.",
+      "hint": "`math.pow(base, exp)` returns a float: `math.pow(2, 10)` → `1024.0`\nWrap in `int()` to convert to an integer: `print(int(math.pow(2, 10)))` → `1024`\nAlternative: `2 ** 10` uses Python's built-in exponent operator.",
+      "expected": "1024",
+      "solution": "import math\n\nprint(int(math.pow(2, 10)))",
+      "walkthrough": "`math.pow(2, 10)` gives the float 1024.0.\nWrapping it in `int()` drops the decimal part so the printed result is 1024."
+    }
+  ],
+  "lesson": {
+    "intro": "Python ships with a big library of ready-made code, split into modules. Square\nroots, random numbers, dates, file handling: someone has already written it.\n`import` is how you bring a module into your program.",
+    "sections": [
+      {
+        "heading": "import module, then module.thing",
+        "body": "After `import math`, everything in the math module is reachable with a dot.\nThe dot says \"look inside math for this\". Imports normally go at the top of\nthe file.",
+        "code": "import math\n\nprint(math.sqrt(144))\nprint(math.pi)\nprint(math.ceil(3.2), math.floor(3.8))",
+        "output": "12.0\n3.141592653589793\n4 3"
+      },
+      {
+        "heading": "from module import name",
+        "body": "If you only need one or two things, you can import them directly and use them\nwithout the module prefix. Both styles are fine; the first is clearer about\nwhere things come from, the second is shorter.",
+        "code": "from math import pi, sqrt\n\nprint(round(pi, 5))\nprint(sqrt(81))",
+        "output": "3.14159\n9.0"
+      },
+      {
+        "heading": "The random module",
+        "body": "`randint(a, b)` gives a whole number between a and b, both included.\n`choice()` picks an item from a list. `shuffle()` mixes a list up in place.\nThe output changes every run, which is the point.",
+        "code": "import random\n\nprint(random.randint(1, 6))\nprint(random.choice(['rock', 'paper', 'scissors']))\nnums = [1, 2, 3, 4, 5]\nrandom.shuffle(nums)\nprint(nums)",
+        "output": "4\npaper\n[3, 1, 5, 2, 4]"
+      },
+      {
+        "heading": "Floats from math functions",
+        "body": "Most math functions return floats, even for whole answers: `math.pow(2, 10)`\nis `1024.0`. Wrap in `int()` if you want the integer, or use Python's own `**`\noperator, which keeps integers as integers.",
+        "code": "import math\n\nprint(math.pow(2, 10))\nprint(int(math.pow(2, 10)))\nprint(2 ** 10)",
+        "output": "1024.0\n1024\n1024"
+      }
+    ],
+    "watch_out": [
+      "Using `sqrt(144)` after `import math` without the `math.` prefix gives a NameError. Either write `math.sqrt` or use `from math import sqrt`.",
+      "Naming your own file `random.py` or `math.py`. Python will import your file instead of the real module.",
+      "`random.shuffle(nums)` returns `None`. Shuffle first, then print the list on the next line.",
+      "`randint(1, 6)` includes 6. `range(1, 6)` doesn't. They disagree on purpose, annoyingly."
+    ]
+  }
+}

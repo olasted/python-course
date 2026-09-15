@@ -1,0 +1,82 @@
+{
+  "day": 47,
+  "title": "Challenge: Student Grade Manager",
+  "tasks": [
+    {
+      "id": "47.1",
+      "description": "Create a `Student` dataclass with `name: str`, `grades: list = field(default_factory=list)`. Add an `average()` method.",
+      "hint": "`from dataclasses import dataclass, field`\n`@dataclass class Student: name: str; grades: list = field(default_factory=list)`\n`def average(self): return sum(self.grades) / len(self.grades) if self.grades else 0`",
+      "expected": "",
+      "solution": "from dataclasses import dataclass, field\n\n@dataclass\nclass Student:\n    name: str\n    grades: list = field(default_factory=list)\n\n    def average(self):\n        return sum(self.grades) / len(self.grades) if self.grades else 0\n\nalice = Student('Alice', [90, 85, 92])\nbob = Student('Bob')\nprint(alice)\nprint(alice.average())\nprint(bob.average())",
+      "walkthrough": "The dataclass gives you the constructor and a readable print for free.\n`average` uses a conditional expression so a student with no grades returns 0 instead of dividing by zero."
+    },
+    {
+      "id": "47.2",
+      "description": "Create a `GradeBook` class that holds a list of Students. Add `add_student()`, `get_student(name)`, and `class_average()` methods.",
+      "hint": "`self.students = []` in `__init__`.\n`get_student`: loop and return matching student, or `None` if not found.\n`class_average`: `sum(s.average() for s in self.students) / len(self.students)`",
+      "expected": "",
+      "solution": "from dataclasses import dataclass, field\n\n@dataclass\nclass Student:\n    name: str\n    grades: list = field(default_factory=list)\n\n    def average(self):\n        return sum(self.grades) / len(self.grades) if self.grades else 0\n\nclass GradeBook:\n    def __init__(self):\n        self.students = []\n\n    def add_student(self, student):\n        self.students.append(student)\n\n    def get_student(self, name):\n        for s in self.students:\n            if s.name == name:\n                return s\n        return None\n\n    def class_average(self):\n        if not self.students:\n            return 0\n        return sum(s.average() for s in self.students) / len(self.students)\n\n    def top_student(self):\n        if not self.students:\n            return None\n        return max(self.students, key=lambda s: s.average())\n\nbook = GradeBook()\nbook.add_student(Student('Alice', [90, 85]))\nbook.add_student(Student('Bob', [70, 80]))\n\nprint(book.get_student('Alice'))\nprint(book.get_student('Zed'))\nprint(book.class_average())",
+      "walkthrough": "`get_student` loops until it finds a matching name and returns None if it never does.\n`class_average` averages each student's average, with an empty-book guard."
+    },
+    {
+      "id": "47.3",
+      "description": "Add a method `top_student()` that returns the student with the highest average grade.",
+      "hint": "`max(self.students, key=lambda s: s.average())` returns the student with the highest average.\nHandle empty list case: `if not self.students: return None`",
+      "expected": "",
+      "solution": "from dataclasses import dataclass, field\n\n@dataclass\nclass Student:\n    name: str\n    grades: list = field(default_factory=list)\n\n    def average(self):\n        return sum(self.grades) / len(self.grades) if self.grades else 0\n\nclass GradeBook:\n    def __init__(self):\n        self.students = []\n\n    def add_student(self, student):\n        self.students.append(student)\n\n    def get_student(self, name):\n        for s in self.students:\n            if s.name == name:\n                return s\n        return None\n\n    def class_average(self):\n        if not self.students:\n            return 0\n        return sum(s.average() for s in self.students) / len(self.students)\n\n    def top_student(self):\n        if not self.students:\n            return None\n        return max(self.students, key=lambda s: s.average())\n\nbook = GradeBook()\nbook.add_student(Student('Alice', [90, 85]))\nbook.add_student(Student('Bob', [95, 98]))\nbook.add_student(Student('Carol', [60, 70]))\n\nbest = book.top_student()\nprint(f'{best.name} with {best.average():.1f}')",
+      "walkthrough": "`max` with a key function compares students by their average and returns the one with the highest.\nThe empty-list check avoids the ValueError that `max` raises on nothing."
+    },
+    {
+      "id": "47.4",
+      "description": "Add `save_to_csv(filename)` and `load_from_csv(filename)` class methods to persist the grade book.",
+      "hint": "Save: write each student's name + grades as CSV rows.\nLoad: read CSV, reconstruct Student objects.\nUse `csv.writer` for saving, `csv.reader` for loading.",
+      "expected": "",
+      "solution": "from dataclasses import dataclass, field\n\n@dataclass\nclass Student:\n    name: str\n    grades: list = field(default_factory=list)\n\n    def average(self):\n        return sum(self.grades) / len(self.grades) if self.grades else 0\n\nclass GradeBook:\n    def __init__(self):\n        self.students = []\n\n    def add_student(self, student):\n        self.students.append(student)\n\n    def get_student(self, name):\n        for s in self.students:\n            if s.name == name:\n                return s\n        return None\n\n    def class_average(self):\n        if not self.students:\n            return 0\n        return sum(s.average() for s in self.students) / len(self.students)\n\n    def top_student(self):\n        if not self.students:\n            return None\n        return max(self.students, key=lambda s: s.average())\n\n    def save_to_csv(self, filename):\n        import csv\n        with open(filename, 'w', newline='') as f:\n            writer = csv.writer(f)\n            for s in self.students:\n                writer.writerow([s.name] + s.grades)\n\n    @classmethod\n    def load_from_csv(cls, filename):\n        import csv\n        book = cls()\n        with open(filename, newline='') as f:\n            for row in csv.reader(f):\n                if row:\n                    book.add_student(Student(row[0], [float(g) for g in row[1:]]))\n        return book\n\nbook = GradeBook()\nbook.add_student(Student('Alice', [90, 85]))\nbook.add_student(Student('Bob', [70, 80, 75]))\nbook.save_to_csv('gradebook.csv')\n\nloaded = GradeBook.load_from_csv('gradebook.csv')\nfor s in loaded.students:\n    print(s)",
+      "walkthrough": "Each student becomes one CSV row: the name followed by all the grades, however many there are.\n`load_from_csv` is a classmethod that builds a fresh GradeBook, reads each row, and reconstructs a Student with the grades converted back to floats."
+    },
+    {
+      "id": "47.5",
+      "description": "Create a simple CLI menu: 1) Add student, 2) Add grade, 3) View report, 4) Save & Exit. Loop until exit.",
+      "hint": "`while True: choice = input('1/2/3/4: ')` with if/elif branches.\nFor 'Add grade': get student name first, then `student.grades.append(float(grade))`.\n'View report': loop students, print name and average.",
+      "expected": "",
+      "solution": "from dataclasses import dataclass, field\n\n@dataclass\nclass Student:\n    name: str\n    grades: list = field(default_factory=list)\n\n    def average(self):\n        return sum(self.grades) / len(self.grades) if self.grades else 0\n\nclass GradeBook:\n    def __init__(self):\n        self.students = []\n\n    def add_student(self, student):\n        self.students.append(student)\n\n    def get_student(self, name):\n        for s in self.students:\n            if s.name == name:\n                return s\n        return None\n\n    def class_average(self):\n        if not self.students:\n            return 0\n        return sum(s.average() for s in self.students) / len(self.students)\n\n    def top_student(self):\n        if not self.students:\n            return None\n        return max(self.students, key=lambda s: s.average())\n\n    def save_to_csv(self, filename):\n        import csv\n        with open(filename, 'w', newline='') as f:\n            writer = csv.writer(f)\n            for s in self.students:\n                writer.writerow([s.name] + s.grades)\n\n    @classmethod\n    def load_from_csv(cls, filename):\n        import csv\n        book = cls()\n        with open(filename, newline='') as f:\n            for row in csv.reader(f):\n                if row:\n                    book.add_student(Student(row[0], [float(g) for g in row[1:]]))\n        return book\n\nbook = GradeBook()\n\nwhile True:\n    print('\\n1) Add student  2) Add grade  3) View report  4) Save & Exit')\n    choice = input('Choice: ').strip()\n\n    if choice == '1':\n        name = input('Student name: ')\n        book.add_student(Student(name))\n        print(f'Added {name}')\n    elif choice == '2':\n        name = input('Student name: ')\n        student = book.get_student(name)\n        if student is None:\n            print('No such student')\n        else:\n            student.grades.append(float(input('Grade: ')))\n            print('Grade added')\n    elif choice == '3':\n        for s in book.students:\n            print(f'{s.name:<10} {s.average():.1f}')\n        print(f'Class average: {book.class_average():.1f}')\n    elif choice == '4':\n        book.save_to_csv('gradebook.csv')\n        print('Saved. Bye.')\n        break\n    else:\n        print('Unknown option')",
+      "walkthrough": "The loop shows the menu, reads a choice, and branches. Each branch does one small job using the GradeBook methods.\nOption 4 saves and then `break`s out of the loop. The `else` handles typos without crashing.",
+      "solution_stdin": "1\nAlice\n2\nAlice\n90\n2\nAlice\n80\n3\n9\n4\n"
+    }
+  ],
+  "lesson": {
+    "intro": "A project that pulls together dataclasses, classes, CSV files and a menu loop.\nA student has grades; a grade book holds students and can report on them. Build\nit up one task at a time and run after each. The solutions show one reasonable\ndesign, not the only one.",
+    "sections": [
+      {
+        "heading": "The data: a Student dataclass",
+        "body": "A name and a list of grades. `default_factory=list` so every student gets\na fresh list. A method for the average, guarded against an empty list.",
+        "code": "from dataclasses import dataclass, field\n\n@dataclass\nclass Student:\n    name: str\n    grades: list = field(default_factory=list)\n\n    def average(self):\n        return sum(self.grades) / len(self.grades) if self.grades else 0\n\ns = Student('Alice', [90, 85])\nprint(s)\nprint(s.average())",
+        "output": "Student(name='Alice', grades=[90, 85])\n87.5"
+      },
+      {
+        "heading": "The container: a GradeBook class",
+        "body": "Holds a list of students and knows how to find one by name and compute\nthe overall average. `max` with a `key` finds the top student.",
+        "code": "class GradeBook:\n    def __init__(self):\n        self.students = []\n\n    def add_student(self, student):\n        self.students.append(student)\n\n    def get_student(self, name):\n        for s in self.students:\n            if s.name == name:\n                return s\n        return None\n\n    def top_student(self):\n        if not self.students:\n            return None\n        return max(self.students, key=lambda s: s.average())\n\nprint('(see the solutions for a full version)')",
+        "output": "(see the solutions for a full version)"
+      },
+      {
+        "heading": "Saving and loading",
+        "body": "One CSV row per student: the name, then the grades. Loading reads each row\nback, converts the grades to floats, and rebuilds the objects. A\n`@classmethod` is a natural home for \"make a GradeBook from a file\".",
+        "code": "# name,grade,grade,grade...\n# Alice,90,85\n# Bob,72,80,91\nprint('rows = [name] + grades')",
+        "output": "rows = [name] + grades"
+      },
+      {
+        "heading": "The menu loop",
+        "body": "Print the options, read a choice, branch with if/elif, repeat until exit.\nKeep each branch short by calling methods on the grade book rather than\ndoing the work inline.",
+        "code": "def menu():\n    print('1) Add student  2) Add grade  3) Report  4) Save & exit')\n    return input('> ')\n\nprint('(loop: while True: choice = menu(); ...)')",
+        "output": "(loop: while True: choice = menu(); ...)"
+      }
+    ],
+    "watch_out": [
+      "Dividing by `len(self.grades)` when it's zero. Guard it.",
+      "Reading grades back from CSV as strings and then averaging them. Convert to float.",
+      "Letting the menu crash on an unknown choice. An `else: print('Unknown option')` keeps it polite.",
+      "In this app, put every menu answer on its own line in the input box, ending with the exit option."
+    ]
+  }
+}

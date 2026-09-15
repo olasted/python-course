@@ -1,0 +1,89 @@
+{
+  "day": 23,
+  "title": "Classes: Inheritance",
+  "tasks": [
+    {
+      "id": "23.1",
+      "description": "Create a class `Animal` with a name attribute and a `speak()` method that prints '{name} makes a sound.'. Create an instance and call speak().",
+      "hint": "`def __init__(self, name): self.name = name` stores the name.\n`def speak(self): print(f'{self.name} makes a sound.')`\nThis is the BASE class — child classes will inherit these.",
+      "expected": "",
+      "solution": "class Animal:\n    def __init__(self, name):\n        self.name = name\n\n    def speak(self):\n        print(f'{self.name} makes a sound.')\n\na = Animal('Generic')\na.speak()",
+      "walkthrough": "This is the base class. It stores a name and has one method.\nNothing here is about inheritance yet; the next tasks build on it."
+    },
+    {
+      "id": "23.2",
+      "description": "Create a class `Cat` that inherits from `Animal`. Override `speak()` to print '{name} says: Meow!'. Create a Cat and call speak().",
+      "hint": "Inheritance syntax: `class Cat(Animal):` — put the parent in parentheses.\nRedefining `speak()` in Cat OVERRIDES the parent's version for Cat instances.\n`cat = Cat('Whiskers'); cat.speak()` — calls Cat's speak, not Animal's.",
+      "expected": "",
+      "solution": "class Animal:\n    def __init__(self, name):\n        self.name = name\n\n    def speak(self):\n        print(f'{self.name} makes a sound.')\n\nclass Cat(Animal):\n    def speak(self):\n        print(f'{self.name} says: Meow!')\n\ncat = Cat('Whiskers')\ncat.speak()",
+      "walkthrough": "`class Cat(Animal)` makes Cat inherit from Animal, including its `__init__`.\nCat's own `speak` overrides the parent's, so a Cat meows instead of making a generic sound."
+    },
+    {
+      "id": "23.3",
+      "description": "Create a `Dog` class inheriting from `Animal` with its own speak(). Also add a fetch() method. Show that both speak() and fetch() work.",
+      "hint": "Use `super().__init__(name)` in Dog's `__init__` to call Animal's initialiser.\nDog's `speak()` overrides Animal's; `fetch()` is a brand new method only Dog has.\n`dog.speak()` + `dog.fetch()` should both work.",
+      "expected": "",
+      "solution": "class Animal:\n    def __init__(self, name):\n        self.name = name\n\n    def speak(self):\n        print(f'{self.name} makes a sound.')\n\nclass Dog(Animal):\n    def __init__(self, name):\n        super().__init__(name)\n\n    def speak(self):\n        print(f'{self.name} says: Woof!')\n\n    def fetch(self):\n        print(f'{self.name} fetches the ball!')\n\ndog = Dog('Rex')\ndog.speak()\ndog.fetch()",
+      "walkthrough": "Dog overrides `speak` and adds a brand new method, `fetch`, that Animal doesn't have.\nIts `__init__` just hands the name to the parent with `super()`. Since it adds nothing extra, you could leave that `__init__` out entirely and get the same result."
+    },
+    {
+      "id": "23.4",
+      "description": "Create a `Shape` class with a `area()` method returning 0. Create `Circle(Shape)` and `Square(Shape)` subclasses that override area(). Test each.",
+      "hint": "Shape is the base: `def area(self): return 0`\nCircle: `self.radius = radius`, `def area(self): return 3.14159 * self.radius ** 2`\nSquare: `self.side = side`, `def area(self): return self.side ** 2`",
+      "expected": "",
+      "solution": "class Shape:\n    def area(self):\n        return 0\n\nclass Circle(Shape):\n    def __init__(self, radius):\n        self.radius = radius\n\n    def area(self):\n        return 3.14159 * self.radius ** 2\n\nclass Square(Shape):\n    def __init__(self, side):\n        self.side = side\n\n    def area(self):\n        return self.side ** 2\n\nprint(Shape().area())\nprint(Circle(2).area())\nprint(Square(3).area())",
+      "walkthrough": "Shape gives a default `area` that returns 0. Each subclass replaces it with the right formula.\nBecause they all have an `area` method, you can treat any shape the same way, which is the real benefit."
+    },
+    {
+      "id": "23.5",
+      "description": "Use isinstance() to check if a Dog object is an instance of Dog, Animal, and str. Print each result.",
+      "hint": "`isinstance(obj, ClassName)` returns True if `obj` is that type OR a subclass.\nA Dog IS an Animal (due to inheritance) — `isinstance(dog, Animal)` → `True`\n`isinstance(dog, str)` → `False` — Dog is not related to str.",
+      "expected": "",
+      "solution": "class Animal:\n    def __init__(self, name):\n        self.name = name\n\nclass Dog(Animal):\n    pass\n\ndog = Dog('Rex')\nprint(isinstance(dog, Dog))\nprint(isinstance(dog, Animal))\nprint(isinstance(dog, str))",
+      "walkthrough": "`isinstance` follows the inheritance chain. A Dog is a Dog, and because Dog inherits from Animal, it's also an Animal.\nIt has nothing to do with strings, so the last check is False."
+    },
+    {
+      "id": "23.6",
+      "description": "Create a `Vehicle` class with speed and fuel. Create `Car(Vehicle)` that adds a doors attribute. Create `Truck(Vehicle)` that adds cargo_capacity. Make instances of both and print their attributes.",
+      "hint": "In Car's `__init__`: `super().__init__(speed, fuel)` first, then `self.doors = doors`\nIn Truck's `__init__`: same pattern with `self.cargo_capacity = capacity`\nThis avoids duplicating the speed/fuel setup — inheritance handles it.",
+      "expected": "",
+      "solution": "class Vehicle:\n    def __init__(self, speed, fuel):\n        self.speed = speed\n        self.fuel = fuel\n\nclass Car(Vehicle):\n    def __init__(self, speed, fuel, doors):\n        super().__init__(speed, fuel)\n        self.doors = doors\n\nclass Truck(Vehicle):\n    def __init__(self, speed, fuel, cargo_capacity):\n        super().__init__(speed, fuel)\n        self.cargo_capacity = cargo_capacity\n\ncar = Car(120, 'petrol', 4)\ntruck = Truck(90, 'diesel', 5000)\nprint(car.speed, car.fuel, car.doors)\nprint(truck.speed, truck.fuel, truck.cargo_capacity)",
+      "walkthrough": "Both child classes call `super().__init__` to set speed and fuel, then store their own extra attribute.\nThe shared setup lives in one place, Vehicle, instead of being copied into each child."
+    }
+  ],
+  "lesson": {
+    "intro": "Inheritance lets one class build on another. A `Cat` is an `Animal`, so it gets\neverything `Animal` has for free and only adds or changes what's different.\nIt saves repetition and lets you say \"these things are all a kind of X\".",
+    "sections": [
+      {
+        "heading": "A base class and a child class",
+        "body": "Put the parent in brackets after the child's name. The child inherits every\nmethod and attribute. If the child defines a method with the same name, that\nversion wins for child objects. That's called overriding.",
+        "code": "class Animal:\n    def __init__(self, name):\n        self.name = name\n\n    def speak(self):\n        print(f'{self.name} makes a sound.')\n\nclass Cat(Animal):\n    def speak(self):\n        print(f'{self.name} says: Meow!')\n\nAnimal('Generic').speak()\nCat('Whiskers').speak()",
+        "output": "Generic makes a sound.\nWhiskers says: Meow!"
+      },
+      {
+        "heading": "Adding new methods",
+        "body": "A child can have methods the parent doesn't. Here `Dog` overrides `speak`\nand adds `fetch`. Notice `Dog` has no `__init__` of its own; it uses the\ninherited one.",
+        "code": "class Animal:\n    def __init__(self, name):\n        self.name = name\n\nclass Dog(Animal):\n    def speak(self):\n        print(f'{self.name} says: Woof!')\n\n    def fetch(self):\n        print(f'{self.name} fetches the ball.')\n\nd = Dog('Rex')\nd.speak()\nd.fetch()",
+        "output": "Rex says: Woof!\nRex fetches the ball."
+      },
+      {
+        "heading": "super(): extend the parent's __init__",
+        "body": "When a child needs extra attributes, give it its own `__init__`, call\n`super().__init__(...)` to let the parent set up its part, then add the rest.",
+        "code": "class Vehicle:\n    def __init__(self, speed, fuel):\n        self.speed = speed\n        self.fuel = fuel\n\nclass Car(Vehicle):\n    def __init__(self, speed, fuel, doors):\n        super().__init__(speed, fuel)\n        self.doors = doors\n\nc = Car(120, 'petrol', 4)\nprint(c.speed, c.fuel, c.doors)",
+        "output": "120 petrol 4"
+      },
+      {
+        "heading": "isinstance: is this a kind of that?",
+        "body": "`isinstance(obj, Class)` is True if the object was made from that class or\nany class that inherits from it. A Dog is an Animal, so both checks pass.",
+        "code": "class Animal: pass\nclass Dog(Animal): pass\n\nd = Dog()\nprint(isinstance(d, Dog))\nprint(isinstance(d, Animal))\nprint(isinstance(d, str))",
+        "output": "True\nTrue\nFalse"
+      }
+    ],
+    "watch_out": [
+      "Forgetting `super().__init__(...)` in a child's `__init__`. Then the parent's attributes are never set.",
+      "The brackets after the class name hold the parent, not parameters: `class Cat(Animal):`.",
+      "Overriding a method replaces it completely. Call `super().method()` inside if you want the parent's behaviour too.",
+      "`isinstance` checks the whole chain of parents, `type(obj) == Dog` doesn't."
+    ]
+  }
+}

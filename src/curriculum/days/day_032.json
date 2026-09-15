@@ -1,0 +1,87 @@
+{
+  "day": 32,
+  "title": "Decorators",
+  "tasks": [
+    {
+      "id": "32.1",
+      "description": "Write a decorator `shout` that makes any function's string return value uppercase. Apply it to a function that returns 'hello world'.",
+      "hint": "A decorator is a function that wraps another function.\n`def shout(func): def wrapper(*args, **kwargs): return func(*args, **kwargs).upper(); return wrapper`\nApply with `@shout` above the function definition.",
+      "expected": "HELLO WORLD",
+      "solution": "def shout(func):\n    def wrapper(*args, **kwargs):\n        return func(*args, **kwargs).upper()\n    return wrapper\n\n@shout\ndef greet():\n    return 'hello world'\n\nprint(greet())",
+      "walkthrough": "`shout` receives the original function and returns `wrapper`, which calls it and uppercases the result.\n`@shout` replaces `greet` with that wrapper, so calling `greet()` now goes through it."
+    },
+    {
+      "id": "32.2",
+      "description": "Write a decorator `timer` that prints how long a function takes to run. Apply it to a function that loops 1 million times.",
+      "hint": "`import time` — use `time.time()` before and after calling the function.\n`start = time.time(); result = func(*args, **kwargs); end = time.time()`\nPrint: `print(f'Took {end - start:.4f}s')` then return result.",
+      "expected": "",
+      "solution": "import time\n\ndef timer(func):\n    def wrapper(*args, **kwargs):\n        start = time.time()\n        result = func(*args, **kwargs)\n        end = time.time()\n        print(f'Took {end - start:.4f}s')\n        return result\n    return wrapper\n\n@timer\ndef count():\n    total = 0\n    for i in range(1_000_000):\n        total += i\n    return total\n\nprint(count())",
+      "walkthrough": "The wrapper notes the time, runs the real function, notes the time again, and prints the difference.\nIt still returns the function's result, so `print(count())` shows the total after the timing line."
+    },
+    {
+      "id": "32.3",
+      "description": "Write a decorator `repeat(n)` that calls a function n times. Apply it so a function prints 'Hello!' three times.",
+      "hint": "This is a decorator FACTORY — it takes an argument.\n`def repeat(n): def decorator(func): def wrapper(*a, **kw): [func(*a, **kw) for _ in range(n)]; return wrapper; return decorator`\nApply: `@repeat(3)` above the function.",
+      "expected": "Hello!\nHello!\nHello!",
+      "solution": "def repeat(n):\n    def decorator(func):\n        def wrapper(*args, **kwargs):\n            for _ in range(n):\n                func(*args, **kwargs)\n        return wrapper\n    return decorator\n\n@repeat(3)\ndef say_hello():\n    print('Hello!')\n\nsay_hello()",
+      "walkthrough": "`repeat(3)` is called first and returns `decorator`. That decorator is then applied to `say_hello`.\nThe innermost wrapper loops `n` times, calling the original each time."
+    },
+    {
+      "id": "32.4",
+      "description": "Write a decorator `log_call` that prints 'Calling {func_name}' before a function runs. Test it.",
+      "hint": "Inside the wrapper: `print(f'Calling {func.__name__}')` before calling func.\n`func.__name__` gives the function's name as a string.\nThis is useful for debugging — you can see exactly which functions are being called.",
+      "expected": "",
+      "solution": "def log_call(func):\n    def wrapper(*args, **kwargs):\n        print(f'Calling {func.__name__}')\n        return func(*args, **kwargs)\n    return wrapper\n\n@log_call\ndef add(a, b):\n    return a + b\n\nprint(add(2, 3))",
+      "walkthrough": "`func.__name__` is the original function's name as a string, so the message says which function is being called.\nThe wrapper then calls it with the same arguments and passes the result back."
+    },
+    {
+      "id": "32.5",
+      "description": "Stack two decorators on one function: `@log_call` and `@shout`. Show that both run (prints the call log AND uppercases the output).",
+      "hint": "Decorators stack from bottom up — the closest to the function runs first.\n`@log_call` then `@shout` on the next line means: shout wraps the function, then log_call wraps that.\nThe order can matter — experiment to see the difference.",
+      "expected": "",
+      "solution": "def log_call(func):\n    def wrapper(*args, **kwargs):\n        print(f'Calling {func.__name__}')\n        return func(*args, **kwargs)\n    return wrapper\n\ndef shout(func):\n    def wrapper(*args, **kwargs):\n        return func(*args, **kwargs).upper()\n    return wrapper\n\n@log_call\n@shout\ndef greet():\n    return 'hello world'\n\nprint(greet())",
+      "walkthrough": "`@shout` is closest to the function so it wraps first; `@log_call` wraps the result of that.\nCalling `greet()` runs log_call's wrapper (prints the message), which calls shout's wrapper, which calls the original and uppercases it.\nNote the logged name is 'wrapper', because by the time log_call sees it, the function is already shout's wrapper."
+    }
+  ],
+  "lesson": {
+    "intro": "A decorator is a function that takes another function and gives back a new one\nwith something added: timing, logging, changing the result. The `@name` syntax\napplies it. Decorators look magical the first time, so today goes slowly and\nshows what the `@` is really doing.",
+    "sections": [
+      {
+        "heading": "Functions are values",
+        "body": "You can pass a function to another function and return functions from\nfunctions. That's the whole foundation. Here `wrap` takes a function and\nreturns a new one that calls it and uppercases the result.",
+        "code": "def shout(func):\n    def wrapper():\n        return func().upper()\n    return wrapper\n\ndef hello():\n    return 'hello world'\n\nloud_hello = shout(hello)\nprint(loud_hello())",
+        "output": "HELLO WORLD"
+      },
+      {
+        "heading": "The @ syntax is just that, shorter",
+        "body": "Writing `@shout` above a def is exactly the same as writing\n`hello = shout(hello)` after it. The name now refers to the wrapped version.",
+        "code": "def shout(func):\n    def wrapper():\n        return func().upper()\n    return wrapper\n\n@shout\ndef hello():\n    return 'hello world'\n\nprint(hello())",
+        "output": "HELLO WORLD"
+      },
+      {
+        "heading": "Passing arguments through",
+        "body": "The wrapper should accept whatever the original does. `*args` and\n`**kwargs` capture anything and pass it straight along. This is the\nstandard shape of a decorator; copy it.",
+        "code": "def log_call(func):\n    def wrapper(*args, **kwargs):\n        print(f'Calling {func.__name__}')\n        return func(*args, **kwargs)\n    return wrapper\n\n@log_call\ndef add(a, b):\n    return a + b\n\nprint(add(2, 3))",
+        "output": "Calling add\n5"
+      },
+      {
+        "heading": "Decorators with arguments",
+        "body": "`@repeat(3)` needs one more layer: a function that takes the argument and\nreturns a decorator. Three nested defs. Read it inside out: the wrapper does\nthe work, the decorator wraps, the outer function configures.",
+        "code": "def repeat(n):\n    def decorator(func):\n        def wrapper(*args, **kwargs):\n            for _ in range(n):\n                func(*args, **kwargs)\n        return wrapper\n    return decorator\n\n@repeat(3)\ndef greet():\n    print('Hello!')\n\ngreet()",
+        "output": "Hello!\nHello!\nHello!"
+      },
+      {
+        "heading": "Stacking",
+        "body": "Several decorators apply from the bottom up. The one closest to the def\nwraps first, and the one on top wraps that.",
+        "code": "def a(func):\n    def wrapper():\n        return 'a(' + func() + ')'\n    return wrapper\n\ndef b(func):\n    def wrapper():\n        return 'b(' + func() + ')'\n    return wrapper\n\n@a\n@b\ndef f():\n    return 'f'\n\nprint(f())",
+        "output": "a(b(f))"
+      }
+    ],
+    "watch_out": [
+      "Forgetting `return wrapper` at the end of the decorator. The decorated function becomes `None`.",
+      "Forgetting `return func(...)` inside the wrapper. The result gets swallowed.",
+      "Writing `@shout()` with brackets when `shout` takes the function directly. Only decorators with arguments use brackets.",
+      "A decorated function's `__name__` becomes 'wrapper'. `functools.wraps` fixes that; not needed for now."
+    ]
+  }
+}

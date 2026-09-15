@@ -1,0 +1,104 @@
+{
+  "day": 3,
+  "title": "Input and Output",
+  "tasks": [
+    {
+      "id": "3.1",
+      "description": "Ask the user for their name using input(), then print: Hello, {name}!",
+      "hint": "`input('prompt')` pauses execution and waits for the user to type something, then press Enter.\nThe result is always a string, stored in a variable: `name = input('Enter your name: ')`\nBuild the greeting with an f-string: `print(f'Hello, {name}!')`",
+      "expected": "",
+      "solution": "name = input('Enter your name: ')\nprint(f'Hello, {name}!')",
+      "walkthrough": "`input()` shows the prompt, waits for a line, and returns it as a string.\nThat string is saved as `name`, then dropped into the greeting with an f-string.",
+      "solution_stdin": "Sam\n"
+    },
+    {
+      "id": "3.2",
+      "description": "Ask the user for a number, then print that number multiplied by 2.",
+      "hint": "`input()` ALWAYS returns a string — even if the user types `5`, you get `'5'` (a string).\nConvert it to a number before doing math: `num = int(input('Enter a number: '))`\nThen multiply: `print(num * 2)`",
+      "expected": "",
+      "solution": "number = int(input('Enter a number: '))\nprint(number * 2)",
+      "walkthrough": "Whatever is typed comes back as text, so `int()` converts it to a whole number before it's stored.\nAfter that, `number * 2` is ordinary maths.",
+      "solution_stdin": "7\n"
+    },
+    {
+      "id": "3.3",
+      "description": "Ask the user for two numbers on separate lines, then print their sum.",
+      "hint": "Use two separate `input()` calls, one for each number.\nConvert both to `float()` so decimal inputs work: `a = float(input('First: '))`\nThen `print(a + b)` — Python adds the numbers, not the strings.",
+      "expected": "",
+      "solution": "a = float(input('First number: '))\nb = float(input('Second number: '))\nprint(a + b)",
+      "walkthrough": "Two separate `input()` calls read two separate lines.\n`float()` is used instead of `int()` so numbers like 2.5 work as well as whole numbers.\n`a + b` adds the converted numbers rather than joining two strings.",
+      "solution_stdin": "2.5\n4\n"
+    },
+    {
+      "id": "3.4",
+      "description": "Ask for a person's name and age. Print: My name is {name} and I am {age} years old.",
+      "hint": "Get both with separate `input()` calls and store in variables.\nf-strings let you embed multiple variables: `f'My name is {name} and I am {age} years old.'`\nNote: `age` is a string from input — you don't need to convert it if you're just printing it.",
+      "expected": "",
+      "solution": "name = input('Name: ')\nage = input('Age: ')\nprint(f'My name is {name} and I am {age} years old.')",
+      "walkthrough": "Both answers are read as strings, and that's fine here because they're only being printed, not used for maths.\nThe f-string has two placeholders and each is filled from its variable.",
+      "solution_stdin": "Priya\n29\n"
+    },
+    {
+      "id": "3.5",
+      "description": "Ask the user to enter their favourite city. Print it in uppercase with 'I love ' in front.",
+      "hint": "Store the input in a variable: `city = input('Your favourite city: ')`\nCall `.upper()` on it to convert to uppercase: `city.upper()`\nCombine with string concatenation: `print('I love ' + city.upper())`",
+      "expected": "",
+      "solution": "city = input('Your favourite city: ')\nprint('I love ' + city.upper())",
+      "walkthrough": "`city.upper()` makes an uppercase copy of the answer.\nThe `+` joins the fixed text and the uppercase city into one string. Note the space at the end of `'I love '`.",
+      "solution_stdin": "lisbon\n"
+    },
+    {
+      "id": "3.6",
+      "description": "Ask the user for a number. Print 'Even' if it is divisible by 2, otherwise print 'Odd'.",
+      "hint": "Convert the input to `int` first: `num = int(input('Enter a number: '))`\nThe modulo operator `%` gives the remainder: `num % 2` is `0` for even, `1` for odd.\nUse `if num % 2 == 0: print('Even') else: print('Odd')`",
+      "expected": "",
+      "solution": "number = int(input('Enter a number: '))\nif number % 2 == 0:\n    print('Even')\nelse:\n    print('Odd')",
+      "walkthrough": "`%` gives the remainder after division. Any even number divided by 2 leaves 0, any odd number leaves 1.\nThe `if` checks whether the remainder is 0 and prints the matching word.\nYou'll see a lot more of `if`/`else` tomorrow.",
+      "solution_stdin": "10\n"
+    },
+    {
+      "id": "3.7",
+      "description": "Ask the user for their first name and last name separately. Print their full name with a space in between.",
+      "hint": "Two `input()` calls: `first = input(...)` and `last = input(...)`\nJoin them: `print(first + ' ' + last)` or the f-string way: `print(f'{first} {last}')`\nThe f-string approach is cleaner — the space inside `{}` brackets is also part of the string.",
+      "expected": "",
+      "solution": "first = input('First name: ')\nlast = input('Last name: ')\nprint(f'{first} {last}')",
+      "walkthrough": "Two inputs, two variables.\nThe space between the braces in the f-string becomes the space between the names in the output.\n`print(first + ' ' + last)` would give exactly the same result.",
+      "solution_stdin": "Grace\nHopper\n"
+    }
+  ],
+  "lesson": {
+    "intro": "So far your programs only talk. Today they listen. `input()` pauses the program\nand waits for whoever is running it to type something. That one function is enough\nto make programs that feel interactive.\n\nIn this app, when you run code that uses `input()`, a small box will ask you for\nthe answers first, one per line. Your program then reads them in order.",
+    "sections": [
+      {
+        "heading": "Asking a question",
+        "body": "`input('...')` shows the text you give it, waits for a line of typing, and hands\nthat line back to you. You almost always store it in a variable.",
+        "code": "name = input('What is your name? ')\nprint(f'Nice to meet you, {name}.')",
+        "output": "What is your name? Nice to meet you, Sam."
+      },
+      {
+        "heading": "Whatever they type is text",
+        "body": "This is the rule that catches everyone. `input()` always gives you a string,\neven if the person typed `5`. You get `'5'`, and `'5' * 2` is `'55'`, not `10`.\n\nIf you want a number, convert it straight away with `int()` or `float()`.",
+        "code": "answer = input('Pick a number: ')\nnumber = int(answer)\nprint(number * 2)",
+        "output": "Pick a number: 14"
+      },
+      {
+        "heading": "Doing the conversion in one line",
+        "body": "You can wrap `input()` inside `int()` directly. This is the most common way\nyou'll see it written. Use `float()` instead when decimals are allowed.",
+        "code": "a = float(input('First number: '))\nb = float(input('Second number: '))\nprint(a + b)",
+        "output": "First number: Second number: 5.5"
+      },
+      {
+        "heading": "Joining text together",
+        "body": "Two ways to combine strings. The `+` operator glues them end to end, and\nyou have to add spaces yourself. An f-string lets you write the sentence\nnaturally with the variables dropped in.",
+        "code": "first = 'Ada'\nlast = 'Lovelace'\nprint(first + ' ' + last)\nprint(f'{first} {last}')",
+        "output": "Ada Lovelace\nAda Lovelace"
+      }
+    ],
+    "watch_out": [
+      "Forgetting to convert. `input('Age: ') + 1` fails because you can't add 1 to text.",
+      "Using `int()` on something with a decimal point. `int('3.5')` is an error. Use `float()`.",
+      "Putting the conversion in the wrong place: `int(input('Enter a number: '))` converts the answer, which is what you want. `input(int('...'))` makes no sense.",
+      "In this app you have to supply the input values in the box before the program runs. If you supply fewer values than the program asks for, you'll see an EOFError."
+    ]
+  }
+}

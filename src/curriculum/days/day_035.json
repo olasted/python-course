@@ -1,0 +1,87 @@
+{
+  "day": 35,
+  "title": "Functional Programming",
+  "tasks": [
+    {
+      "id": "35.1",
+      "description": "Use `functools.reduce()` to multiply all numbers in [1, 2, 3, 4, 5] together. Print the result.",
+      "hint": "`from functools import reduce`\n`reduce(function, iterable)` applies the function cumulatively: `reduce(lambda a, b: a*b, [1,2,3,4,5])`\nThis computes `((((1*2)*3)*4)*5)` = 120.",
+      "expected": "120",
+      "solution": "from functools import reduce\n\nproduct = reduce(lambda a, b: a * b, [1, 2, 3, 4, 5])\nprint(product)",
+      "walkthrough": "`reduce` runs the lambda on 1 and 2 to get 2, then on 2 and 3 to get 6, then 24, then 120.\nThe final single value is returned."
+    },
+    {
+      "id": "35.2",
+      "description": "Use `map()`, `filter()`, and `reduce()` together: from [1..10], keep evens, square them, then sum. Print the result.",
+      "hint": "Step 1: `evens = filter(lambda x: x%2==0, range(1, 11))` → 2,4,6,8,10\nStep 2: `squares = map(lambda x: x**2, evens)` → 4,16,36,64,100\nStep 3: `reduce(lambda a, b: a+b, squares)` → 220",
+      "expected": "220",
+      "solution": "from functools import reduce\n\nevens = filter(lambda x: x % 2 == 0, range(1, 11))\nsquares = map(lambda x: x ** 2, evens)\ntotal = reduce(lambda a, b: a + b, squares)\nprint(total)",
+      "walkthrough": "The filter keeps 2, 4, 6, 8, 10. The map squares them to 4, 16, 36, 64, 100.\nThe reduce adds those together: 220.\nNothing is computed until `reduce` pulls values through the chain."
+    },
+    {
+      "id": "35.3",
+      "description": "Write a pure function `add(a, b)` and use `functools.partial` to create `add5` — a function that always adds 5. Test add5(10).",
+      "hint": "`from functools import partial`\n`partial(function, arg)` creates a new function with some args pre-filled.\n`add5 = partial(add, 5)` — calling `add5(10)` is the same as `add(5, 10)` → 15.",
+      "expected": "15",
+      "solution": "from functools import partial\n\ndef add(a, b):\n    return a + b\n\nadd5 = partial(add, 5)\nprint(add5(10))",
+      "walkthrough": "`partial(add, 5)` fixes `a` as 5. The new function only needs `b`.\n`add5(10)` is therefore the same as `add(5, 10)`."
+    },
+    {
+      "id": "35.4",
+      "description": "Use a list comprehension instead of `map()` to triple every number in [1, 2, 3, 4, 5]. Print the result.",
+      "hint": "List comprehensions are often preferred over `map()` in Python for readability.\n`[x * 3 for x in range(1, 6)]` → `[3, 6, 9, 12, 15]`\nBoth approaches work — list comprehensions are more 'Pythonic'.",
+      "expected": "[3, 6, 9, 12, 15]",
+      "solution": "tripled = [x * 3 for x in [1, 2, 3, 4, 5]]\nprint(tripled)",
+      "walkthrough": "The comprehension multiplies each item by 3 and collects the results.\nIt does exactly what `list(map(lambda x: x * 3, ...))` would, with less ceremony."
+    },
+    {
+      "id": "35.5",
+      "description": "Write a function `compose(f, g)` that returns a new function h where h(x) = f(g(x)). Test with double and add1.",
+      "hint": "`def compose(f, g): return lambda x: f(g(x))`\n`double = lambda x: x * 2; add1 = lambda x: x + 1`\n`double_then_add1 = compose(add1, double); print(double_then_add1(3))` → 7",
+      "expected": "7",
+      "solution": "def compose(f, g):\n    return lambda x: f(g(x))\n\ndouble = lambda x: x * 2\nadd1 = lambda x: x + 1\n\ndouble_then_add1 = compose(add1, double)\nprint(double_then_add1(3))",
+      "walkthrough": "`compose` returns a lambda that applies `g` and then `f` to its input.\nWith `f = add1` and `g = double`, calling it with 3 doubles to 6 and then adds 1 to get 7."
+    }
+  ],
+  "lesson": {
+    "intro": "Functional programming is a style: build programs by combining small functions\nthat take input and return output without changing anything else. Python isn't\na purely functional language, but it borrows the useful parts. Today: `reduce`,\n`partial`, and composing functions.",
+    "sections": [
+      {
+        "heading": "reduce: fold a list into one value",
+        "body": "`reduce(function, list)` applies the function to the first two items, then\nto that result and the third item, and so on until one value is left.\nIt lives in `functools`. Use it for products and other combinations;\nfor sums, `sum()` is clearer.",
+        "code": "from functools import reduce\n\nprint(reduce(lambda a, b: a * b, [1, 2, 3, 4, 5]))\nprint(reduce(lambda a, b: a + b, [1, 2, 3]))",
+        "output": "120\n6"
+      },
+      {
+        "heading": "Chaining map, filter and reduce",
+        "body": "Each step takes the output of the last. Read it as a pipeline: keep the evens,\nsquare them, add them up.",
+        "code": "from functools import reduce\n\nevens = filter(lambda x: x % 2 == 0, range(1, 11))\nsquares = map(lambda x: x ** 2, evens)\nprint(reduce(lambda a, b: a + b, squares))",
+        "output": "220"
+      },
+      {
+        "heading": "partial: pre-fill some arguments",
+        "body": "`partial(func, value)` gives you a new function with the first argument\nalready supplied. Handy when you keep calling something with the same\nfirst argument.",
+        "code": "from functools import partial\n\ndef add(a, b):\n    return a + b\n\nadd5 = partial(add, 5)\nprint(add5(10))\nprint(add5(1))",
+        "output": "15\n6"
+      },
+      {
+        "heading": "Composing functions",
+        "body": "`compose(f, g)` returns a new function that applies g first, then f.\nIt's a small idea with a lot of mileage: build complex behaviour from\nsimple, testable pieces.",
+        "code": "def compose(f, g):\n    return lambda x: f(g(x))\n\ndouble = lambda x: x * 2\nadd1 = lambda x: x + 1\n\ndouble_then_add1 = compose(add1, double)\nprint(double_then_add1(3))",
+        "output": "7"
+      },
+      {
+        "heading": "When a comprehension is better",
+        "body": "`map` and `filter` are fine, but for most everyday jobs a comprehension\nsays the same thing more plainly. Use whichever reads better.",
+        "code": "print(list(map(lambda x: x * 3, [1, 2, 3])))\nprint([x * 3 for x in [1, 2, 3]])",
+        "output": "[3, 6, 9]\n[3, 6, 9]"
+      }
+    ],
+    "watch_out": [
+      "`reduce` isn't built in; you need `from functools import reduce`.",
+      "`reduce` on an empty list raises an error unless you give a starting value as the third argument.",
+      "In `compose(f, g)`, `g` runs first. The order trips people up.",
+      "A pure function shouldn't print or change globals. If it does, it's harder to combine."
+    ]
+  }
+}

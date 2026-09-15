@@ -1,0 +1,81 @@
+{
+  "day": 51,
+  "title": "SQLite with Python",
+  "tasks": [
+    {
+      "id": "51.1",
+      "description": "Connect to an SQLite database 'school.db'. Create a `students` table with columns: id (PRIMARY KEY), name (TEXT), grade (INTEGER).",
+      "hint": "`import sqlite3; conn = sqlite3.connect('school.db')`\n`cursor = conn.cursor()`\n`cursor.execute('CREATE TABLE IF NOT EXISTS students (id INTEGER PRIMARY KEY, name TEXT, grade INTEGER)')`\n`conn.commit()` — always commit after changes.",
+      "expected": "",
+      "solution": "import os\nimport sqlite3\n\nif os.path.exists('school.db'):\n    os.remove('school.db')\n\nconn = sqlite3.connect('school.db')\ncur = conn.cursor()\ncur.execute('''CREATE TABLE IF NOT EXISTS students (\n    id INTEGER PRIMARY KEY,\n    name TEXT,\n    grade INTEGER)''')\nconn.commit()\n\nprint('Table created')\nconn.close()",
+      "walkthrough": "The solution deletes any old database first so it starts clean every run.\n`connect` creates school.db, the cursor runs the CREATE TABLE statement, and `commit` saves it."
+    },
+    {
+      "id": "51.2",
+      "description": "Insert 3 student records into the `students` table using parameterised queries (use ? placeholders).",
+      "hint": "NEVER use string formatting for SQL — it's vulnerable to SQL injection!\n`cursor.execute('INSERT INTO students (name, grade) VALUES (?, ?)', ('Alice', 90))`\nOr insert multiple at once: `cursor.executemany('INSERT...', list_of_tuples)`",
+      "expected": "",
+      "solution": "import os\nimport sqlite3\n\nif os.path.exists('school.db'):\n    os.remove('school.db')\n\nconn = sqlite3.connect('school.db')\ncur = conn.cursor()\ncur.execute('''CREATE TABLE IF NOT EXISTS students (\n    id INTEGER PRIMARY KEY,\n    name TEXT,\n    grade INTEGER)''')\nconn.commit()\n\nstudents = [('Alice', 90), ('Bob', 75), ('Carol', 85)]\ncur.executemany('INSERT INTO students (name, grade) VALUES (?, ?)', students)\nconn.commit()\n\nprint('Inserted', len(students), 'students')\nconn.close()",
+      "walkthrough": "`executemany` runs the same INSERT once per tuple in the list.\nThe `?` placeholders are filled in safely by the library, never by string formatting."
+    },
+    {
+      "id": "51.3",
+      "description": "Query all students from the database and print each one. Use `fetchall()` to get all rows.",
+      "hint": "`cursor.execute('SELECT * FROM students')`\n`rows = cursor.fetchall()` — returns a list of tuples.\n`for row in rows: print(row)` — each tuple is (id, name, grade).",
+      "expected": "",
+      "solution": "import os\nimport sqlite3\n\nif os.path.exists('school.db'):\n    os.remove('school.db')\n\nconn = sqlite3.connect('school.db')\ncur = conn.cursor()\ncur.execute('''CREATE TABLE IF NOT EXISTS students (\n    id INTEGER PRIMARY KEY,\n    name TEXT,\n    grade INTEGER)''')\nconn.commit()\n\nstudents = [('Alice', 90), ('Bob', 75), ('Carol', 85)]\ncur.executemany('INSERT INTO students (name, grade) VALUES (?, ?)', students)\nconn.commit()\n\ncur.execute('SELECT * FROM students')\nfor row in cur.fetchall():\n    print(row)\nconn.close()",
+      "walkthrough": "`SELECT *` asks for every column. `fetchall` returns a list of tuples, one per row, in the order (id, name, grade).\nThe id column was filled automatically because it's the primary key."
+    },
+    {
+      "id": "51.4",
+      "description": "Update a student's grade. Delete a student by name. Print the table after each operation.",
+      "hint": "Update: `cursor.execute('UPDATE students SET grade=? WHERE name=?', (95, 'Alice'))`\nDelete: `cursor.execute('DELETE FROM students WHERE name=?', ('Bob',))`\nAlways `conn.commit()` after changes.",
+      "expected": "",
+      "solution": "import os\nimport sqlite3\n\nif os.path.exists('school.db'):\n    os.remove('school.db')\n\nconn = sqlite3.connect('school.db')\ncur = conn.cursor()\ncur.execute('''CREATE TABLE IF NOT EXISTS students (\n    id INTEGER PRIMARY KEY,\n    name TEXT,\n    grade INTEGER)''')\nconn.commit()\n\nstudents = [('Alice', 90), ('Bob', 75), ('Carol', 85)]\ncur.executemany('INSERT INTO students (name, grade) VALUES (?, ?)', students)\nconn.commit()\n\ndef show():\n    cur.execute('SELECT * FROM students')\n    for row in cur.fetchall():\n        print(row)\n    print('---')\n\nshow()\n\ncur.execute('UPDATE students SET grade = ? WHERE name = ?', (95, 'Alice'))\nconn.commit()\nshow()\n\ncur.execute('DELETE FROM students WHERE name = ?', ('Bob',))\nconn.commit()\nshow()\nconn.close()",
+      "walkthrough": "A small `show` helper prints the whole table so each change is visible.\nUPDATE changes Alice's grade; DELETE removes Bob. Both are committed before the table is printed again."
+    },
+    {
+      "id": "51.5",
+      "description": "Add a query to find students with grade above 80. Also calculate the average grade using SQL's AVG() function.",
+      "hint": "`cursor.execute('SELECT * FROM students WHERE grade > 80')` → high scorers.\n`cursor.execute('SELECT AVG(grade) FROM students')` → average.\n`cursor.fetchone()[0]` gets the single result value.",
+      "expected": "",
+      "solution": "import os\nimport sqlite3\n\nif os.path.exists('school.db'):\n    os.remove('school.db')\n\nconn = sqlite3.connect('school.db')\ncur = conn.cursor()\ncur.execute('''CREATE TABLE IF NOT EXISTS students (\n    id INTEGER PRIMARY KEY,\n    name TEXT,\n    grade INTEGER)''')\nconn.commit()\n\nstudents = [('Alice', 90), ('Bob', 75), ('Carol', 85)]\ncur.executemany('INSERT INTO students (name, grade) VALUES (?, ?)', students)\nconn.commit()\n\ncur.execute('SELECT name, grade FROM students WHERE grade > 80')\nprint('Above 80:')\nfor name, grade in cur.fetchall():\n    print(f'  {name}: {grade}')\n\ncur.execute('SELECT AVG(grade) FROM students')\naverage = cur.fetchone()[0]\nprint(f'Average grade: {average:.2f}')\nconn.close()",
+      "walkthrough": "The WHERE clause filters rows in the database, so only high scorers come back.\n`AVG(grade)` returns a single row with a single value; `fetchone()[0]` picks it out."
+    }
+  ],
+  "lesson": {
+    "intro": "SQLite is a real database that lives in a single file and comes with Python.\nYou talk to it in SQL: short statements for creating tables, inserting rows,\nand querying. Today is enough SQL to store and fetch records, plus the one\nrule that keeps databases safe.",
+    "sections": [
+      {
+        "heading": "Connect, create a table, commit",
+        "body": "`connect` opens (or creates) the database file. A cursor runs SQL.\n`CREATE TABLE IF NOT EXISTS` is safe to run every time. `commit` saves\nchanges; without it, inserts and updates are lost when the program ends.",
+        "code": "import sqlite3\n\nconn = sqlite3.connect('school.db')\ncur = conn.cursor()\ncur.execute('''CREATE TABLE IF NOT EXISTS students (\n    id INTEGER PRIMARY KEY,\n    name TEXT,\n    grade INTEGER)''')\nconn.commit()\nprint('table ready')",
+        "output": "table ready"
+      },
+      {
+        "heading": "Insert with placeholders, always",
+        "body": "Never build SQL by gluing user values into the string. Use `?` placeholders\nand pass the values as a tuple. The library escapes them properly, which\nis what prevents SQL injection. `executemany` inserts several rows at once.",
+        "code": "import sqlite3\n\nconn = sqlite3.connect('school.db')\ncur = conn.cursor()\ncur.execute('DELETE FROM students')\ncur.execute('INSERT INTO students (name, grade) VALUES (?, ?)', ('Alice', 90))\ncur.executemany('INSERT INTO students (name, grade) VALUES (?, ?)',\n                [('Bob', 75), ('Carol', 85)])\nconn.commit()\nprint(cur.rowcount, 'rows in last statement')",
+        "output": "2 rows in last statement"
+      },
+      {
+        "heading": "Querying",
+        "body": "`SELECT` gets rows back. `fetchall()` returns them as a list of tuples,\n`fetchone()` returns just the first. `WHERE` filters, `AVG` and friends\naggregate.",
+        "code": "import sqlite3\n\nconn = sqlite3.connect('school.db')\ncur = conn.cursor()\ncur.execute('SELECT * FROM students')\nfor row in cur.fetchall():\n    print(row)\ncur.execute('SELECT AVG(grade) FROM students')\nprint(cur.fetchone()[0])",
+        "output": "(1, 'Alice', 90)\n(2, 'Bob', 75)\n(3, 'Carol', 85)\n83.33333333333333"
+      },
+      {
+        "heading": "Update and delete",
+        "body": "Same shape: SQL with placeholders, values as a tuple, then commit. A\none-item tuple needs a trailing comma.",
+        "code": "import sqlite3\n\nconn = sqlite3.connect('school.db')\ncur = conn.cursor()\ncur.execute('UPDATE students SET grade = ? WHERE name = ?', (95, 'Alice'))\ncur.execute('DELETE FROM students WHERE name = ?', ('Bob',))\nconn.commit()\ncur.execute('SELECT name, grade FROM students')\nprint(cur.fetchall())",
+        "output": "[('Alice', 95), ('Carol', 85)]"
+      }
+    ],
+    "watch_out": [
+      "Forgetting `conn.commit()`. Everything looks fine until you reopen the file and it's empty.",
+      "`('Bob')` is just a string. A one-item tuple is `('Bob',)`.",
+      "f-strings in SQL: `f\"... WHERE name = '{name}'\"` is the injection hole. Placeholders only.",
+      "The database file persists between runs. Delete it or use `DELETE FROM` if you want a clean start."
+    ]
+  }
+}

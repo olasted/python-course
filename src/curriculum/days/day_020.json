@@ -1,0 +1,85 @@
+{
+  "day": 20,
+  "title": "Challenge: Number Guessing Game",
+  "tasks": [
+    {
+      "id": "20.1",
+      "description": "Import random and pick a secret number between 1 and 100. Print 'Game starts!' and the secret (just to test).",
+      "hint": "`import random` at the top.\n`random.randint(1, 100)` returns a random integer including both 1 and 100.\nStore it: `secret = random.randint(1, 100)` then print it to verify.",
+      "expected": "",
+      "solution": "import random\n\nsecret = random.randint(1, 100)\nprint('Game starts!')\nprint(secret)",
+      "walkthrough": "`randint(1, 100)` includes both 1 and 100. The secret is stored so later steps can compare against it.\nPrinting it now is just for testing; you'll remove that line once the game works."
+    },
+    {
+      "id": "20.2",
+      "description": "Add a loop: ask the user to guess. Print 'Too low', 'Too high', or 'Correct!' and break when guessed.",
+      "hint": "`while True:` loops forever — use `break` when the player guesses correctly.\nConvert input to int: `guess = int(input('Guess: '))`\nThree branches: `if guess < secret` → Too low, `elif guess > secret` → Too high, `else` → Correct + break.",
+      "expected": "",
+      "solution": "import random\n\nsecret = random.randint(1, 100)\nprint('Game starts!')\n\nwhile True:\n    guess = int(input('Guess: '))\n    if guess < secret:\n        print('Too low')\n    elif guess > secret:\n        print('Too high')\n    else:\n        print('Correct!')\n        break",
+      "walkthrough": "The loop runs until `break`, which only happens in the `else` branch when the guess matches.\nEach guess is converted with `int()` so it can be compared to the number.",
+      "solution_stdin": "1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n12\n13\n14\n15\n16\n17\n18\n19\n20\n21\n22\n23\n24\n25\n26\n27\n28\n29\n30\n31\n32\n33\n34\n35\n36\n37\n38\n39\n40\n41\n42\n43\n44\n45\n46\n47\n48\n49\n50\n51\n52\n53\n54\n55\n56\n57\n58\n59\n60\n61\n62\n63\n64\n65\n66\n67\n68\n69\n70\n71\n72\n73\n74\n75\n76\n77\n78\n79\n80\n81\n82\n83\n84\n85\n86\n87\n88\n89\n90\n91\n92\n93\n94\n95\n96\n97\n98\n99\n100\n"
+    },
+    {
+      "id": "20.3",
+      "description": "Track how many guesses the player took. Print 'You got it in X guesses!' when they win.",
+      "hint": "Create `attempts = 0` before the loop.\nIncrement inside the loop on each guess: `attempts += 1`\nWhen they win: `print(f'You got it in {attempts} guesses!')`",
+      "expected": "",
+      "solution": "import random\n\nsecret = random.randint(1, 100)\nattempts = 0\nprint('Game starts!')\n\nwhile True:\n    guess = int(input('Guess: '))\n    attempts += 1\n    if guess < secret:\n        print('Too low')\n    elif guess > secret:\n        print('Too high')\n    else:\n        print(f'You got it in {attempts} guesses!')\n        break",
+      "walkthrough": "`attempts` starts at 0 and goes up by one every time a guess is read, before the comparison.\nWhen the guess is right, the message uses the current count.",
+      "solution_stdin": "1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n12\n13\n14\n15\n16\n17\n18\n19\n20\n21\n22\n23\n24\n25\n26\n27\n28\n29\n30\n31\n32\n33\n34\n35\n36\n37\n38\n39\n40\n41\n42\n43\n44\n45\n46\n47\n48\n49\n50\n51\n52\n53\n54\n55\n56\n57\n58\n59\n60\n61\n62\n63\n64\n65\n66\n67\n68\n69\n70\n71\n72\n73\n74\n75\n76\n77\n78\n79\n80\n81\n82\n83\n84\n85\n86\n87\n88\n89\n90\n91\n92\n93\n94\n95\n96\n97\n98\n99\n100\n"
+    },
+    {
+      "id": "20.4",
+      "description": "Add a maximum of 7 guesses. If the player runs out, print 'Game over! The number was X.'",
+      "hint": "Change the while condition: `while attempts < 7:`\nAfter the loop, check if the game was won or lost: `if guess == secret: ...` or use a flag.\nIf the loop ended without a correct guess: `print(f'Game over! The number was {secret}.')`",
+      "expected": "",
+      "solution": "import random\n\nsecret = random.randint(1, 100)\nattempts = 0\nwon = False\nprint('Game starts!')\n\nwhile attempts < 7:\n    guess = int(input('Guess: '))\n    attempts += 1\n    if guess < secret:\n        print('Too low')\n    elif guess > secret:\n        print('Too high')\n    else:\n        won = True\n        break\n\nif won:\n    print(f'You got it in {attempts} guesses!')\nelse:\n    print(f'Game over! The number was {secret}.')",
+      "walkthrough": "The loop condition now limits the number of passes to 7.\nA `won` flag records whether the loop ended because of a correct guess or because the attempts ran out.\nAfter the loop, the flag decides which message to show.",
+      "solution_stdin": "50\n25\n75\n10\n90\n40\n60\n"
+    },
+    {
+      "id": "20.5",
+      "description": "Wrap the whole game in a function `play_game()`. After it ends, ask 'Play again? (y/n)'. If yes, call the function again.",
+      "hint": "`def play_game():` — move all your game logic inside.\nAfter the function definition: `while True: play_game(); again = input('Play again? (y/n): '); if again != 'y': break`\nOr use a while loop: `keep_playing = True` then check the answer.",
+      "expected": "",
+      "solution": "import random\n\ndef play_game():\n    secret = random.randint(1, 100)\n    attempts = 0\n    won = False\n    print('Game starts!')\n\n    while attempts < 7:\n        guess = int(input('Guess: '))\n        attempts += 1\n        if guess < secret:\n            print('Too low')\n        elif guess > secret:\n            print('Too high')\n        else:\n            won = True\n            break\n\n    if won:\n        print(f'You got it in {attempts} guesses!')\n    else:\n        print(f'Game over! The number was {secret}.')\n\nwhile True:\n    play_game()\n    again = input('Play again? (y/n): ')\n    if again.lower() != 'y':\n        break",
+      "walkthrough": "All of the game logic moves inside `play_game()`, indented one level.\nThe outer loop calls the function, then asks whether to go again. Any answer other than y ends the program.\n`.lower()` means Y and y both work.",
+      "solution_stdin": "50\n25\n75\n10\n90\n40\n60\nn\n"
+    }
+  ],
+  "lesson": {
+    "intro": "Your first full program: a guessing game. You'll build it in five small steps,\neach adding one feature. Every step should run on its own before you move to\nthe next. That habit, small working steps, is the most useful thing to take from\nthis day.",
+    "sections": [
+      {
+        "heading": "Step 1: a secret number",
+        "body": "`random.randint(1, 100)` picks the secret. Print it while you're building so\nyou can test quickly, then remove that print at the end.",
+        "code": "import random\n\nsecret = random.randint(1, 100)\nprint('Game starts!')\nprint(f'(psst, it is {secret})')",
+        "output": "Game starts!\n(psst, it is 57)"
+      },
+      {
+        "heading": "Step 2: the guessing loop",
+        "body": "A `while True` loop that asks for a guess, compares it with the secret, and\nbreaks when they match. Three outcomes means `if`/`elif`/`else`.",
+        "code": "secret = 42\nwhile True:\n    guess = int(input('Guess: '))\n    if guess < secret:\n        print('Too low')\n    elif guess > secret:\n        print('Too high')\n    else:\n        print('Correct!')\n        break",
+        "output": "Guess: Too low\nGuess: Too high\nGuess: Correct!"
+      },
+      {
+        "heading": "Step 3 and 4: counting and limiting attempts",
+        "body": "A counter that starts at 0 and goes up once per guess. To cap the attempts,\nchange the loop condition to `while attempts < 7` and, after the loop, work\nout whether they won. A `won` flag keeps that check simple.",
+        "code": "secret = 42\nattempts = 0\nwon = False\nwhile attempts < 7:\n    guess = int(input('Guess: '))\n    attempts += 1\n    if guess == secret:\n        won = True\n        break\n    print('Too low' if guess < secret else 'Too high')\n\nif won:\n    print(f'You got it in {attempts} guesses!')\nelse:\n    print(f'Game over! The number was {secret}.')",
+        "output": "Guess: Too low\nGuess: You got it in 2 guesses!"
+      },
+      {
+        "heading": "Step 5: play again",
+        "body": "Move the whole game into a function, then loop: play, ask, repeat if yes.\nNotice how the function makes this trivial: the game is just one call.",
+        "code": "def play_game():\n    print('(a whole game happens here)')\n\nwhile True:\n    play_game()\n    again = input('Play again? (y/n): ')\n    if again.lower() != 'y':\n        break\nprint('Thanks for playing')",
+        "output": "(a whole game happens here)\nPlay again? (y/n): Thanks for playing"
+      }
+    ],
+    "watch_out": [
+      "Comparing the guess as a string. `input()` gives text; convert with `int()` before comparing to the number.",
+      "Incrementing `attempts` inside the `if` instead of once per loop pass.",
+      "Testing with a random secret is slow. Temporarily set `secret = 42` while you build.",
+      "In this app, put each guess on its own line in the input box before running."
+    ]
+  }
+}

@@ -1,0 +1,85 @@
+{
+  "day": 30,
+  "title": "Challenge: Hangman Game",
+  "tasks": [
+    {
+      "id": "30.1",
+      "description": "Build the complete Hangman game from scratch. Pick a random word from a list, let the player guess letters, give 6 tries, show the blank display each round, and announce win or loss.",
+      "hint": "Break it into steps: 1) Pick random word with `random.choice()`, 2) `guessed = set()`, 3) Main loop with `while tries > 0 and not all_guessed`.\nDisplay: `' '.join(c if c in guessed else '_' for c in word)`\nCheck each guess: if in word → show it, if not → reduce tries.",
+      "expected": "",
+      "solution": "import random\n\nwords = ['python', 'hangman', 'coding', 'developer', 'function']\nword = random.choice(words)\nguessed = set()\nwrong = []\nmax_tries = 6\n\ndef display():\n    return ' '.join(c if c in guessed else '_' for c in word)\n\ndef won():\n    return all(c in guessed for c in word)\n\nwhile not won() and len(wrong) < max_tries:\n    print(display())\n    print(f'Tries left: {max_tries - len(wrong)}')\n    guess = input('Guess a letter: ').lower()\n    guessed.add(guess)\n    if guess not in word:\n        wrong.append(guess)\n\nif won():\n    print(f'You won! The word was: {word}')\nelse:\n    print(f'Game over! The word was: {word}')",
+      "walkthrough": "This is the full game in about twenty lines. The two small helper functions keep the loop body readable.\nEach round: show the blanks and tries, read a letter, record it, count it as wrong if needed.\nAfter the loop, `won()` decides the ending message.",
+      "solution_stdin": "e\nt\na\no\ni\nn\ns\nr\nh\nl\nd\nc\nu\nm\nf\np\ng\nw\ny\nb\nv\nk\nx\nj\nq\nz\n"
+    },
+    {
+      "id": "30.2",
+      "description": "Improve your game: add input validation (only accept single letters), handle already-guessed letters, and show which letters have been guessed.",
+      "hint": "Validation: `if len(guess) != 1 or not guess.isalpha(): continue`\nAlready guessed: `if guess in guessed: print('Already tried!'); continue`\nShow guessed letters: `print(f'Guessed: {sorted(guessed)}')` at the start of each round.",
+      "expected": "",
+      "solution": "import random\n\nwords = ['python', 'hangman', 'coding', 'developer', 'function']\nword = random.choice(words)\nguessed = set()\nwrong = []\nmax_tries = 6\n\ndef display():\n    return ' '.join(c if c in guessed else '_' for c in word)\n\ndef won():\n    return all(c in guessed for c in word)\n\nwhile not won() and len(wrong) < max_tries:\n    print(display())\n    print(f'Guessed: {sorted(guessed)}')\n    print(f'Tries left: {max_tries - len(wrong)}')\n    guess = input('Guess a letter: ').lower()\n    if len(guess) != 1 or not guess.isalpha():\n        print('Enter a single letter!')\n        continue\n    if guess in guessed:\n        print('Already tried!')\n        continue\n    guessed.add(guess)\n    if guess not in word:\n        wrong.append(guess)\n\nif won():\n    print(f'You won! The word was: {word}')\nelse:\n    print(f'Game over! The word was: {word}')",
+      "walkthrough": "Two `if ... continue` checks guard the input: one for shape (a single letter) and one for repeats.\n`sorted(guessed)` shows the letters tried so far in a stable order, which is friendlier than printing the raw set.",
+      "solution_stdin": "12\ne\ne\ne\nt\na\no\ni\nn\ns\nr\nh\nl\nd\nc\nu\nm\nf\np\ng\nw\ny\nb\nv\nk\nx\nj\nq\nz\n"
+    },
+    {
+      "id": "30.3",
+      "description": "Add a category to your word list. Store words as a dict: {'animals': ['cat', 'dog'], 'fruits': ['apple']}. Pick a random category and random word, and tell the player the category at the start.",
+      "hint": "`category = random.choice(list(words_dict.keys()))` picks a random key.\n`word = random.choice(words_dict[category])` picks a word from that category.\n`print(f'Category: {category}')` hints the player before they start guessing.",
+      "expected": "",
+      "solution": "import random\n\nwords = {\n    'animals': ['cat', 'dog', 'horse', 'rabbit'],\n    'fruits': ['apple', 'banana', 'cherry'],\n    'languages': ['python', 'rust', 'kotlin'],\n}\ncategory = random.choice(list(words.keys()))\nword = random.choice(words[category])\nguessed = set()\nwrong = []\nmax_tries = 6\n\ndef display():\n    return ' '.join(c if c in guessed else '_' for c in word)\n\ndef won():\n    return all(c in guessed for c in word)\n\nprint(f'Category: {category}')\n\nwhile not won() and len(wrong) < max_tries:\n    print(display())\n    print(f'Tries left: {max_tries - len(wrong)}')\n    guess = input('Guess a letter: ').lower()\n    if len(guess) != 1 or not guess.isalpha():\n        print('Enter a single letter!')\n        continue\n    if guess in guessed:\n        print('Already tried!')\n        continue\n    guessed.add(guess)\n    if guess not in word:\n        wrong.append(guess)\n\nif won():\n    print(f'You won! The word was: {word}')\nelse:\n    print(f'Game over! The word was: {word}')",
+      "walkthrough": "The dictionary maps each category to its own list of words.\nPicking happens in two steps: a random key, then a random word from that key's list.\nThe category is printed once, before the loop, as a clue.",
+      "solution_stdin": "e\nt\na\no\ni\nn\ns\nr\nh\nl\nd\nc\nu\nm\nf\np\ng\nw\ny\nb\nv\nk\nx\nj\nq\nz\n"
+    },
+    {
+      "id": "30.4",
+      "description": "Wrap the entire game in a play_hangman() function. After the game ends, ask if the player wants to play again. Loop until they say no.",
+      "hint": "`def play_hangman(): # all game logic here`\nAfter calling it: `while input('Play again? (y/n): ').lower() == 'y': play_hangman()`\nOr use a do-while pattern: call once, then check in a while loop.",
+      "expected": "",
+      "solution": "import random\n\nwords = {\n    'animals': ['cat', 'dog', 'horse', 'rabbit'],\n    'fruits': ['apple', 'banana', 'cherry'],\n    'languages': ['python', 'rust', 'kotlin'],\n}\n\ndef play_hangman():\n    category = random.choice(list(words.keys()))\n    word = random.choice(words[category])\n    guessed = set()\n    wrong = []\n    max_tries = 6\n\n    def display():\n        return ' '.join(c if c in guessed else '_' for c in word)\n\n    def won():\n        return all(c in guessed for c in word)\n\n    print(f'Category: {category}')\n    while not won() and len(wrong) < max_tries:\n        print(display())\n        print(f'Tries left: {max_tries - len(wrong)}')\n        guess = input('Guess a letter: ').lower()\n        if len(guess) != 1 or not guess.isalpha():\n            print('Enter a single letter!')\n            continue\n        if guess in guessed:\n            print('Already tried!')\n            continue\n        guessed.add(guess)\n        if guess not in word:\n            wrong.append(guess)\n\n    if won():\n        print(f'You won! The word was: {word}')\n    else:\n        print(f'Game over! The word was: {word}')\n\nwhile True:\n    play_hangman()\n    if input('Play again? (y/n): ').lower() != 'y':\n        break\nprint('Thanks for playing!')",
+      "walkthrough": "Everything about a single game moves inside `play_hangman()`. The word list stays outside since it doesn't change between games.\nThe loop at the bottom plays one game, asks, and either goes again or breaks.\nBecause each call to the function sets up fresh variables, every game starts clean.",
+      "solution_stdin": "e\nt\na\no\ni\nn\ns\nr\nh\nl\nd\nc\nu\nm\nf\np\ng\nw\ny\nb\nv\nk\nx\nj\nq\nz\nn\n"
+    },
+    {
+      "id": "30.5",
+      "description": "Final polish: draw a simple ASCII hangman that updates with each wrong guess. Each wrong guess adds a body part to the drawing.",
+      "hint": "Create a list of ASCII art strings — one for each stage (0 wrong to 6 wrong).\nIndex into the list using the number of wrong guesses: `stages[wrong_count]`\nPrint the current stage at the start of each round.",
+      "expected": "",
+      "solution": "import random\n\nSTAGES = [\n    '''\n      +---+\n          |\n          |\n          |\n     =======''',\n    '''\n      +---+\n      O   |\n          |\n          |\n     =======''',\n    '''\n      +---+\n      O   |\n      |   |\n          |\n     =======''',\n    '''\n      +---+\n      O   |\n     /|   |\n          |\n     =======''',\n    '''\n      +---+\n      O   |\n     /|\\  |\n          |\n     =======''',\n    '''\n      +---+\n      O   |\n     /|\\  |\n     /    |\n     =======''',\n    '''\n      +---+\n      O   |\n     /|\\  |\n     / \\  |\n     =======''',\n]\n\nwords = {\n    'animals': ['cat', 'dog', 'horse', 'rabbit'],\n    'fruits': ['apple', 'banana', 'cherry'],\n    'languages': ['python', 'rust', 'kotlin'],\n}\n\ndef play_hangman():\n    category = random.choice(list(words.keys()))\n    word = random.choice(words[category])\n    guessed = set()\n    wrong = []\n    max_tries = len(STAGES) - 1\n\n    def display():\n        return ' '.join(c if c in guessed else '_' for c in word)\n\n    def won():\n        return all(c in guessed for c in word)\n\n    print(f'Category: {category}')\n    while not won() and len(wrong) < max_tries:\n        print(STAGES[len(wrong)])\n        print(display())\n        print(f'Wrong: {wrong}')\n        guess = input('Guess a letter: ').lower()\n        if len(guess) != 1 or not guess.isalpha():\n            print('Enter a single letter!')\n            continue\n        if guess in guessed:\n            print('Already tried!')\n            continue\n        guessed.add(guess)\n        if guess not in word:\n            wrong.append(guess)\n\n    print(STAGES[len(wrong)])\n    if won():\n        print(f'You won! The word was: {word}')\n    else:\n        print(f'Game over! The word was: {word}')\n\nwhile True:\n    play_hangman()\n    if input('Play again? (y/n): ').lower() != 'y':\n        break",
+      "walkthrough": "Seven drawings cover zero to six wrong guesses. Because they're in a list, `STAGES[len(wrong)]` picks the right one with no if statements.\n`max_tries` is derived from the list length, so adding or removing a stage automatically adjusts the game.\nThe final drawing is printed once more after the loop so the player sees the finished figure on a loss.",
+      "solution_stdin": "e\nt\na\no\ni\nn\ns\nr\nh\nl\nd\nc\nu\nm\nf\np\ng\nw\ny\nb\nv\nk\nx\nj\nq\nz\nn\n"
+    }
+  ],
+  "lesson": {
+    "intro": "Time to build Hangman from a blank editor, without the scaffolding of the last\ntwo days. If you get stuck, the solutions from days 28 and 29 are still there.\nThen you'll add categories, a play-again loop, and a drawing.",
+    "sections": [
+      {
+        "heading": "Planning before typing",
+        "body": "Before writing any code, sketch the pieces in comments. Something like this.\nThen fill in each comment with code and run after every step.",
+        "code": "# 1. pick a random word\n# 2. guessed = set(), wrong = [], max_tries = 6\n# 3. while not won and tries left:\n#       show blanks, ask for a letter, validate, update\n# 4. print win or lose, reveal word"
+      },
+      {
+        "heading": "Categories with a dictionary",
+        "body": "Store words under category names. Pick a random category with\n`random.choice(list(words.keys()))`, then a random word from that\ncategory's list. Tell the player the category as a clue.",
+        "code": "import random\n\nwords = {'animals': ['cat', 'dog'], 'fruits': ['apple', 'pear']}\ncategory = random.choice(list(words.keys()))\nword = random.choice(words[category])\nprint(f'Category: {category}')\nprint(len(word))",
+        "output": "Category: fruits\n5"
+      },
+      {
+        "heading": "Play again",
+        "body": "Wrap the game in a function, then loop around it. The whole game becomes one\nline inside the loop, which is why functions are worth the effort.",
+        "code": "def play_hangman():\n    print('(game happens here)')\n\nwhile True:\n    play_hangman()\n    if input('Play again? (y/n): ').lower() != 'y':\n        break",
+        "output": "(game happens here)\nPlay again? (y/n):"
+      },
+      {
+        "heading": "A drawing that grows",
+        "body": "Put one drawing per stage in a list, index 0 for no wrong guesses up to\nindex 6 for the full figure. Then `stages[len(wrong)]` picks the right one.\nTriple-quoted strings make multi-line art easy.",
+        "code": "stages = [\n    '  +---+\\n      |\\n      |\\n      |\\n =======',\n    '  +---+\\n  O   |\\n      |\\n      |\\n =======',\n    '  +---+\\n  O   |\\n  |   |\\n      |\\n =======',\n]\nwrong = ['a', 'b']\nprint(stages[len(wrong)])",
+        "output": " +---+\n O   |\n |   |\n     |\n======="
+      }
+    ],
+    "watch_out": [
+      "Trying to write the whole game before running anything. Get the loop working with a fixed word first.",
+      "Reading the category without converting `.keys()` to a list. `random.choice` needs a sequence.",
+      "Off-by-one on the stages list: with 6 tries you need 7 drawings, from 0 wrong to 6 wrong.",
+      "Forgetting `.lower()` on the play-again answer."
+    ]
+  }
+}

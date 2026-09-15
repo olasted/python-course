@@ -1,0 +1,97 @@
+{
+  "day": 18,
+  "title": "String Formatting",
+  "tasks": [
+    {
+      "id": "18.1",
+      "description": "Given name = 'Alice' and age = 30, print: 'My name is Alice and I am 30 years old.' using an f-string.",
+      "hint": "f-strings start with `f` before the opening quote: `f'...'`\nEmbed variables in `{}`: `f'My name is {name} and I am {age} years old.'`\nAny valid Python expression works inside `{}` — variables, math, function calls.",
+      "expected": "My name is Alice and I am 30 years old.",
+      "solution": "name = 'Alice'\nage = 30\nprint(f'My name is {name} and I am {age} years old.')",
+      "walkthrough": "Two placeholders, each replaced by the value of the named variable.\nThe `f` prefix is what makes the braces active."
+    },
+    {
+      "id": "18.2",
+      "description": "Use an f-string to print: '10 squared is 100' — compute 10**2 directly inside the f-string.",
+      "hint": "f-strings evaluate expressions inside `{}`, not just variable names.\n`f'{10} squared is {10**2}'` → `'10 squared is 100'`\nThe calculation happens at runtime — very handy for inline computations.",
+      "expected": "10 squared is 100",
+      "solution": "print(f'{10} squared is {10 ** 2}')",
+      "walkthrough": "The braces can hold expressions, not just names. `10 ** 2` is evaluated to 100 as the string is built."
+    },
+    {
+      "id": "18.3",
+      "description": "Print the float 3.14159265 formatted to exactly 2 decimal places using an f-string format spec.",
+      "hint": "Format specs go inside `{}` after a colon: `f'{value:.2f}'`\n`.2f` means: fixed-point notation with exactly 2 decimal places.\n`f'{3.14159265:.2f}'` → `'3.14'` — it rounds automatically.",
+      "expected": "3.14",
+      "solution": "print(f'{3.14159265:.2f}')",
+      "walkthrough": "The part after the colon is a format spec. `.2f` means fixed-point with two digits after the decimal point.\nThe value is rounded to 3.14 for display."
+    },
+    {
+      "id": "18.4",
+      "description": "Print the number 42 padded to a width of 8 characters, right-aligned, with spaces on the left.",
+      "hint": "Right-align format spec: `f'{value:>8}'` — `>` means right, `8` is total width.\n`f'{42:>8}'` → `'      42'` (6 spaces then 42)\nLeft-align uses `<`, centre uses `^`.",
+      "expected": "      42",
+      "solution": "print(f'{42:>8}')",
+      "walkthrough": "`>8` means right-align inside a field 8 characters wide.\n42 is two characters, so six spaces are added on the left."
+    },
+    {
+      "id": "18.5",
+      "description": "Print a table header: 'Name       | Score' then two rows: 'Alice      | 95' and 'Bob        | 87'. Use f-strings with fixed widths.",
+      "hint": "Left-align in a fixed-width field: `f'{name:<10}'` — `<` is left-align, `10` is width.\n`f'{name:<10}| {score}'` aligns the name column to 10 chars wide.\nRepeat the same format for the header and both data rows.",
+      "expected": "Name       | Score\nAlice      | 95\nBob        | 87",
+      "solution": "print(f'{\"Name\":<11}| Score')\nprint(f'{\"Alice\":<11}| 95')\nprint(f'{\"Bob\":<11}| 87')",
+      "walkthrough": "`<11` pads each name on the right to exactly 11 characters, so the `|` lands in the same column every time.\nCount the spaces in the expected output carefully: Name plus seven spaces is 11 characters. The hint says 10, which is one short.\nDouble quotes are used inside the braces because the string itself uses single quotes."
+    },
+    {
+      "id": "18.6",
+      "description": "Given price = 1234.567, print it formatted with a comma as thousands separator and 2 decimal places: '1,234.57'",
+      "hint": "The `,` in the format spec adds comma separators every 3 digits.\nCombine with `.2f`: `f'{price:,.2f}'` → `'1,234.57'`\nThis is essential for displaying money and large numbers readably.",
+      "expected": "1,234.57",
+      "solution": "price = 1234.567\nprint(f'{price:,.2f}')",
+      "walkthrough": "The comma in the spec inserts a thousands separator. The `.2f` fixes two decimal places.\nTogether they turn 1234.567 into 1,234.57."
+    },
+    {
+      "id": "18.7",
+      "description": "Use a multi-line string (triple quotes) to store and print a 3-line poem of your choice.",
+      "hint": "Triple-quoted strings preserve newlines and indentation exactly as written.\n`text = \"\"\"Line 1\\nLine 2\\nLine 3\"\"\"`  or write it on separate lines inside the triple quotes.\n`print(text)` outputs it with the line breaks intact.",
+      "expected": "",
+      "solution": "poem = '''The kettle hums,\nthe window fogs,\ntea for one.'''\nprint(poem)",
+      "walkthrough": "Triple quotes let the string run across several lines without any `\\n` characters.\nEach line break inside the quotes becomes a line break in the output. Write your own poem; any three lines will do."
+    }
+  ],
+  "lesson": {
+    "intro": "You've used f-strings to drop a variable into text. They can do more: line things\nup in columns, fix the number of decimal places, add thousands separators. This is\nthe difference between output that's readable and output that isn't.",
+    "sections": [
+      {
+        "heading": "Expressions inside the braces",
+        "body": "Anything that produces a value can go inside `{}`: a variable, some maths, a\nfunction call, a method call.",
+        "code": "name = 'Alice'\nprint(f'{name} has {len(name)} letters')\nprint(f'{10} squared is {10 ** 2}')\nprint(f'{name.upper()}!')",
+        "output": "Alice has 5 letters\n10 squared is 100\nALICE!"
+      },
+      {
+        "heading": "Format specs: a colon then instructions",
+        "body": "After the value, a colon starts a format spec. `.2f` means two decimal places.\n`,` adds thousands separators. They can be combined.",
+        "code": "price = 1234.567\nprint(f'{price:.2f}')\nprint(f'{price:,.2f}')\nprint(f'{3.14159265:.3f}')",
+        "output": "1234.57\n1,234.57\n3.142"
+      },
+      {
+        "heading": "Width and alignment",
+        "body": "A number in the spec sets a minimum width. `<` aligns left, `>` right,\n`^` centre. Padding is done with spaces. This is how you make columns line up.",
+        "code": "print(f'[{42:>8}]')\nprint(f'[{42:<8}]')\nprint(f'[{42:^8}]')\nprint(f'{\"Name\":<10}| Score')\nprint(f'{\"Alice\":<10}| 95')",
+        "output": "[      42]\n[42      ]\n[   42   ]\nName      | Score\nAlice     | 95"
+      },
+      {
+        "heading": "Multi-line strings",
+        "body": "Three quotes start a string that can span several lines. The line breaks are\nkept exactly as you typed them.",
+        "code": "poem = '''Roses are red,\nviolets are blue,\nthis string has three lines,\nand so does this too.'''\nprint(poem)",
+        "output": "Roses are red,\nviolets are blue,\nthis string has three lines,\nand so does this too."
+      }
+    ],
+    "watch_out": [
+      "Forgetting the `f` before the quote. Without it, `{name}` is printed literally.",
+      "Using the same quote type inside the braces as around the string. `f'{d['key']}'` breaks; use `f\"{d['key']}\"`.",
+      "`:.2f` rounds for display only. The variable still holds the full value.",
+      "The width in `{name:<10}` is a minimum. Longer text isn't cut off, it just pushes the column over."
+    ]
+  }
+}

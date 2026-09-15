@@ -1,0 +1,95 @@
+{
+  "day": 19,
+  "title": "Scope and Nested Data",
+  "tasks": [
+    {
+      "id": "19.1",
+      "description": "Define x = 10 globally. Inside a function show_x(), print x. Call the function.",
+      "hint": "Functions can READ global variables without any special keyword — they're visible everywhere.\nDefine `x = 10` outside any function (at the top level).\nInside `show_x()`: `print(x)` works because Python looks up the enclosing scope.",
+      "expected": "10",
+      "solution": "x = 10\n\ndef show_x():\n    print(x)\n\nshow_x()",
+      "walkthrough": "`x` is defined at the top level, so it's global.\nInside `show_x`, Python doesn't find a local `x`, so it looks outward and finds the global one."
+    },
+    {
+      "id": "19.2",
+      "description": "Try to modify the global x = 10 inside a function using the 'global' keyword. Print x after calling the function.",
+      "hint": "Without `global x`, assigning inside a function creates a LOCAL variable — the global is untouched.\nAdd `global x` as the first line of the function to tell Python you mean the global.\nThen `x = 20` inside the function changes the actual global.",
+      "expected": "20",
+      "solution": "x = 10\n\ndef change_x():\n    global x\n    x = 20\n\nchange_x()\nprint(x)",
+      "walkthrough": "`global x` tells Python that `x` inside this function means the one outside.\nWithout that line, `x = 20` would create a separate local variable and the print would still show 10."
+    },
+    {
+      "id": "19.3",
+      "description": "Create a list of 3 dictionaries, each with 'name' and 'score'. Loop through and print each person's name and score.",
+      "hint": "List of dicts: `people = [{'name': 'Alice', 'score': 90}, ...]`\nLoop: `for person in people:` — each `person` is one dict.\nAccess keys: `person['name']` and `person['score']`",
+      "expected": "",
+      "solution": "people = [\n    {'name': 'Alice', 'score': 90},\n    {'name': 'Bob', 'score': 75},\n    {'name': 'Carol', 'score': 85},\n]\nfor person in people:\n    print(f\"{person['name']}: {person['score']}\")",
+      "walkthrough": "Each item in the list is a dictionary. The loop hands you one at a time as `person`.\nThe f-string uses double quotes on the outside so the single-quoted keys don't clash."
+    },
+    {
+      "id": "19.4",
+      "description": "Given `students = [{'name': 'Alice', 'score': 90}, {'name': 'Bob', 'score': 75}, {'name': 'Carol', 'score': 85}]`, print only students with a score above 80.",
+      "hint": "Loop through the list; for each student check `if student['score'] > 80:`\nInside the if block: `print(student['name'])`\nAlice (90 > 80) and Carol (85 > 80) should print; Bob (75) should not.",
+      "expected": "Alice\nCarol",
+      "solution": "students = [{'name': 'Alice', 'score': 90}, {'name': 'Bob', 'score': 75}, {'name': 'Carol', 'score': 85}]\nfor student in students:\n    if student['score'] > 80:\n        print(student['name'])",
+      "walkthrough": "Loop over the records and test the score field of each one.\nOnly Alice (90) and Carol (85) clear 80, so only their names print."
+    },
+    {
+      "id": "19.5",
+      "description": "Given a dict of lists `classes = {'math': [90, 85, 92], 'english': [78, 88, 95]}`, print the average score for each class.",
+      "hint": "Loop: `for subject, scores in classes.items():`\nCalculate average: `avg = sum(scores) / len(scores)`\nPrint: `print(f'{subject}: {avg}')` — format as needed.",
+      "expected": "",
+      "solution": "classes = {'math': [90, 85, 92], 'english': [78, 88, 95]}\nfor subject, scores in classes.items():\n    average = sum(scores) / len(scores)\n    print(f'{subject}: {average:.1f}')",
+      "walkthrough": "`.items()` gives each subject name together with its list of scores.\nThe average is the total divided by the count. `:.1f` keeps the output to one decimal place."
+    },
+    {
+      "id": "19.6",
+      "description": "Sort the list `[{'name': 'Bob', 'age': 30}, {'name': 'Alice', 'age': 25}, {'name': 'Carol', 'age': 28}]` by age and print the names in order.",
+      "hint": "`sorted(list, key=func)` sorts by whatever the key function returns.\nThe key should extract the 'age': `key=lambda p: p['age']`\nLoop the sorted result: `for p in sorted(...): print(p['name'])`",
+      "expected": "Alice\nCarol\nBob",
+      "solution": "people = [{'name': 'Bob', 'age': 30}, {'name': 'Alice', 'age': 25}, {'name': 'Carol', 'age': 28}]\nfor person in sorted(people, key=lambda p: p['age']):\n    print(person['name'])",
+      "walkthrough": "The `key` function is called on each record and its return value is what gets compared.\n`lambda p: p['age']` returns the age, so the records are ordered 25, 28, 30.\nThe loop then prints the name of each record in that order."
+    }
+  ],
+  "lesson": {
+    "intro": "Two ideas today. Scope is about which variables a function can see. Nested data\nis about putting lists inside dictionaries and dictionaries inside lists, which is\nhow most real-world data actually looks.",
+    "sections": [
+      {
+        "heading": "Functions can read outside variables",
+        "body": "A variable created at the top level of the file is global. Any function can\nread it without doing anything special.",
+        "code": "x = 10\n\ndef show_x():\n    print(x)\n\nshow_x()",
+        "output": "10"
+      },
+      {
+        "heading": "But assigning makes a new local one",
+        "body": "If a function assigns to a name, Python treats that name as local to the\nfunction. The global is untouched. To change the global on purpose, declare\n`global x` at the top of the function. Use this sparingly; passing values in\nand returning them out is usually cleaner.",
+        "code": "x = 10\n\ndef try_change():\n    x = 20\n\ndef really_change():\n    global x\n    x = 30\n\ntry_change()\nprint(x)\nreally_change()\nprint(x)",
+        "output": "10\n30"
+      },
+      {
+        "heading": "A list of dictionaries",
+        "body": "Each dictionary is one record, and the list holds many of them. Loop over the\nlist to get one dictionary at a time, then use keys to reach inside it.",
+        "code": "students = [\n    {'name': 'Alice', 'score': 90},\n    {'name': 'Bob', 'score': 75},\n]\nfor s in students:\n    print(f\"{s['name']} scored {s['score']}\")",
+        "output": "Alice scored 90\nBob scored 75"
+      },
+      {
+        "heading": "A dictionary of lists",
+        "body": "The other way round: each key maps to a list. `.items()` gives you the key\nand the list together, and you can run `sum` and `len` on the list.",
+        "code": "classes = {'math': [90, 85, 92], 'english': [78, 88, 95]}\nfor subject, scores in classes.items():\n    print(f'{subject}: {sum(scores) / len(scores):.1f}')",
+        "output": "math: 89.0\nenglish: 87.0"
+      },
+      {
+        "heading": "Sorting records by a field",
+        "body": "`sorted()` takes a `key` argument: a function that says what to sort by.\nA lambda is a tiny inline function, perfect for \"give me the age of this\nrecord\". Tomorrow's lesson on lambdas has more.",
+        "code": "people = [{'name': 'Bob', 'age': 30}, {'name': 'Alice', 'age': 25}]\nfor p in sorted(people, key=lambda p: p['age']):\n    print(p['name'])",
+        "output": "Alice\nBob"
+      }
+    ],
+    "watch_out": [
+      "Reading a global then assigning to it in the same function without `global` gives an UnboundLocalError.",
+      "Mixing quote types: inside `f\"...\"` use single quotes for keys, `s['name']`, or the string ends early.",
+      "`students[0]['name']` reads left to right: first pick the record, then the field.",
+      "Sorting with `key=` doesn't change the original list; `sorted()` returns a new one."
+    ]
+  }
+}

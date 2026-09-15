@@ -1,0 +1,89 @@
+{
+  "day": 24,
+  "title": "File Reading",
+  "tasks": [
+    {
+      "id": "24.1",
+      "description": "Write a few lines to 'notes.txt' first (using open with 'w'), then read the whole file back and print its contents.",
+      "hint": "Write: `with open('notes.txt', 'w') as f: f.write('Hello\\nWorld')`\nRead: `with open('notes.txt', 'r') as f: print(f.read())`\nThe `with` statement automatically closes the file — always use it.",
+      "expected": "",
+      "solution": "with open('notes.txt', 'w') as f:\n    f.write('Hello\\n')\n    f.write('World\\n')\n\nwith open('notes.txt', 'r') as f:\n    print(f.read())",
+      "walkthrough": "The first `with` block opens the file for writing and puts two lines in it. The block ending closes the file.\nThe second opens it for reading and `read()` returns the whole contents as one string."
+    },
+    {
+      "id": "24.2",
+      "description": "Write 5 lines to 'numbers.txt' (each containing a number 1-5), then read each line and print it stripped of whitespace.",
+      "hint": "Write with a loop: `for i in range(1, 6): f.write(f'{i}\\n')`\nRead: `for line in f: print(line.strip())` — the `.strip()` removes the trailing newline.\nWithout strip, each `print()` adds its own newline, causing blank lines.",
+      "expected": "",
+      "solution": "with open('numbers.txt', 'w') as f:\n    for i in range(1, 6):\n        f.write(f'{i}\\n')\n\nwith open('numbers.txt', 'r') as f:\n    for line in f:\n        print(line.strip())",
+      "walkthrough": "The loop writes 1 to 5, each followed by a newline.\nReading back, each `line` still includes that newline, so `.strip()` removes it before printing."
+    },
+    {
+      "id": "24.3",
+      "description": "Write a poem of 4+ lines to 'poem.txt'. Read it back and print each line with its line number: '1: First line'",
+      "hint": "`enumerate(iterable, start=1)` gives you (number, item) pairs starting at 1.\n`for i, line in enumerate(f, 1): print(f'{i}: {line.strip()}')`\nThe second arg to enumerate sets the starting number.",
+      "expected": "",
+      "solution": "with open('poem.txt', 'w') as f:\n    f.write('The fog comes\\n')\n    f.write('on little cat feet.\\n')\n    f.write('It sits looking\\n')\n    f.write('over harbor and city\\n')\n\nwith open('poem.txt', 'r') as f:\n    for number, line in enumerate(f, 1):\n        print(f'{number}: {line.strip()}')",
+      "walkthrough": "`enumerate(f, 1)` pairs each line with a number starting from 1 rather than 0.\nThe two values are unpacked into `number` and `line` on each pass."
+    },
+    {
+      "id": "24.4",
+      "description": "Write a sentence to 'words.txt'. Read it back and count how many words it contains. Print the word count.",
+      "hint": "Read the whole file: `content = f.read()`\n`.split()` splits on any whitespace and returns a list of words.\n`len(content.split())` counts the words.",
+      "expected": "",
+      "solution": "with open('words.txt', 'w') as f:\n    f.write('The quick brown fox jumps over the lazy dog')\n\nwith open('words.txt', 'r') as f:\n    content = f.read()\n    print(len(content.split()))",
+      "walkthrough": "`.split()` with no argument breaks the text at any whitespace, giving a list of words.\n`len()` counts them: 9."
+    },
+    {
+      "id": "24.5",
+      "description": "Append a new line to an existing file using mode 'a'. Then read the whole file and print it.",
+      "hint": "Mode `'a'` (append) adds to the END of a file without deleting existing content.\nInclude `\\n` at the start of your new text: `f.write('\\nNew line here')`\nThen open with `'r'` and `f.read()` to see the full file.",
+      "expected": "",
+      "solution": "with open('journal.txt', 'w') as f:\n    f.write('Day one')\n\nwith open('journal.txt', 'a') as f:\n    f.write('\\nDay two')\n\nwith open('journal.txt', 'r') as f:\n    print(f.read())",
+      "walkthrough": "The middle block opens in append mode, so the existing text is kept and the new text goes after it.\nThe leading `\\n` starts the new entry on its own line."
+    },
+    {
+      "id": "24.6",
+      "description": "Write 5 names to 'names.txt' (one per line). Read them back and print only names longer than 4 characters.",
+      "hint": "Read with `f.readlines()` → list of lines, each ending with `\\n`.\nStrip each: `name = line.strip()`\nFilter: `if len(name) > 4: print(name)`",
+      "expected": "",
+      "solution": "names = ['Sam', 'Alexander', 'Jo', 'Priya', 'Bartholomew']\nwith open('names.txt', 'w') as f:\n    for name in names:\n        f.write(name + '\\n')\n\nwith open('names.txt', 'r') as f:\n    for line in f.readlines():\n        name = line.strip()\n        if len(name) > 4:\n            print(name)",
+      "walkthrough": "`readlines()` returns all the lines as a list. Each is stripped to remove the newline before its length is measured.\nOnly names longer than four characters pass the check."
+    }
+  ],
+  "lesson": {
+    "intro": "Programs that only live in memory forget everything when they end. Files let\nthem remember. Today you'll write a little text to a file and read it back in\na few different ways.\n\nIn this app, files you create end up in the `src/workspace` folder, and they\nstay there between runs, so you can write in one run and read in the next.",
+    "sections": [
+      {
+        "heading": "open, with, and the mode",
+        "body": "`open(name, mode)` opens a file. The mode is `'w'` to write (which wipes any\nexisting content), `'r'` to read, or `'a'` to append. Wrapping it in `with`\nmeans the file is closed automatically at the end of the block, even if\nsomething goes wrong. Always use `with`.",
+        "code": "with open('notes.txt', 'w') as f:\n    f.write('First line\\n')\n    f.write('Second line\\n')\n\nwith open('notes.txt', 'r') as f:\n    print(f.read())",
+        "output": "First line\nSecond line"
+      },
+      {
+        "heading": "Reading line by line",
+        "body": "Looping over an open file gives you one line at a time. Each line still ends\nwith its newline character, so `.strip()` it before printing, or you'll get\nblank lines between them.",
+        "code": "with open('numbers.txt', 'w') as f:\n    for i in range(1, 4):\n        f.write(f'{i}\\n')\n\nwith open('numbers.txt') as f:\n    for line in f:\n        print(line.strip())",
+        "output": "1\n2\n3"
+      },
+      {
+        "heading": "Numbering lines with enumerate",
+        "body": "`enumerate(f, 1)` pairs each line with a counter starting at 1.",
+        "code": "with open('poem.txt', 'w') as f:\n    f.write('Roses are red\\nViolets are blue\\n')\n\nwith open('poem.txt') as f:\n    for i, line in enumerate(f, 1):\n        print(f'{i}: {line.strip()}')",
+        "output": "1: Roses are red\n2: Violets are blue"
+      },
+      {
+        "heading": "Appending",
+        "body": "Mode `'a'` adds to the end of a file without touching what's already there.\nIf the existing content doesn't end with a newline, start your new text with\none.",
+        "code": "with open('log.txt', 'w') as f:\n    f.write('start')\n\nwith open('log.txt', 'a') as f:\n    f.write('\\nmore')\n\nwith open('log.txt') as f:\n    print(f.read())",
+        "output": "start\nmore"
+      }
+    ],
+    "watch_out": [
+      "`'w'` mode empties the file the moment you open it. Use `'a'` if you want to keep what's there.",
+      "`f.write()` doesn't add a newline. Put `\\n` in the string yourself.",
+      "Reading after the `with` block ends gives 'I/O operation on closed file'. Keep the reads inside.",
+      "`f.read()` can only be called once per open; the second call returns an empty string."
+    ]
+  }
+}

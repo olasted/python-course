@@ -1,0 +1,79 @@
+{
+  "day": 43,
+  "title": "Abstract Classes & Protocols",
+  "tasks": [
+    {
+      "id": "43.1",
+      "description": "Use `ABC` and `@abstractmethod` to define an abstract `Shape` with an abstract `area()` method. Create a `Circle` that implements it.",
+      "hint": "`from abc import ABC, abstractmethod`\n`class Shape(ABC): @abstractmethod def area(self): pass`\nYou cannot instantiate `Shape` directly — you MUST implement all abstract methods in subclasses.",
+      "expected": "",
+      "solution": "from abc import ABC, abstractmethod\n\nclass Shape(ABC):\n    @abstractmethod\n    def area(self):\n        pass\n\nclass Circle(Shape):\n    def __init__(self, radius):\n        self.radius = radius\n\n    def area(self):\n        return 3.14159 * self.radius ** 2\n\nc = Circle(2)\nprint(c.area())",
+      "walkthrough": "`Shape` declares `area` as abstract, so it promises nothing about how it works, only that it exists.\n`Circle` provides a real implementation, which makes it a concrete class that can be instantiated."
+    },
+    {
+      "id": "43.2",
+      "description": "Attempt to instantiate the abstract `Shape` class directly. Show that it raises a `TypeError`.",
+      "hint": "Try: `shape = Shape()` — Python raises `TypeError: Can't instantiate abstract class Shape with abstract method area`\nThis is intentional — abstract classes define an INTERFACE, not implementations.\nCatch the TypeError and print a message.",
+      "expected": "",
+      "solution": "from abc import ABC, abstractmethod\n\nclass Shape(ABC):\n    @abstractmethod\n    def area(self):\n        pass\n\ntry:\n    shape = Shape()\nexcept TypeError as e:\n    print(f'TypeError: {e}')",
+      "walkthrough": "Python refuses to create an instance of a class with unimplemented abstract methods.\nThe TypeError message names the class and the missing method, which is caught and printed here."
+    },
+    {
+      "id": "43.3",
+      "description": "Create a `Drawable` abstract class with abstract methods `draw()` and `resize(factor)`. Implement both in a `Square` subclass.",
+      "hint": "Multiple abstract methods: declare both with `@abstractmethod`.\nA subclass must implement ALL abstract methods or it's still abstract.\n`class Square(Drawable): def draw(self): ... def resize(self, factor): ...`",
+      "expected": "",
+      "solution": "from abc import ABC, abstractmethod\n\nclass Drawable(ABC):\n    @abstractmethod\n    def draw(self):\n        pass\n\n    @abstractmethod\n    def resize(self, factor):\n        pass\n\nclass Square(Drawable):\n    def __init__(self, side):\n        self.side = side\n\n    def draw(self):\n        print(f'Square with side {self.side}')\n\n    def resize(self, factor):\n        self.side *= factor\n\ns = Square(4)\ns.draw()\ns.resize(2)\ns.draw()",
+      "walkthrough": "Both methods are abstract, so `Square` has to implement both before it can be created.\nLeave one out and the TypeError from the previous task appears for Square instead."
+    },
+    {
+      "id": "43.4",
+      "description": "Define a `Protocol` class `Printable` with a `print_info()` method. Create a class that satisfies the protocol without explicitly inheriting.",
+      "hint": "`from typing import Protocol`\n`class Printable(Protocol): def print_info(self) -> None: ...`\nAny class with a matching `print_info()` method satisfies the protocol — NO inheritance needed!\nThis is called structural subtyping or 'duck typing' with type checking.",
+      "expected": "",
+      "solution": "from typing import Protocol\n\nclass Printable(Protocol):\n    def print_info(self) -> None: ...\n\nclass Book:\n    def __init__(self, title):\n        self.title = title\n\n    def print_info(self):\n        print(f'Book: {self.title}')\n\ndef show(item: Printable):\n    item.print_info()\n\nshow(Book('Dune'))",
+      "walkthrough": "`Book` never mentions `Printable`, yet it satisfies the protocol because it has a `print_info` method with the right shape.\n`show` accepts anything Printable, and a type checker would confirm Book qualifies."
+    },
+    {
+      "id": "43.5",
+      "description": "Compare abstract classes vs protocols: show a function that accepts any object with a `speak()` method, using Protocol for type hints.",
+      "hint": "`class Speaker(Protocol): def speak(self) -> str: ...`\n`def make_noise(obj: Speaker): print(obj.speak())`\nAny class with `speak()` works — Dog, Cat, Robot — without a common base class.",
+      "expected": "",
+      "solution": "from typing import Protocol\n\nclass Speaker(Protocol):\n    def speak(self) -> str: ...\n\nclass Dog:\n    def speak(self):\n        return 'Woof!'\n\nclass Cat:\n    def speak(self):\n        return 'Meow!'\n\nclass Robot:\n    def speak(self):\n        return 'Beep boop.'\n\ndef make_noise(obj: Speaker):\n    print(obj.speak())\n\nfor thing in [Dog(), Cat(), Robot()]:\n    make_noise(thing)",
+      "walkthrough": "Three unrelated classes share nothing except a `speak` method.\nWith an abstract class they'd all need to inherit from a common base. With a Protocol, the method alone is enough."
+    }
+  ],
+  "lesson": {
+    "intro": "Sometimes you want to say \"every Shape must have an area method\" without\nsaying how each one calculates it. Abstract classes enforce that through\ninheritance. Protocols do it without inheritance: anything with the right\nmethods counts. Both are about agreeing on an interface.",
+    "sections": [
+      {
+        "heading": "Abstract base classes",
+        "body": "Inherit from `ABC` and mark methods with `@abstractmethod`. The class can't\nbe instantiated directly, and neither can a subclass until it implements\nevery abstract method. The base class describes the contract; subclasses\nfulfil it.",
+        "code": "from abc import ABC, abstractmethod\n\nclass Shape(ABC):\n    @abstractmethod\n    def area(self):\n        pass\n\nclass Circle(Shape):\n    def __init__(self, r):\n        self.r = r\n\n    def area(self):\n        return 3.14159 * self.r ** 2\n\nprint(Circle(1).area())",
+        "output": "3.14159"
+      },
+      {
+        "heading": "What happens if you try anyway",
+        "body": "Instantiating the abstract class, or a subclass that forgot a method, raises\na TypeError that names what's missing. That's the feature: the mistake shows\nup at creation time, not later when the method is called.",
+        "code": "from abc import ABC, abstractmethod\n\nclass Shape(ABC):\n    @abstractmethod\n    def area(self):\n        pass\n\ntry:\n    Shape()\nexcept TypeError as e:\n    print(e)",
+        "output": "Can't instantiate abstract class Shape without an implementation for abstract method 'area'"
+      },
+      {
+        "heading": "Protocols: structural typing",
+        "body": "A `Protocol` lists the methods something needs. Any class that has them\nsatisfies the protocol automatically, no inheritance required. This is\nduck typing (\"if it quacks like a duck\") made explicit for type checkers.",
+        "code": "from typing import Protocol\n\nclass Speaker(Protocol):\n    def speak(self) -> str: ...\n\nclass Dog:\n    def speak(self):\n        return 'Woof'\n\nclass Robot:\n    def speak(self):\n        return 'Beep'\n\ndef make_noise(thing: Speaker):\n    print(thing.speak())\n\nmake_noise(Dog())\nmake_noise(Robot())",
+        "output": "Woof\nBeep"
+      },
+      {
+        "heading": "Which to use",
+        "body": "- Abstract class: you control all the subclasses and want shared code in the base.\n- Protocol: you want to accept anything with the right shape, including classes you don't own.\n\nIn practice, Protocols are lighter and Python leans that way. Abstract\nclasses are still common in libraries and frameworks."
+      }
+    ],
+    "watch_out": [
+      "Forgetting to inherit from `ABC`. Then `@abstractmethod` does nothing and the class can be instantiated.",
+      "A subclass with a typo in the method name is still abstract, because the real method wasn't implemented.",
+      "The `...` in a Protocol method body is literal; it's the ellipsis placeholder.",
+      "Protocols don't enforce anything at runtime by default. They're for type checkers and readers."
+    ]
+  }
+}

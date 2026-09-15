@@ -1,0 +1,97 @@
+{
+  "day": 1,
+  "title": "Hello, Python!",
+  "tasks": [
+    {
+      "id": "1.1",
+      "description": "Print the text 'Hello, Python!' to the console.",
+      "hint": "`print()` is Python's built-in output function — it displays whatever you put inside the parentheses.\nWrap your text in quotes (single or double both work): `print('Hello, Python!')`\nCommon mistake: forgetting the quotes turns text into a variable name, causing a NameError.",
+      "expected": "Hello, Python!",
+      "solution": "print('Hello, Python!')",
+      "walkthrough": "`print` shows whatever is in the brackets.\nThe quotes tell Python the bit in the middle is text, so it prints it exactly as written."
+    },
+    {
+      "id": "1.2",
+      "description": "Print two separate lines: 'Line one' and 'Line two'. Use two print() calls.",
+      "hint": "Each `print()` call automatically adds a newline at the end, so the next print starts on a new line.\nWrite one statement directly below the other — no separator needed between them.\nExample:\n  `print('Line one')`\n  `print('Line two')`",
+      "expected": "Line one\nLine two",
+      "solution": "print('Line one')\nprint('Line two')",
+      "walkthrough": "Every `print` finishes by moving to a new line, so two prints give you two lines.\nNothing special is needed between them. Python runs the lines top to bottom."
+    },
+    {
+      "id": "1.3",
+      "description": "Calculate 10 + 5 inside print() and show the result. No strings — just the math.",
+      "hint": "You can pass a math expression directly into `print()` — Python evaluates it first.\n`print(10 + 5)` computes 15, then prints 15 (not the string '10 + 5').\nCommon mistake: `print('10 + 5')` prints the literal text, not the answer.",
+      "expected": "15",
+      "solution": "print(10 + 5)",
+      "walkthrough": "Without quotes, Python works out `10 + 5` first and gets `15`.\nThen it prints that result. If you had written `'10 + 5'` in quotes, it would print those characters instead."
+    },
+    {
+      "id": "1.4",
+      "description": "Print the result of 7 multiplied by 6.",
+      "hint": "Python uses `*` for multiplication (not `x` like in handwriting).\nPut the expression directly inside print: `print(7 * 6)`\nOther operators: `+` add, `-` subtract, `/` divide, `**` exponent.",
+      "expected": "42",
+      "solution": "print(7 * 6)",
+      "walkthrough": "The multiplication symbol in Python is `*`, not `x`.\n`7 * 6` is worked out as `42` and then printed."
+    },
+    {
+      "id": "1.5",
+      "description": "Print the result of 20 divided by 4. Notice what type of number Python gives you.",
+      "hint": "The `/` operator in Python always returns a float, even when the result is a whole number.\nSo `20 / 4` gives `5.0`, not `5`.\nIf you need an integer result, use `//` (floor division): `20 // 4` gives `5`.",
+      "expected": "5.0",
+      "solution": "print(20 / 4)",
+      "walkthrough": "The `/` operator always gives back a float, which is Python's word for a number with a decimal point.\nSo even though 20 divides neatly by 4, the answer is shown as `5.0`.\nIf you ever want a whole number, `20 // 4` gives `5`."
+    },
+    {
+      "id": "1.6",
+      "description": "Create a variable called `name`, assign it your first name as a string, then print: Hello, {name}!",
+      "hint": "Store your name: `name = 'Alex'` (replace Alex with yours)\nf-strings are the cleanest way to embed a variable into text: `print(f'Hello, {name}!')`\nThe `f` before the quote activates the f-string; `{name}` gets replaced with the variable's value.",
+      "expected": "",
+      "solution": "name = 'Alex'\nprint(f'Hello, {name}!')",
+      "walkthrough": "The first line stores the text `'Alex'` under the name `name`. Use your own name if you like.\nThe `f` before the quote turns the string into an f-string. Inside it, `{name}` is swapped for the variable's value.\nThe result is `Hello, Alex!` with the braces and the f gone."
+    },
+    {
+      "id": "1.7",
+      "description": "Print the result of (100 - 37) * 2. Use parentheses to control the order of operations.",
+      "hint": "Python follows PEMDAS order — parentheses go first.\nSo `(100 - 37)` is calculated first giving 63, then `63 * 2` gives 126.\nWithout parentheses, `100 - 37 * 2` would give 26 (wrong order!).",
+      "expected": "126",
+      "solution": "print((100 - 37) * 2)",
+      "walkthrough": "Brackets go first, so `100 - 37` becomes `63`.\nThen `63 * 2` gives `126`, which is what gets printed.\nWithout the inner brackets, Python would do the multiplication first and get `26`."
+    }
+  ],
+  "lesson": {
+    "intro": "Today is about getting Python to say something back. That's genuinely it.\nYou'll type a line, run it, and see the result. Everything else in the course\nbuilds on that little loop of write, run, look.",
+    "sections": [
+      {
+        "heading": "print() puts text on the screen",
+        "body": "`print` is a built-in function. You give it something inside the round brackets\nand it shows that thing in the output. Text goes inside quotes so Python knows\nit's text and not a command.\n\nSingle quotes and double quotes both work. Pick one and stay consistent.",
+        "code": "print('Hello there')\nprint(\"Double quotes work too\")",
+        "output": "Hello there\nDouble quotes work too"
+      },
+      {
+        "heading": "Python can do maths for you",
+        "body": "If you leave the quotes off, Python treats what's inside the brackets as\nsomething to work out. `2 + 3` becomes `5` before it gets printed.\n\nThe operators are `+` add, `-` subtract, `*` multiply, `/` divide and\n`**` for powers. Brackets control the order, just like in school maths.",
+        "code": "print(2 + 3)\nprint(4 * 5)\nprint(10 / 4)\nprint((1 + 2) * 3)",
+        "output": "5\n20\n2.5\n9"
+      },
+      {
+        "heading": "Quotes change everything",
+        "body": "Compare these two lines. The first prints the answer. The second prints the\ncharacters `2 + 3` exactly as typed, because quotes mean \"this is text,\ndon't work it out\".",
+        "code": "print(2 + 3)\nprint('2 + 3')",
+        "output": "5\n2 + 3"
+      },
+      {
+        "heading": "Variables remember a value",
+        "body": "A variable is a name for a value. You create one with `=`. After that you can\nuse the name anywhere you'd have used the value.\n\nTo mix a variable into text, put an `f` before the opening quote and wrap the\nname in curly braces. That's called an f-string and you'll use it constantly.",
+        "code": "name = 'Sam'\nprint(f'Hello, {name}!')",
+        "output": "Hello, Sam!"
+      }
+    ],
+    "watch_out": [
+      "Forgetting the quotes around text. `print(Hello)` makes Python look for a variable called Hello, which doesn't exist, so you get a NameError.",
+      "Mismatched quotes. If you open with `'` you must close with `'`.",
+      "`Print` with a capital P isn't the same as `print`. Python cares about case.",
+      "Division with `/` always gives a decimal, so `20 / 4` is `5.0`, not `5`."
+    ]
+  }
+}

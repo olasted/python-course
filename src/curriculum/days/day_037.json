@@ -1,0 +1,81 @@
+{
+  "day": 37,
+  "title": "Itertools",
+  "tasks": [
+    {
+      "id": "37.1",
+      "description": "Use `itertools.chain()` to combine three lists [1,2], [3,4], [5,6] into a single iterable and print each element.",
+      "hint": "`from itertools import chain`\n`chain([1,2], [3,4], [5,6])` creates a single iterable over all three.\nLoop: `for item in chain([1,2], [3,4], [5,6]): print(item)`",
+      "expected": "1\n2\n3\n4\n5\n6",
+      "solution": "from itertools import chain\n\nfor item in chain([1, 2], [3, 4], [5, 6]):\n    print(item)",
+      "walkthrough": "`chain` produces the items of each list in turn as one continuous stream.\nThe loop prints each one on its own line."
+    },
+    {
+      "id": "37.2",
+      "description": "Use `itertools.product()` to print all combinations of ['H', 'T'] for 2 coin flips (like HH, HT, TH, TT).",
+      "hint": "`from itertools import product`\n`product(['H','T'], repeat=2)` → all 2-element combinations with repetition.\nEach element is a tuple — print each on its own line.",
+      "expected": "('H', 'H')\n('H', 'T')\n('T', 'H')\n('T', 'T')",
+      "solution": "from itertools import product\n\nfor flips in product(['H', 'T'], repeat=2):\n    print(flips)",
+      "walkthrough": "`repeat=2` means two positions, each filled from the list, giving all four ordered outcomes.\nEach outcome is a tuple, and printing a tuple shows the brackets and quotes."
+    },
+    {
+      "id": "37.3",
+      "description": "Use `itertools.combinations()` to find all 2-element combinations from [1, 2, 3, 4]. Print each.",
+      "hint": "`from itertools import combinations`\n`combinations([1,2,3,4], 2)` gives all unique pairs without repetition.\nOrder doesn't matter: (1,2) and (2,1) are the same — only one is returned.",
+      "expected": "",
+      "solution": "from itertools import combinations\n\nfor pair in combinations([1, 2, 3, 4], 2):\n    print(pair)",
+      "walkthrough": "`combinations` picks 2 items at a time without regard to order, so there are six pairs from four items.\n(1, 2) appears but (2, 1) does not, since they're the same pair."
+    },
+    {
+      "id": "37.4",
+      "description": "Use `itertools.groupby()` to group a sorted list of words by their first letter.",
+      "hint": "`from itertools import groupby`\nIMPORTANT: The list MUST be sorted first — `groupby` only groups consecutive equal keys.\n`for key, group in groupby(sorted_words, key=lambda w: w[0]): print(key, list(group))`",
+      "expected": "",
+      "solution": "from itertools import groupby\n\nwords = ['banana', 'apple', 'cherry', 'avocado', 'blueberry']\nwords.sort()\n\nfor letter, group in groupby(words, key=lambda w: w[0]):\n    print(letter, list(group))",
+      "walkthrough": "Sorting puts words that start with the same letter next to each other, which `groupby` needs.\nThe key function picks out the first letter, and each group is turned into a list for printing."
+    },
+    {
+      "id": "37.5",
+      "description": "Use `itertools.islice()` to print only the first 5 elements of an infinite counter starting at 0.",
+      "hint": "`from itertools import islice, count`\n`count(0)` generates 0, 1, 2, 3... forever.\n`islice(count(0), 5)` safely takes only the first 5 without running forever.",
+      "expected": "0\n1\n2\n3\n4",
+      "solution": "from itertools import islice, count\n\nfor n in islice(count(0), 5):\n    print(n)",
+      "walkthrough": "`count(0)` would go on forever, but `islice(..., 5)` stops after five items.\nThe loop only ever sees 0 through 4."
+    }
+  ],
+  "lesson": {
+    "intro": "`itertools` is a set of tools for looping cleverly: joining sequences, generating\ncombinations, grouping runs, and taking slices of things that never end. Each\none is small, but together they replace a lot of nested loops.",
+    "sections": [
+      {
+        "heading": "chain: several sequences as one",
+        "body": "`chain(a, b, c)` loops through a, then b, then c, without building a\ncombined list first.",
+        "code": "from itertools import chain\n\nfor item in chain([1, 2], [3, 4], [5, 6]):\n    print(item, end=' ')",
+        "output": "1 2 3 4 5 6"
+      },
+      {
+        "heading": "product and combinations",
+        "body": "`product(items, repeat=2)` is every ordered pair, like two coin flips.\n`combinations(items, 2)` is every unordered pair, so (1, 2) appears but\n(2, 1) doesn't. Each result is a tuple.",
+        "code": "from itertools import product, combinations\n\nfor p in product(['H', 'T'], repeat=2):\n    print(p)\nprint(list(combinations([1, 2, 3], 2)))",
+        "output": "('H', 'H')\n('H', 'T')\n('T', 'H')\n('T', 'T')\n[(1, 2), (1, 3), (2, 3)]"
+      },
+      {
+        "heading": "groupby: runs of equal keys",
+        "body": "`groupby` groups consecutive items that share a key. Consecutive is the\nimportant word: sort first, or items with the same key that aren't next\nto each other end up in separate groups. Each group is an iterator, so wrap\nit in `list()` to see it.",
+        "code": "from itertools import groupby\n\nwords = sorted(['banana', 'apple', 'cherry', 'avocado', 'blueberry'])\nfor letter, group in groupby(words, key=lambda w: w[0]):\n    print(letter, list(group))",
+        "output": "a ['apple', 'avocado']\nb ['banana', 'blueberry']\nc ['cherry']"
+      },
+      {
+        "heading": "count and islice: infinite, but only take some",
+        "body": "`count(0)` counts up forever. `islice(iterable, n)` takes the first n\nitems from anything, including things that never end. Together they're\na safe way to say \"the first five\".",
+        "code": "from itertools import count, islice\n\nfor n in islice(count(0), 5):\n    print(n, end=' ')\nprint()\nprint(list(islice(count(10, 5), 3)))",
+        "output": "0 1 2 3 4\n[10, 15, 20]"
+      }
+    ],
+    "watch_out": [
+      "Forgetting to sort before `groupby`. It only groups neighbours.",
+      "Printing `product(...)` or `chain(...)` directly shows an object; loop over it or wrap in `list()`.",
+      "`list(count(0))` never finishes. Always pair `count` with `islice` or a `break`.",
+      "The `group` from `groupby` is used up once you iterate it. Convert to a list if you need it twice."
+    ]
+  }
+}

@@ -1,0 +1,81 @@
+{
+  "day": 52,
+  "title": "Threading Basics",
+  "tasks": [
+    {
+      "id": "52.1",
+      "description": "Create and start two threads that each print 'Hello from Thread N' three times. Watch how output interleaves.",
+      "hint": "`import threading`\n`def task(n): [print(f'Hello from Thread {n}') for _ in range(3)]`\n`t1 = threading.Thread(target=task, args=(1,)); t1.start()`\nCreate t2 similarly. The output order may vary — that's threads!",
+      "expected": "",
+      "solution": "import threading\n\ndef task(n):\n    for _ in range(3):\n        print(f'Hello from Thread {n}')\n\nt1 = threading.Thread(target=task, args=(1,))\nt2 = threading.Thread(target=task, args=(2,))\nt1.start()\nt2.start()",
+      "walkthrough": "Each Thread is given the function to run and its arguments as a tuple.\n`start()` sets it going. The two threads print independently, so the lines may come out interleaved differently each run."
+    },
+    {
+      "id": "52.2",
+      "description": "Use `thread.join()` to wait for both threads to finish before printing 'All done!'.",
+      "hint": "`t1.start(); t2.start()` — start both.\nThen `t1.join(); t2.join()` — wait for each to complete.\n`print('All done!')` after the joins is guaranteed to run last.",
+      "expected": "",
+      "solution": "import threading\n\ndef task(n):\n    for _ in range(3):\n        print(f'Hello from Thread {n}')\n\nt1 = threading.Thread(target=task, args=(1,))\nt2 = threading.Thread(target=task, args=(2,))\nt1.start()\nt2.start()\nt1.join()\nt2.join()\nprint('All done!')",
+      "walkthrough": "`join()` on each thread makes the main program wait for it to finish.\nBecause both joins come before the final print, 'All done!' is guaranteed to be last."
+    },
+    {
+      "id": "52.3",
+      "description": "Use a `threading.Lock` to prevent a shared counter from being corrupted by two threads incrementing it.",
+      "hint": "`lock = threading.Lock()`\nInside each thread: `with lock: counter += 1` — only one thread enters at a time.\nWithout the lock, both threads might read the same value and produce wrong results.",
+      "expected": "",
+      "solution": "import threading\n\ncounter = 0\nlock = threading.Lock()\n\ndef increment():\n    global counter\n    for _ in range(100000):\n        with lock:\n            counter += 1\n\nthreads = [threading.Thread(target=increment) for _ in range(2)]\nfor t in threads:\n    t.start()\nfor t in threads:\n    t.join()\n\nprint(f'Final counter: {counter}')",
+      "walkthrough": "Without the lock, two threads could read the same value, both add one, and both write back, losing an increment.\n`with lock:` ensures only one thread is inside that block at a time, so the final count is exactly 200000."
+    },
+    {
+      "id": "52.4",
+      "description": "Simulate downloading 3 files simultaneously using threads. Each 'download' just sleeps for a random time and prints done.",
+      "hint": "`import time, random`\n`def download(name): time.sleep(random.uniform(0.5, 2)); print(f'{name} downloaded')`\nStart 3 threads, join all — total time should be ~max(sleep times) not sum.",
+      "expected": "",
+      "solution": "import threading\nimport time\nimport random\n\ndef download(name):\n    delay = random.uniform(0.2, 0.6)\n    time.sleep(delay)\n    print(f'{name} downloaded in {delay:.2f}s')\n\nfiles = ['report.pdf', 'photo.jpg', 'data.csv']\nthreads = [threading.Thread(target=download, args=(f,)) for f in files]\n\nstart = time.time()\nfor t in threads:\n    t.start()\nfor t in threads:\n    t.join()\nprint(f'All downloads finished in {time.time() - start:.2f}s')",
+      "walkthrough": "Each download sleeps for a random time to simulate waiting on a network.\nBecause the three run at the same time, the total is roughly the longest single delay rather than the sum of all three."
+    },
+    {
+      "id": "52.5",
+      "description": "Use `threading.Event` to create a 'stop signal' that cleanly shuts down a worker thread.",
+      "hint": "`stop_event = threading.Event()`\nWorker: `while not stop_event.is_set(): # do work`\nMain thread: `stop_event.set()` signals the worker to stop cleanly.",
+      "expected": "",
+      "solution": "import threading\nimport time\n\nstop_event = threading.Event()\n\ndef worker():\n    ticks = 0\n    while not stop_event.is_set():\n        ticks += 1\n        print(f'working... ({ticks})')\n        time.sleep(0.1)\n    print('Worker shutting down cleanly')\n\nt = threading.Thread(target=worker)\nt.start()\n\ntime.sleep(0.35)\nstop_event.set()\nt.join()\nprint('Main thread done')",
+      "walkthrough": "The worker loops until the event is set, checking at the top of each pass.\nThe main thread lets it run briefly, sets the event, and joins. The worker finishes its current pass, prints its shutdown message and exits."
+    }
+  ],
+  "lesson": {
+    "intro": "A thread lets part of your program run alongside the rest. It's useful when\nyou're waiting on slow things like downloads, so several waits can overlap.\nIt also introduces a new kind of bug, where two threads change the same data\nat once. Today covers starting threads, waiting for them, and locking.",
+    "sections": [
+      {
+        "heading": "Starting a thread",
+        "body": "`Thread(target=func, args=(...))` prepares a thread; `.start()` runs it.\nThe main program carries on immediately. Output from two threads can\ninterleave in any order.",
+        "code": "import threading\n\ndef task(n):\n    for _ in range(2):\n        print(f'Hello from Thread {n}')\n\nt1 = threading.Thread(target=task, args=(1,))\nt2 = threading.Thread(target=task, args=(2,))\nt1.start()\nt2.start()",
+        "output": "Hello from Thread 1\nHello from Thread 1\nHello from Thread 2\nHello from Thread 2"
+      },
+      {
+        "heading": "join: wait for it to finish",
+        "body": "`.join()` blocks until that thread is done. Start all your threads, then\njoin all of them, and the line after the joins is guaranteed to run last.",
+        "code": "import threading, time\n\ndef download(name, seconds):\n    time.sleep(seconds)\n    print(f'{name} done')\n\nthreads = [threading.Thread(target=download, args=(f'file{i}', 0.2)) for i in range(3)]\nstart = time.time()\nfor t in threads: t.start()\nfor t in threads: t.join()\nprint(f'All done in {time.time() - start:.1f}s')",
+        "output": "file0 done\nfile1 done\nfile2 done\nAll done in 0.2s"
+      },
+      {
+        "heading": "Locks: one at a time",
+        "body": "`counter += 1` is really read, add, write. If two threads do it at the same\nmoment, one update can be lost. A `Lock` makes a block of code run by only\none thread at a time. `with lock:` acquires and releases it.",
+        "code": "import threading\n\ncounter = 0\nlock = threading.Lock()\n\ndef work():\n    global counter\n    for _ in range(10000):\n        with lock:\n            counter += 1\n\nthreads = [threading.Thread(target=work) for _ in range(4)]\nfor t in threads: t.start()\nfor t in threads: t.join()\nprint(counter)",
+        "output": "40000"
+      },
+      {
+        "heading": "Event: a clean stop signal",
+        "body": "A worker that loops forever needs a way to be told to stop. An `Event`\nis a flag another thread can set. The worker checks `is_set()` each loop.",
+        "code": "import threading, time\n\nstop = threading.Event()\n\ndef worker():\n    n = 0\n    while not stop.is_set():\n        n += 1\n        time.sleep(0.05)\n    print(f'worker stopped after {n} ticks')\n\nt = threading.Thread(target=worker)\nt.start()\ntime.sleep(0.3)\nstop.set()\nt.join()",
+        "output": "worker stopped after 6 ticks"
+      }
+    ],
+    "watch_out": [
+      "`args=(1)` is just the number 1. It needs the trailing comma: `args=(1,)`.",
+      "Passing `target=task()` with brackets runs the function immediately instead of in a thread.",
+      "Forgetting `join`: the program may print 'done' before the threads finish.",
+      "Threads in Python don't speed up pure calculation much (the GIL). They shine for waiting: network, files, sleep."
+    ]
+  }
+}

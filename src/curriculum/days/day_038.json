@@ -1,0 +1,87 @@
+{
+  "day": 38,
+  "title": "Advanced Error Handling",
+  "tasks": [
+    {
+      "id": "38.1",
+      "description": "Create a custom exception class `InvalidAgeError` that inherits from Exception. Raise it when age < 0. Test with age = -5.",
+      "hint": "`class InvalidAgeError(Exception): pass` — just inherit from Exception.\nRaise it: `if age < 0: raise InvalidAgeError(f'Age cannot be negative: {age}')`\nCatch it: `except InvalidAgeError as e: print(e)`",
+      "expected": "",
+      "solution": "class InvalidAgeError(Exception):\n    pass\n\ndef set_age(age):\n    if age < 0:\n        raise InvalidAgeError(f'Age cannot be negative: {age}')\n    return age\n\ntry:\n    set_age(-5)\nexcept InvalidAgeError as e:\n    print(f'Caught: {e}')",
+      "walkthrough": "The class body is just `pass`; inheriting from Exception is all it takes.\n`raise` with a message stops the function, and the `except` block catches it by its new name."
+    },
+    {
+      "id": "38.2",
+      "description": "Catch multiple exception types in separate except blocks: handle ZeroDivisionError and ValueError differently.",
+      "hint": "You can have multiple `except` clauses — Python uses the FIRST matching one.\n`try: # code that might raise\nexcept ZeroDivisionError: print('No division by zero!')\nexcept ValueError: print('Invalid value!')`\nOr catch both at once: `except (ZeroDivisionError, ValueError):`",
+      "expected": "",
+      "solution": "def risky(value):\n    return 10 / int(value)\n\nfor value in ['2', '0', 'abc']:\n    try:\n        print(risky(value))\n    except ZeroDivisionError:\n        print('No division by zero!')\n    except ValueError:\n        print('Invalid value!')",
+      "walkthrough": "'2' works. '0' converts fine but the division fails, hitting the first handler.\n'abc' fails at `int()`, which raises ValueError and hits the second handler."
+    },
+    {
+      "id": "38.3",
+      "description": "Use `raise from` to re-raise an exception with more context. Catch a KeyError and raise a custom error that includes the original.",
+      "hint": "`raise CustomError('message') from original_exception` chains the exceptions.\nThe original exception is attached and shown in the traceback for debugging.\n`except KeyError as e: raise ValueError(f'Key not found: {e}') from e`",
+      "expected": "",
+      "solution": "settings = {'host': 'localhost'}\n\ndef get_port():\n    try:\n        return settings['port']\n    except KeyError as e:\n        raise ValueError(f'Key not found: {e}') from e\n\ntry:\n    get_port()\nexcept ValueError as e:\n    print(e)\n    print('Original cause:', repr(e.__cause__))",
+      "walkthrough": "The inner `except` catches the KeyError and raises a ValueError with a clearer message.\n`from e` links the two, so the original KeyError is available as `__cause__` and appears in a full traceback."
+    },
+    {
+      "id": "38.4",
+      "description": "Write a function that validates a username: must be 3-20 chars, alphanumeric only. Raise ValueError with a descriptive message if invalid.",
+      "hint": "Check length: `if not (3 <= len(name) <= 20): raise ValueError('Username must be 3-20 characters')`\nCheck characters: `if not name.isalnum(): raise ValueError('Only letters and numbers allowed')`\nTest with valid AND invalid inputs.",
+      "expected": "",
+      "solution": "def validate_username(name):\n    if not (3 <= len(name) <= 20):\n        raise ValueError('Username must be 3-20 characters')\n    if not name.isalnum():\n        raise ValueError('Only letters and numbers allowed')\n    return name\n\nfor candidate in ['alice99', 'ab', 'bad name!', 'x' * 25]:\n    try:\n        print(f'Valid: {validate_username(candidate)}')\n    except ValueError as e:\n        print(f'Invalid: {e}')",
+      "walkthrough": "Each rule gets its own check and its own message, so the caller knows exactly what was wrong.\nThe loop tests one valid name and three invalid ones to exercise every branch."
+    },
+    {
+      "id": "38.5",
+      "description": "Use `warnings.warn()` to issue a deprecation warning for an old function, then call the new one.",
+      "hint": "`import warnings`\nInside the old function: `warnings.warn('Use new_func() instead', DeprecationWarning, stacklevel=2)`\nThis warns the developer without crashing the program.",
+      "expected": "",
+      "solution": "import warnings\n\ndef new_greet(name):\n    return f'Hello, {name}!'\n\ndef old_greet(name):\n    warnings.warn('old_greet() is deprecated, use new_greet()', DeprecationWarning, stacklevel=2)\n    return new_greet(name)\n\nwarnings.simplefilter('always')\nprint(old_greet('Sam'))",
+      "walkthrough": "`warnings.warn` sends the message to stderr and returns; the program keeps running.\n`stacklevel=2` makes the warning point at the caller of `old_greet`, which is where the fix needs to happen.\n`simplefilter('always')` makes sure the warning is shown, since DeprecationWarnings are hidden by default in some contexts."
+    }
+  ],
+  "lesson": {
+    "intro": "You can catch errors. Today you'll also make your own: raising exceptions on\npurpose when input is bad, defining custom error types so callers can tell\nproblems apart, and chaining errors so the original cause isn't lost.",
+    "sections": [
+      {
+        "heading": "Custom exceptions",
+        "body": "An exception is just a class that inherits from `Exception`. Usually the\nbody is `pass`; the name is what matters. Raise it with `raise` and a\nmessage, catch it by name.",
+        "code": "class InvalidAgeError(Exception):\n    pass\n\ndef check_age(age):\n    if age < 0:\n        raise InvalidAgeError(f'Age cannot be negative: {age}')\n    return age\n\ntry:\n    check_age(-5)\nexcept InvalidAgeError as e:\n    print(e)",
+        "output": "Age cannot be negative: -5"
+      },
+      {
+        "heading": "Several except blocks",
+        "body": "Different errors can get different handling. Python picks the first\n`except` that matches. A tuple catches several with the same handler.",
+        "code": "for value in ['0', 'abc']:\n    try:\n        print(10 / int(value))\n    except ZeroDivisionError:\n        print('No division by zero!')\n    except ValueError:\n        print('Invalid value!')",
+        "output": "No division by zero!\nInvalid value!"
+      },
+      {
+        "heading": "raise ... from: keep the cause",
+        "body": "When you catch a low-level error and raise a clearer one, `from e` attaches\nthe original so it still shows in the traceback. The new error's\n`__cause__` is the old one.",
+        "code": "config = {'host': 'localhost'}\n\ntry:\n    try:\n        port = config['port']\n    except KeyError as e:\n        raise ValueError(f'Missing setting: {e}') from e\nexcept ValueError as e:\n    print(e)\n    print('caused by:', repr(e.__cause__))",
+        "output": "Missing setting: 'port'\ncaused by: KeyError('port')"
+      },
+      {
+        "heading": "Validation that fails loudly",
+        "body": "A function that checks its input and raises `ValueError` with a specific\nmessage is far easier to use than one that quietly returns the wrong thing.",
+        "code": "def validate_username(name):\n    if not (3 <= len(name) <= 20):\n        raise ValueError('Username must be 3-20 characters')\n    if not name.isalnum():\n        raise ValueError('Only letters and numbers allowed')\n    return name\n\nfor name in ['sam_1', 'ab', 'sam1']:\n    try:\n        print('ok:', validate_username(name))\n    except ValueError as e:\n        print('bad:', e)",
+        "output": "bad: Only letters and numbers allowed\nbad: Username must be 3-20 characters\nok: sam1"
+      },
+      {
+        "heading": "Warnings",
+        "body": "Sometimes you want to flag something without stopping. `warnings.warn`\nprints a message to stderr and carries on. In this app, warnings show up\nin the output panel under a separate heading.",
+        "code": "import warnings\n\ndef old_func():\n    warnings.warn('Use new_func() instead', DeprecationWarning, stacklevel=2)\n    return new_func()\n\ndef new_func():\n    return 'result'\n\nprint(old_func())",
+        "output": "result"
+      }
+    ],
+    "watch_out": [
+      "Raising a string, `raise 'oops'`, isn't allowed. Raise an exception object.",
+      "Catching `Exception` in a bare way hides bugs. Catch what you expect.",
+      "`raise` on its own inside an `except` re-raises the same error, which is handy when you only wanted to log it.",
+      "A custom exception with no message prints as an empty string. Always pass one."
+    ]
+  }
+}

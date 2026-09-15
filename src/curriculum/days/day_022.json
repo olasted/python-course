@@ -1,0 +1,89 @@
+{
+  "day": 22,
+  "title": "Classes: Basics",
+  "tasks": [
+    {
+      "id": "22.1",
+      "description": "Define a class `Dog` with an `__init__` method that takes `name` and `breed`. Create an instance and print the dog's name.",
+      "hint": "`class Dog:` defines a new class (by convention, class names are CamelCase).\n`def __init__(self, name, breed):` runs automatically when you create an instance.\nStore attributes: `self.name = name` — `self` refers to the specific instance being created.",
+      "expected": "",
+      "solution": "class Dog:\n    def __init__(self, name, breed):\n        self.name = name\n        self.breed = breed\n\nmy_dog = Dog('Rex', 'labrador')\nprint(my_dog.name)",
+      "walkthrough": "Calling `Dog('Rex', 'labrador')` runs `__init__` with `self` set to the new object.\nThe two values are stored as attributes, and `my_dog.name` reads one back."
+    },
+    {
+      "id": "22.2",
+      "description": "Add a method `bark()` to the Dog class that prints '{name} says: Woof!'. Call it on your Dog instance.",
+      "hint": "Methods are functions inside a class — they always take `self` as first parameter.\n`def bark(self):` — access the dog's name with `self.name`.\nCall it on an instance: `my_dog.bark()` — Python passes `self` automatically.",
+      "expected": "",
+      "solution": "class Dog:\n    def __init__(self, name, breed):\n        self.name = name\n        self.breed = breed\n\n    def bark(self):\n        print(f'{self.name} says: Woof!')\n\nmy_dog = Dog('Rex', 'labrador')\nmy_dog.bark()",
+      "walkthrough": "`bark` is indented inside the class, at the same level as `__init__`.\nWhen you call `my_dog.bark()`, Python passes `my_dog` in as `self`, so `self.name` is Rex."
+    },
+    {
+      "id": "22.3",
+      "description": "Add a `__str__` method to Dog that returns 'Dog: {name} ({breed})'. Print the Dog instance directly.",
+      "hint": "`__str__` is the 'string representation' — Python calls it automatically when you `print()` an object.\nIt must `return` a string (not print one).\nOnce defined, `print(my_dog)` calls `__str__` and prints the returned string.",
+      "expected": "",
+      "solution": "class Dog:\n    def __init__(self, name, breed):\n        self.name = name\n        self.breed = breed\n\n    def __str__(self):\n        return f'Dog: {self.name} ({self.breed})'\n\nmy_dog = Dog('Rex', 'labrador')\nprint(my_dog)",
+      "walkthrough": "`print` asks the object for its string form by calling `__str__`.\nThe method returns a formatted string, which is what gets displayed."
+    },
+    {
+      "id": "22.4",
+      "description": "Create a class `Rectangle` with `width` and `height`. Add an `area()` method and a `perimeter()` method. Test with width=5, height=3.",
+      "hint": "`self.width = width` and `self.height = height` in `__init__`.\n`def area(self): return self.width * self.height`\n`def perimeter(self): return 2 * (self.width + self.height)`\nCreate: `r = Rectangle(5, 3)` then `print(f'Area: {r.area()}')` etc.",
+      "expected": "Area: 15\nPerimeter: 16",
+      "solution": "class Rectangle:\n    def __init__(self, width, height):\n        self.width = width\n        self.height = height\n\n    def area(self):\n        return self.width * self.height\n\n    def perimeter(self):\n        return 2 * (self.width + self.height)\n\nr = Rectangle(5, 3)\nprint(f'Area: {r.area()}')\nprint(f'Perimeter: {r.perimeter()}')",
+      "walkthrough": "Both methods use the stored width and height through `self`.\nThe output lines are labelled to match the expected output exactly: `Area: 15` and `Perimeter: 16`."
+    },
+    {
+      "id": "22.5",
+      "description": "Create a class `Counter` with a count starting at 0. Add increment() and reset() methods and a get_count() method. Test: increment 3 times, get count, reset, get count.",
+      "hint": "`self.count = 0` in `__init__`.\n`increment()`: `self.count += 1`, `reset()`: `self.count = 0`, `get_count()`: `return self.count`\nCall in order: `c.increment()` x3, `print(c.get_count())`, `c.reset()`, `print(c.get_count())`",
+      "expected": "3\n0",
+      "solution": "class Counter:\n    def __init__(self):\n        self.count = 0\n\n    def increment(self):\n        self.count += 1\n\n    def reset(self):\n        self.count = 0\n\n    def get_count(self):\n        return self.count\n\nc = Counter()\nc.increment()\nc.increment()\nc.increment()\nprint(c.get_count())\nc.reset()\nprint(c.get_count())",
+      "walkthrough": "The count lives on the object as `self.count`, starting at 0.\nThree increments bring it to 3, `reset` puts it back to 0, and `get_count` reports the value each time."
+    },
+    {
+      "id": "22.6",
+      "description": "Create a class `BankAccount` with a balance. Add deposit(amount) and withdraw(amount) methods. Withdraw should not allow the balance to go below 0. Test: deposit 100, withdraw 30, withdraw 200, print balance.",
+      "hint": "`self.balance = 0` in `__init__`.\n`deposit(self, amount): self.balance += amount`\n`withdraw`: check `if amount > self.balance: print('Insufficient funds')` else subtract.\nAfter deposit(100), withdraw(30), withdraw(200): balance should be 70.",
+      "expected": "",
+      "solution": "class BankAccount:\n    def __init__(self):\n        self.balance = 0\n\n    def deposit(self, amount):\n        self.balance += amount\n\n    def withdraw(self, amount):\n        if amount > self.balance:\n            print('Insufficient funds')\n        else:\n            self.balance -= amount\n\naccount = BankAccount()\naccount.deposit(100)\naccount.withdraw(30)\naccount.withdraw(200)\nprint(account.balance)",
+      "walkthrough": "`withdraw` checks the amount against the balance before subtracting, so the balance can never go negative.\n100 in, 30 out leaves 70. The attempt to take 200 is refused, so the final balance is still 70."
+    }
+  ],
+  "lesson": {
+    "intro": "A class is a blueprint for a kind of thing: a dog, a bank account, a rectangle.\nIt bundles data (the dog's name) with the functions that work on that data\n(bark). Once you've written the blueprint you can make as many objects from it\nas you like. This is the start of object-oriented programming.",
+    "sections": [
+      {
+        "heading": "A class with __init__",
+        "body": "`__init__` is a special method that runs automatically when you create an\nobject. `self` is the object being created. `self.name = name` stores the\nvalue on the object so other methods can use it later.\n\nClass names are capitalised by convention. You create an object by calling\nthe class like a function.",
+        "code": "class Dog:\n    def __init__(self, name, breed):\n        self.name = name\n        self.breed = breed\n\nrex = Dog('Rex', 'labrador')\nprint(rex.name)\nprint(rex.breed)",
+        "output": "Rex\nlabrador"
+      },
+      {
+        "heading": "Methods",
+        "body": "A method is a function defined inside the class. Its first parameter is\nalways `self`, and Python fills that in for you when you call\n`rex.bark()`. Inside the method, `self.name` is this particular dog's name.",
+        "code": "class Dog:\n    def __init__(self, name):\n        self.name = name\n\n    def bark(self):\n        print(f'{self.name} says: Woof!')\n\nDog('Rex').bark()\nDog('Bella').bark()",
+        "output": "Rex says: Woof!\nBella says: Woof!"
+      },
+      {
+        "heading": "__str__: what print shows",
+        "body": "Printing an object normally shows something unhelpful like\n`<__main__.Dog object at 0x...>`. Define `__str__` to return a string and\n`print` will use it.",
+        "code": "class Dog:\n    def __init__(self, name, breed):\n        self.name = name\n        self.breed = breed\n\n    def __str__(self):\n        return f'Dog: {self.name} ({self.breed})'\n\nprint(Dog('Rex', 'labrador'))",
+        "output": "Dog: Rex (labrador)"
+      },
+      {
+        "heading": "Objects that change over time",
+        "body": "Attributes can be updated by methods. Each object keeps its own copy, so two\ncounters don't interfere with each other.",
+        "code": "class Counter:\n    def __init__(self):\n        self.count = 0\n\n    def increment(self):\n        self.count += 1\n\na = Counter()\nb = Counter()\na.increment()\na.increment()\nb.increment()\nprint(a.count, b.count)",
+        "output": "2 1"
+      }
+    ],
+    "watch_out": [
+      "Forgetting `self` as the first parameter of a method. Python then complains about the number of arguments.",
+      "Writing `name = name` inside `__init__` instead of `self.name = name`. Without `self.` the value is lost when `__init__` ends.",
+      "`__init__` has two underscores on each side.",
+      "`__str__` must return a string, not print one."
+    ]
+  }
+}

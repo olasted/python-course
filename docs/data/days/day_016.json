@@ -1,0 +1,90 @@
+{
+  "day": 16,
+  "title": "Error Handling (try / except)",
+  "tasks": [
+    {
+      "id": "16.1",
+      "description": "Try to divide 10 by 0 inside a try block. Catch the ZeroDivisionError and print 'Cannot divide by zero'.",
+      "hint": "Wrap risky code in `try:` — if an error occurs, Python jumps to `except:` instead of crashing.\n`except ZeroDivisionError:` catches ONLY that specific error type.\nStructure:\n  `try: print(10 / 0)`\n  `except ZeroDivisionError: print('Cannot divide by zero')`",
+      "expected": "Cannot divide by zero",
+      "solution": "try:\n    print(10 / 0)\nexcept ZeroDivisionError:\n    print('Cannot divide by zero')",
+      "walkthrough": "`10 / 0` raises a ZeroDivisionError. Because that line is inside `try`, Python jumps to the `except` block that names that error.\nThe message is printed and the program carries on normally."
+    },
+    {
+      "id": "16.2",
+      "description": "Try to convert the string 'hello' to an integer. Catch the ValueError and print 'Invalid number'.",
+      "hint": "`int('hello')` raises a `ValueError` because 'hello' can't be converted.\n`except ValueError:` catches conversion errors specifically.\nBeing specific about which exception to catch is better practice than `except:` (which catches everything).",
+      "expected": "Invalid number",
+      "solution": "try:\n    number = int('hello')\nexcept ValueError:\n    print('Invalid number')",
+      "walkthrough": "`int('hello')` can't work because those letters don't form a number, so it raises ValueError.\nThe matching `except` catches it and prints a friendlier message."
+    },
+    {
+      "id": "16.3",
+      "description": "Use try/except/finally: print 'Result: 5' in try (10//2), and print 'Done' in finally. finally always runs.",
+      "hint": "`finally:` runs NO MATTER WHAT — whether the try succeeded or an exception was caught.\nStructure: `try: ... except: ... finally: print('Done')`\nUseful for cleanup tasks like closing files.",
+      "expected": "Result: 5\nDone",
+      "solution": "try:\n    print(f'Result: {10 // 2}')\nexcept ZeroDivisionError:\n    print('Cannot divide by zero')\nfinally:\n    print('Done')",
+      "walkthrough": "Nothing goes wrong here, so the `try` block prints the result and the `except` is skipped.\n`finally` runs regardless of what happened, so Done is printed last."
+    },
+    {
+      "id": "16.4",
+      "description": "Use try/except/else: divide 10 by 2 in try, print 'Success: {result}' in else. The else block runs only when NO exception occurred.",
+      "hint": "`else:` runs ONLY if the try block completed without any exception.\nStructure: `try: result = 10/2` then `except: ...` then `else: print(f'Success: {result}')`\nThis is cleaner than putting print() inside the try block.",
+      "expected": "Success: 5.0",
+      "solution": "try:\n    result = 10 / 2\nexcept ZeroDivisionError:\n    print('Cannot divide by zero')\nelse:\n    print(f'Success: {result}')",
+      "walkthrough": "The division succeeds, so the `except` is skipped and the `else` block runs.\n`else` is a tidy place for \"what to do with the result\", keeping the `try` block small.\n`/` gives a float, so the result shows as 5.0."
+    },
+    {
+      "id": "16.5",
+      "description": "Write a function `safe_divide(a, b)` that returns the result or the string 'Error' if b is 0. Test with safe_divide(10, 0).",
+      "hint": "`def safe_divide(a, b):`\n  `try: return a / b`\n  `except ZeroDivisionError: return 'Error'`\nThe `return` inside `except` exits the function immediately with the error string.",
+      "expected": "Error",
+      "solution": "def safe_divide(a, b):\n    try:\n        return a / b\n    except ZeroDivisionError:\n        return 'Error'\n\nprint(safe_divide(10, 0))",
+      "walkthrough": "The function tries the division and returns the answer if it works.\nWhen `b` is 0, the error is caught and the function returns the string 'Error' instead."
+    },
+    {
+      "id": "16.6",
+      "description": "Write a loop that keeps asking the user for an integer until they enter a valid one. Use try/except to handle bad input.",
+      "hint": "`while True:` loop with `try: num = int(input(...)); break` on success.\nThe `break` only runs if the conversion succeeded.\n`except ValueError: print('Please enter a whole number.')` for bad input — the loop continues.",
+      "expected": "",
+      "solution": "while True:\n    try:\n        number = int(input('Enter a whole number: '))\n        break\n    except ValueError:\n        print('Please enter a whole number.')\nprint(f'You entered {number}')",
+      "walkthrough": "The loop keeps asking. Each attempt tries to convert the input.\nIf `int()` fails, the `except` prints a reminder and the loop goes round again.\nIf it succeeds, `break` runs and the loop ends with a valid number in hand.",
+      "solution_stdin": "abc\n4.5\n12\n"
+    }
+  ],
+  "lesson": {
+    "intro": "Things go wrong. Someone types a word where a number was expected, a file is\nmissing, a division hits zero. Left alone, Python stops with a traceback.\n`try`/`except` lets you say \"attempt this, and if it fails, do that instead\"\nso the program keeps going.",
+    "sections": [
+      {
+        "heading": "try and except",
+        "body": "Put the risky code under `try`. If an error happens there, Python jumps to\nthe matching `except` block instead of crashing. If no error happens, the\n`except` block is skipped.",
+        "code": "try:\n    print(10 / 0)\nexcept ZeroDivisionError:\n    print('Cannot divide by zero')",
+        "output": "Cannot divide by zero"
+      },
+      {
+        "heading": "Catch the specific error",
+        "body": "Each kind of problem has a name: ZeroDivisionError, ValueError, KeyError,\nand so on. Name the one you expect. A bare `except:` catches everything,\nincluding mistakes in your own code that you'd rather know about.\n\nYou can also keep the error object with `as e` to print its message.",
+        "code": "try:\n    number = int('hello')\nexcept ValueError as e:\n    print('Invalid number')\n    print(e)",
+        "output": "Invalid number\ninvalid literal for int() with base 10: 'hello'"
+      },
+      {
+        "heading": "else and finally",
+        "body": "`else` runs only if the `try` block finished without an error. `finally`\nruns no matter what, which makes it the place for tidy-up like closing files.",
+        "code": "try:\n    result = 10 // 2\nexcept ZeroDivisionError:\n    print('Cannot divide by zero')\nelse:\n    print(f'Result: {result}')\nfinally:\n    print('Done')",
+        "output": "Result: 5\nDone"
+      },
+      {
+        "heading": "Asking until the input is valid",
+        "body": "Combine a `while True` loop with `try`. If the conversion works, `break`.\nIf it raises ValueError, print a message and go round again.",
+        "code": "while True:\n    try:\n        n = int(input('Whole number: '))\n        break\n    except ValueError:\n        print('That is not a whole number.')\nprint(f'Got {n}')",
+        "output": "Whole number: That is not a whole number.\nWhole number: Got 42"
+      }
+    ],
+    "watch_out": [
+      "The `except` line names an error type, not a message. It's `except ValueError:`, not `except 'invalid':`.",
+      "Putting too much under `try`. Keep it to the line or two that can actually fail, so you don't hide other bugs.",
+      "`return` inside an `except` block ends the function right there, which is often exactly what you want.",
+      "`finally` runs even after a `return`, so anything you print there will still appear."
+    ]
+  }
+}
