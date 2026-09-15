@@ -336,6 +336,16 @@ function restoreEditorForDay(day) {
     state.editor.setPosition({ lineNumber: last, column: state.editor.getModel().getLineMaxColumn(last) });
 }
 
+// Wipes the editor back to the day's starter comment, keeping undo history
+// so Ctrl+Z can bring the code back (used when a task is finished, and by
+// the manual Clear button).
+function resetEditorToStarter() {
+    if (!state.editor) return;
+    setEditorValue(starterFor(state.day));
+    const last = state.editor.getModel().getLineCount();
+    state.editor.setPosition({ lineNumber: last, column: 1 });
+}
+
 function markErrorLine(line) {
     if (!state.editor || !line) return;
     const range = new monaco.Range(line, 1, line, 1);
@@ -893,13 +903,14 @@ async function executeCode(code, stdin) {
             if (!wasDone) {
                 await markComplete(target.id);
                 next = advanceTarget();
+                resetEditorToStarter();
             }
             const allDone = state.tasks.every(t => t.status === 'completed');
             if (wasDone) {
                 setStatus('Still correct.', 'ok');
             } else if (next) {
                 setStatus(`Correct. ${target.id} is done.`, 'ok');
-                parts.push(`<div class="result-card result-ok"><h3>That's ${escapeHtml(target.id)} done</h3><p>Next up is ${escapeHtml(next.id)}. It's selected for you, so just keep going in the same editor or clear it first.</p></div>`);
+                parts.push(`<div class="result-card result-ok"><h3>That's ${escapeHtml(target.id)} done</h3><p>${escapeHtml(next.id)} is up next. I've cleared the editor for it — if it builds on what you just wrote, Ctrl+Z brings that back.</p></div>`);
             } else if (allDone) {
                 setStatus(`Day ${state.day} complete.`, 'ok');
                 const idx = state.days.findIndex(d => d.day === state.day);
@@ -1396,9 +1407,7 @@ function bindUi() {
 
     el.clearBtn.addEventListener('click', () => {
         if (!state.editor) return;
-        setEditorValue(starterFor(state.day));
-        const last = state.editor.getModel().getLineCount();
-        state.editor.setPosition({ lineNumber: last, column: 1 });
+        resetEditorToStarter();
         state.editor.focus();
         clearOutput();
         showToast('Editor cleared. Ctrl+Z brings it back.');
