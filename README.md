@@ -4,7 +4,7 @@ A 60-day, self-paced Python course. Each day has a short lesson, tasks with hint
 that get more specific, and a worked solution. The app checks your output and
 explains errors in plain language.
 
-**Try it now:** **https://dna0102.github.io/python-course/**
+**Try it now:** **https://olasted.github.io/python-course/**
 
 Nothing to install — a real Python interpreter runs inside the page, and your
 progress saves to your browser automatically.
